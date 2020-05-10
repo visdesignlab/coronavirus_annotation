@@ -4,3 +4,14 @@ body {
   color: $body-color;
   font-family: sans-serif;
 }
+
+#main-wrap{
+  display: flex;
+  width:90%;
+  margin: auto;
+  justify-content: center;
+}
+#main-wrap video{
+  width:inherit;
+  height: auto;
+}

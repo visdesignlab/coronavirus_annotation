@@ -1,10 +1,18 @@
-export function test(){
-    console.log('test');
-}
+import * as d3 from 'd3';
 
 export function addVidPlayer(div){
-    console.log(div, 'div here')
+  
+    let player = d3.select(div).append('video');
+    player.node().controls = true;
+    let src = player.append('source');
+    src.attr('src', './public/covid.mp4');
+    src.attr('type', "video/mp4");
+
+    return player;
+    
 }
+
+
 
 
 
