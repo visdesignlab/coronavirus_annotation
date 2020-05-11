@@ -1,12 +1,13 @@
 import '../styles/index.scss';
-
 import * as vid from './video_player';
+import { renderNav } from './sidebar';
 
-console.log('webpack starterkit');
+const nav = [
+    {"key":"Draw", "callback":vid.formatCanvas}
+]
 
 let mainWrap = document.getElementById('main-wrap');
-// let vidWrap = document.getElementById('vid-wrap');
-// let canvasWrap = document.getElementById('canvas-wrap');
-
 vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
-vid.formatCanvas(mainWrap);
+//vid.formatCanvas(mainWrap);
+
+renderNav(document.getElementById('sidebar'), nav)

@@ -15,7 +15,11 @@ export function formatVidPlayer(div, videoPath){
      
 }
 
-export function formatCanvas(div){
+export function formatCanvas(){
+
+  console.log('is this firing')
+
+   let div = document.getElementById('main-wrap');
 
     let canvas = d3.select(div).select('canvas').node();
     canvas.setAttribute('id', 'vid-canvas');
