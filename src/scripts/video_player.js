@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-export function formatVidPlayer(div){
+export function formatVidPlayer(div, videoPath){
 
     let video = d3.select(div).select('video');
     video.attr('id', 'video');
@@ -8,7 +8,7 @@ export function formatVidPlayer(div){
     video.node().controls = true;
     let src = video.append('source');
 
-    src.attr('src', './public/spike_protein_fusion_movie.mp4');
+    src.attr('src', videoPath);
     src.attr('type', "video/mp4");
 
     return div;
@@ -35,14 +35,18 @@ export function formatCanvas(div){
 
     div.onmousedown=function(e) {
 
-        oldX = (e.pageX);
+        let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+
+        oldX = (e.pageX - sideWidth.width);
         oldY = (e.pageY);
    
         draw=true;
     }
     div.onmousemove=function(e) {
 
-    var mouseX = (e.pageX);
+    let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+
+    var mouseX = (e.pageX - sideWidth.width);
     var mouseY = (e.pageY);
     
       if(draw) {

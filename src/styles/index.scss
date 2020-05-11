@@ -1,35 +1,46 @@
 $body-color: slateblue;
 
 body {
-  color: $body-color;
+  height: 100%;   
+  overflow: hidden;  /*makes the body non-scrollable (we will add scrolling to the sidebar and main content containers)*/
+  margin: 0px;  /*removes default style*/
+  display: flex;  /*enables flex content for its children*/
+  box-sizing: border-box;
   font-family: sans-serif;
+}
+html {
+  height: 100%;
 }
 
 #main-wrap{
-  display: flex;
-  width:90%;
-  margin: auto;
-  left:5%;
-  right:5%;
-  justify-content: center;
-}
-
-#main-wrap div{
-  width:100%;
-  height: auto;
-  position: absolute;
-  left:5%;
-  right:5%;
+  width:80%;
+  flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
+  overflow-y: auto;  /*adds scroll to this container*/
 }
 
 #main-wrap video{
   width:100%;
   height: auto;
   position: absolute;
-
+  left:20%;
 }
 
 #main-wrap canvas{
   position: absolute;
+  left:20%;
   pointer-events: none;
+}
+
+#sidebar{
+  width:20%;
+  flex-shrink: 0;
+  flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
+  overflow-y: auto;  /*adds scroll to this container*/
+ 
+}
+
+.column {
+  height: 100%;  /*allows both columns to span the full height of the browser window*/
+  display: flex;
+  flex-direction: column;  /*places the left and right headers above the bottom content*/
 }
