@@ -11,7 +11,21 @@ body {
   margin: auto;
   justify-content: center;
 }
+
+#main-wrap div{
+  width:100%;
+  height: auto;
+  position: absolute;
+  left:5%;
+  right:5%;
+}
+
 #main-wrap video{
-  width:inherit;
+  width:100%;
+  height: auto;
+}
+
+#main-wrap canvas{
+  width:100%;
   height: auto;
 }
