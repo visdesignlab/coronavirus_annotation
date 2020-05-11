@@ -8,7 +8,7 @@ export function formatVidPlayer(div){
     video.node().controls = true;
     let src = video.append('source');
 
-    src.attr('src', './public/covid.mp4');
+    src.attr('src', './public/spike_protein_fusion_movie.mp4');
     src.attr('type', "video/mp4");
 
     return div;
@@ -28,32 +28,25 @@ export function formatCanvas(div){
     canvas.height = videoDim.height;
 
     context.strokeStyle = "red";
-
+    context.lineWidth = 5;
+   
     var oldX, oldY;
     var draw=false;
 
-    function oMousePos(element, evt) {
-        var ClientRect = element.getBoundingClientRect();
-             return { //objeto
-             x: Math.round(evt.clientX - ClientRect.left),
-             y: Math.round(evt.clientY - ClientRect.top)
-        }
-    }  
-
     div.onmousedown=function(e) {
 
-        oldX = (e.pageX - this.offsetLeft);
-        oldY = (e.pageY - this.offsetTop);
+        oldX = (e.pageX);
+        oldY = (e.pageY);
    
         draw=true;
     }
     div.onmousemove=function(e) {
-      
-      var mouseX = (e.pageX - this.offsetLeft);
-      var mouseY = (e.pageY - this.offsetTop);
+
+    var mouseX = (e.pageX);
+    var mouseY = (e.pageY);
     
       if(draw) {
-        console.log(e)
+        console.log(e, this.offsetLeft)
       context.beginPath();
       context.moveTo(oldX, oldY);
       context.lineTo(mouseX, mouseY);
