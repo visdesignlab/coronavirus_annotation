@@ -9,6 +9,8 @@ body {
   display: flex;
   width:90%;
   margin: auto;
+  left:5%;
+  right:5%;
   justify-content: center;
 }
 
@@ -23,9 +25,11 @@ body {
 #main-wrap video{
   width:100%;
   height: auto;
+  position: absolute;
+
 }
 
 #main-wrap canvas{
-  width:100%;
-  height: auto;
+  position: absolute;
+  pointer-events: none;
 }
