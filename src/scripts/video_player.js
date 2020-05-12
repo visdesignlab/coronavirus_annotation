@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
 
+const shapeArray = [];
+
 export function formatVidPlayer(div, videoPath){
 
     let video = d3.select(div).select('video');
@@ -52,7 +54,7 @@ export function formatCanvas(){
 
     var mouseX = (e.pageX - sideWidth.width);
     var mouseY = (e.pageY);
-    
+  
       if(draw) {
         console.log(e, this.offsetLeft)
       context.beginPath();
@@ -67,6 +69,8 @@ export function formatCanvas(){
     }
     div.onmouseup=function(e) {
       draw=false;
+      shapeArray.push(context.save());
+      console.log(shapeArray, context.save())
     }
 
     return div;
