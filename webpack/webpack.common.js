@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: Path.resolve(__dirname, '../src/scripts/index.js')
+    app: Path.resolve(__dirname, '../src/scripts/index.js'),
+    annotation: Path.resolve(__dirname, '../src/scripts/annotation.js')
   },
   output: {
     path: Path.join(__dirname, '../build'),
@@ -24,7 +25,13 @@ module.exports = {
     ]),
     new HtmlWebpackPlugin({
       template: Path.resolve(__dirname, '../src/index.html')
-    })
+    }),
+    new HtmlWebpackPlugin({
+      template: Path.resolve(__dirname, '../src/annotation.html'),
+      inject: true,
+      chunks: ['annotation'],
+      filename: 'annotation.html'
+  }),
   ],
   resolve: {
     alias: {
