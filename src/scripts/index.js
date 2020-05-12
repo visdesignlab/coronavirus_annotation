@@ -2,6 +2,7 @@ import '../styles/index.scss';
 import * as vid from './video_player';
 import { renderNav } from './sidebar';
 import * as firebase from 'firebase';
+import * as firebaseui from 'firebaseui'
 
 
 /**
@@ -19,9 +20,11 @@ import * as firebase from 'firebase';
     appId: "1:297369575962:web:be320c5d86a0b719a467a3",
     measurementId: "G-H9JT7JZCZ8"
   };
+
   // Initialize Firebase
   let app = firebase.initializeApp(firebaseConfig);
   firebase.analytics();
+
   var database = firebase.database();
 
   console.log('database', database, app);
