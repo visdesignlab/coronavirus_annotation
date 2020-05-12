@@ -51,14 +51,14 @@ var uiConfig = {
       firebase.auth.EmailAuthProvider.PROVIDER_ID,
       
     ],
-    // Terms of service url.
-    tosUrl: '<your-tos-url>',
-    // Privacy policy url.
-    privacyPolicyUrl: '<your-privacy-policy-url>'
+    // // Terms of service url.
+    // tosUrl: '<your-tos-url>',
+    // // Privacy policy url.
+    // privacyPolicyUrl: '<your-privacy-policy-url>'
 };
 
 // The start method will wait until the DOM is loaded.
-ui.start('#firebaseui-auth-container', uiConfig);
+ui.start('#sign-in-container', uiConfig);
 
  
 
