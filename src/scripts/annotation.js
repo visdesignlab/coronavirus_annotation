@@ -1,4 +1,5 @@
 import '../styles/index.scss';
+import * as d3 from 'd3';
 import * as vid from './video_player';
 import { renderNav } from './sidebar';
 import * as firebase from 'firebase';
@@ -6,10 +7,7 @@ import * as firebaseui from 'firebaseui'
 import { firebaseConfig } from './firebaseStuff';
 
 
-
-
 if(!firebase.apps.length){
-    console.log('is this firing?')
     firebase.initializeApp(firebaseConfig)
 }
 
@@ -20,14 +18,15 @@ const nav = [
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/rick-roll.mp4');
-    renderNav(document.getElementById('sidebar'), nav);
-    var user = firebase.auth();
-    console.log(user.currentUser, user, firebase.apps)
+    renderNav(d3.select('.button-wrap').node(), nav);
 }
 
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-        console.log("YES USER", user);
+        console.log("YES USER", user.displayName);
+        let userWrap = d3.select('.user-wrap');
+        userWrap.append('text').text(`Signed in as: ${user.displayName}`)
+
       // User is signed in.
     } else {
         console.log("NO USER", user);
@@ -35,8 +34,3 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
   });
 
-// if (user) {
-//   // User is signed in.
-// } else {
-//   // No user is signed in.
-// }

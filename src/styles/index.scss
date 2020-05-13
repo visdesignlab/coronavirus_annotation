@@ -40,7 +40,15 @@ html {
   flex-shrink: 0;
   flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
   overflow-y: auto;  /*adds scroll to this container*/
- 
+  display:flex;
+}
+
+.user-wrap{
+  margin:auto;
+}
+
+.button-wrap{
+ margin: auto;
 }
 
 .column {
@@ -48,6 +56,8 @@ html {
   display: flex;
   flex-direction: column;  /*places the left and right headers above the bottom content*/
 }
+
+/*firebase styling for sign in*/
 
 #sign-in-container{
   box-sizing: border-box;
