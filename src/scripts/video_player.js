@@ -19,6 +19,8 @@ export function formatVidPlayer(div, videoPath){
 
 export function formatCanvas(){
 
+  let frame = 'video';
+
   console.log('is this firing')
 
    let div = document.getElementById('main-wrap');
@@ -27,7 +29,7 @@ export function formatCanvas(){
     canvas.setAttribute('id', 'vid-canvas');
 
     const context = canvas.getContext("2d");
-    let videoDim = document.getElementById('video').getBoundingClientRect();
+    let videoDim = document.getElementById(frame).getBoundingClientRect();
     console.log(video, 'size')
 
     canvas.width = videoDim.width;
