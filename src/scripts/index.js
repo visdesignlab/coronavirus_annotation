@@ -1,4 +1,5 @@
 import '../styles/index.scss';
+import 'bootstrap';
 import * as firebase from 'firebase';
 import * as firebaseui from 'firebaseui'
 import { firebaseConfig, uiConfig } from './firebaseStuff';
