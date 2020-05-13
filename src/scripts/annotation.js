@@ -12,7 +12,7 @@ if(!firebase.apps.length){
 }
 
 const nav = [
-    {"key":"Draw", "callback":vid.formatCanvas}
+    {"key":"Draw", "callback":vid.formatCanvas, "selectedBool":false}
 ]
 
 let mainWrap = document.getElementById('main-wrap');
@@ -23,10 +23,8 @@ if(mainWrap){
 
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-        console.log("YES USER", user.displayName);
         let userWrap = d3.select('.user-wrap');
         userWrap.append('text').text(`Signed in as: ${user.displayName}`)
-
       // User is signed in.
     } else {
         console.log("NO USER", user);
