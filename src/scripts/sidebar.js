@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { formatCanvas } from './video_player';
 
 export function renderNav(div, nav){
 
@@ -22,6 +23,19 @@ export function renderNav(div, nav){
         d.callback();
     }
         
+        
+    });
+}
+
+export function toggleMagic(){
+    d3.select('.togg-wrap').selectAll('input')
+    .on('click', (d, i, n)=> {
+        console.log(n[i].value);
+        if(n[i].value === "draw"){
+            formatCanvas();
+        }else{
+
+        }
         
     });
 }

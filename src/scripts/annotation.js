@@ -1,7 +1,7 @@
 import '../styles/index.scss';
 import * as d3 from 'd3';
 import * as vid from './video_player';
-import { renderNav } from './sidebar';
+import { renderNav, toggleMagic } from './sidebar';
 import * as firebase from 'firebase';
 import * as firebaseui from 'firebaseui'
 import { firebaseConfig } from './firebaseStuff';
@@ -18,7 +18,8 @@ const nav = [
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
-    renderNav(d3.select('.button-wrap').node(), nav);
+    //renderNav(d3.select('.button-wrap').node(), nav);
+    toggleMagic();
 }
 
 firebase.auth().onAuthStateChanged(function(user) {
