@@ -1,0 +1,108 @@
+
+import * as d3 from 'd3';
+
+const annotationDataset = [];
+
+
+export function formatPush(){
+    console.log('this is button');
+    let interactionDiv = d3.select('#interaction');
+    interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
+    interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
+    interactionDiv.on("click", function() {
+        var coords = d3.mouse(this);
+
+        console.log(coords)
+
+        console.log(document.getElementById('video').duration);
+
+        let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+
+        // // Normally we go from data to pixels, but here we're doing pixels to data
+        var newData= {
+        //  x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
+        //  y: Math.round( yScale.invert(coords[1]))
+            x: coords[0],
+            y: coords[1]
+        };
+
+        annotationDataset.push(newData);   // Push data to our array
+
+        let div = interactionDiv.selectAll('div.push').data(annotationDataset).join('div').classed('push', true);
+        div.style('position', 'absolute')
+        div.style('top', (d)=> d.y+'px')
+        div.style('left', (d)=> d.x+'px')
+        let svg = div.selectAll('svg').data(d=> [d]).join('svg');
+        let circ = svg.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'red');
+        
+
+        // svg.selectAll("circle")  // For new circle, go through the update process
+        //   .data(dataset)
+        //   .enter()
+        //   .append("circle")
+        //   .attr(circleAttrs)  // Get attributes from circleAttrs var
+        //   .on("mouseover", handleMouseOver)
+        //   .on("mouseout", handleMouseOut);
+      });
+}
+export function formatCanvas(){
+
+    let frame = 'video';
+  
+    console.log('is this firing')
+  
+     let div = document.getElementById('main-wrap');
+  
+      let canvas = d3.select(div).select('canvas').node();
+      canvas.setAttribute('id', 'vid-canvas');
+  
+      const context = canvas.getContext("2d");
+      let videoDim = document.getElementById(frame).getBoundingClientRect();
+      console.log(video, 'size')
+  
+      canvas.width = videoDim.width;
+      canvas.height = videoDim.height;
+  
+      context.strokeStyle = "red";
+      context.lineWidth = 5;
+     
+      var oldX, oldY;
+      var draw=false;
+  
+      div.onmousedown=function(e) {
+  
+          let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+  
+          oldX = (e.pageX - sideWidth.width);
+          oldY = (e.pageY);
+     
+          draw=true;
+      }
+      div.onmousemove=function(e) {
+  
+      let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+  
+      var mouseX = (e.pageX - sideWidth.width);
+      var mouseY = (e.pageY);
+    
+        if(draw) {
+          console.log(e, this.offsetLeft)
+          context.beginPath();
+          context.moveTo(oldX, oldY);
+          context.lineTo(mouseX, mouseY);
+          context.stroke();
+          context.closePath();
+          oldX=mouseX;
+          oldY=mouseY;
+        }
+      
+      }
+      div.onmouseup=function(e) {
+        draw=false;
+        shapeArray.push(context.save());
+        console.log(shapeArray, context.save())
+      }
+  
+      return div;
+  
+  }

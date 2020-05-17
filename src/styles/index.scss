@@ -238,7 +238,7 @@ VIDEO CONTROLS
   align-items: center;
 }
 
-video, canvas {
+video, canvas, #interaction {
   // width: 100%;
   // height: 100%;
   position: absolute;
@@ -249,8 +249,17 @@ video, canvas {
   border-radius: 4px;
 }
 
+#interaction{
+  z-index:2000;
+}
+
 #main-wrap canvas{
   pointer-events: none;
+  z-index: 2;
+}
+
+video{
+  z-index: 1;
 }
 
 .video-controls {

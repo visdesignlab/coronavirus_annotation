@@ -1,4 +1,6 @@
 import * as d3 from 'd3';
+import { formatCanvas, formatPush } from './canvas';
+import { toggleMagic } from './sidebar';
 
 const shapeArray = [];
 
@@ -14,6 +16,10 @@ export function formatVidPlayer(div, videoPath){
   src.attr('type', "video/mp4");
 
   customControls(videoSelect.node());
+
+  console.log('is this on')
+  let interactionVal = d3.select('.togg-wrap').selectAll('input').data();
+  interactionVal.value === 'draw' ? formatCanvas() : formatPush();
     
   return div;
      
@@ -313,67 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 }
 
-export function formatCanvas(){
 
-  let frame = 'video';
-
-  console.log('is this firing')
-
-   let div = document.getElementById('main-wrap');
-
-    let canvas = d3.select(div).select('canvas').node();
-    canvas.setAttribute('id', 'vid-canvas');
-
-    const context = canvas.getContext("2d");
-    let videoDim = document.getElementById(frame).getBoundingClientRect();
-    console.log(video, 'size')
-
-    canvas.width = videoDim.width;
-    canvas.height = videoDim.height;
-
-    context.strokeStyle = "red";
-    context.lineWidth = 5;
-   
-    var oldX, oldY;
-    var draw=false;
-
-    div.onmousedown=function(e) {
-
-        let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
-
-        oldX = (e.pageX - sideWidth.width);
-        oldY = (e.pageY);
-   
-        draw=true;
-    }
-    div.onmousemove=function(e) {
-
-    let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
-
-    var mouseX = (e.pageX - sideWidth.width);
-    var mouseY = (e.pageY);
-  
-      if(draw) {
-        console.log(e, this.offsetLeft)
-        context.beginPath();
-        context.moveTo(oldX, oldY);
-        context.lineTo(mouseX, mouseY);
-        context.stroke();
-        context.closePath();
-        oldX=mouseX;
-        oldY=mouseY;
-      }
-    
-    }
-    div.onmouseup=function(e) {
-      draw=false;
-      shapeArray.push(context.save());
-      console.log(shapeArray, context.save())
-    }
-
-    return div;
-
-}
 
 
 

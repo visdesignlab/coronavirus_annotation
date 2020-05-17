@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas } from './video_player';
+import { formatCanvas, annotateCircle, formatPush } from './canvas';
 
 export function renderNav(div, nav){
 
@@ -8,11 +8,12 @@ export function renderNav(div, nav){
     buttons.classed('btn btn-secondary', true);
     buttons.attr('id', d=> `button-${d.key}`);
     buttons.on('click', (d, i, n)=> {
-    if(d.key === 'Draw'){
+    if(d.key === 'draw'){
         if(d.selectedBool === false){
             d.selectedBool = true;
             console.log('how do you pause the video');
             console.log(n[i])
+            document.getElementById('video').setAttribute('pointer-events', 'none')
             d.callback();
         }else{
             d.selectedBool = false;
@@ -22,9 +23,7 @@ export function renderNav(div, nav){
     }else{
         d.callback();
     }
-        
-        
-    });
+ });
 }
 
 export function toggleMagic(){
@@ -34,7 +33,8 @@ export function toggleMagic(){
         if(n[i].value === "draw"){
             formatCanvas();
         }else{
-
+            //annotateCircle();
+            formatPush();
         }
         
     });
