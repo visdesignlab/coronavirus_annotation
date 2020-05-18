@@ -18,27 +18,35 @@ export function formatPush(){
 
         if(d3.event.target == interactionDiv.node()){
 
-            var coords = d3.mouse(this);
+            if(!pushedBool){       
 
-            console.log(coords)
+                pushedBool = true;
+         
+                var coords = d3.mouse(this);
 
-            event.stopPropagation();
+                event.stopPropagation();
 
-            let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+                let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
 
-            let pushDiv = interactionDiv.append('div');
-            pushDiv.style('position', 'absolute')
-            pushDiv.style('top', (d)=> coords[1]+'px')
-            pushDiv.style('left', (d)=> coords[0]+'px')
-            let svg = pushDiv.append('svg');
-            let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
+                let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+                pushDiv.style('position', 'absolute')
+                pushDiv.style('top', (d)=> coords[1]+'px')
+                pushDiv.style('left', (d)=> coords[0]+'px')
+                let svg = pushDiv.append('svg');
+                let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
 
-            let currentTime = document.getElementById('video').currentTime;
+                let currentTime = document.getElementById('video').currentTime;
 
-            let inputDiv = pushDiv.append('div').classed('text-input', true);
-            inputDiv.append('text').text(`${currentTime} :`)
-            inputDiv.append('textarea').attr('id', 'text-area-id');
-            let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+                let inputDiv = pushDiv.append('div').classed('text-input', true);
+                inputDiv.append('text').text(`${currentTime} :`)
+                inputDiv.append('textarea').attr('id', 'text-area-id');
+                let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+        
+            }else{
+                pushedBool = false;
+                d3.select('#push-div').remove();
+
+            }
 
 
         }
