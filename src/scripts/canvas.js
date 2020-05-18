@@ -1,5 +1,6 @@
 
 import * as d3 from 'd3';
+import * as firebase from 'firebase';
 
 const annotationDataset = [];
 
@@ -13,43 +14,73 @@ export function formatPush(){
 
     interactionDiv.on("click", function() {
 
-        console.log('evt', d3.event.target)
+        let event = d3.event.target;
         d3.event.stopPropagation();
+        let coords = d3.mouse(this);
 
-        if(d3.event.target == interactionDiv.node()){
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
 
-            if(!pushedBool){       
+                    if(event == interactionDiv.node()){
+            
+                        if(!pushedBool){       
+            
+                            pushedBool = true;
+                    
+                            let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+            
+                            let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+                            pushDiv.style('position', 'absolute')
+                            pushDiv.style('top', (d)=> coords[1]+'px')
+                            pushDiv.style('left', (d)=> coords[0]+'px')
+                            let svg = pushDiv.append('svg');
+                            let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
+            
+                            let currentTime = document.getElementById('video').currentTime;
+            
+                            let inputDiv = pushDiv.append('div').classed('text-input', true);
+                            inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
+                            inputDiv.append('textarea').attr('id', 'text-area-id');
+                            let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+                            submit.on('click', ()=> {
+            
+            
+            
+                                let dataPush = {
+                                    time: currentTime,
+                                    comment: d3.select('#text-area-id').node().value,
+                                }
+                                
+                                
+                                dataPush.user = user;
+                                dataPush.displayName = user.displayName;
 
-                pushedBool = true;
-         
-                var coords = d3.mouse(this);
+                                console.log(dataPush)
+                        
+            
+                                
+                            });
+                    
+                        }else{
+                            pushedBool = false;
+                            d3.select('#push-div').remove();
+            
+                        }
 
-                event.stopPropagation();
+                    }
+                // User is signed in.
+                } else {
+                    console.log("NO USER", user);
+                // No user is signed in.
+                }
+            
 
-                let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+        });
 
-                let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
-                pushDiv.style('position', 'absolute')
-                pushDiv.style('top', (d)=> coords[1]+'px')
-                pushDiv.style('left', (d)=> coords[0]+'px')
-                let svg = pushDiv.append('svg');
-                let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
+       
 
-                let currentTime = document.getElementById('video').currentTime;
 
-                let inputDiv = pushDiv.append('div').classed('text-input', true);
-                inputDiv.append('text').text(`${currentTime} :`)
-                inputDiv.append('textarea').attr('id', 'text-area-id');
-                let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
         
-            }else{
-                pushedBool = false;
-                d3.select('#push-div').remove();
-
-            }
-
-
-        }
         
 
 
