@@ -9,40 +9,62 @@ export function formatPush(){
     let interactionDiv = d3.select('#interaction');
     interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
     interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
+    let pushedBool = false;
+
     interactionDiv.on("click", function() {
-        var coords = d3.mouse(this);
 
-        console.log(coords)
+        console.log('evt', d3.event.target)
+        d3.event.stopPropagation();
 
-        console.log(document.getElementById('video').duration);
+        if(d3.event.target == interactionDiv.node()){
 
-        let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+            var coords = d3.mouse(this);
 
-        // // Normally we go from data to pixels, but here we're doing pixels to data
-        var newData= {
-        //  x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
-        //  y: Math.round( yScale.invert(coords[1]))
-            x: coords[0],
-            y: coords[1]
-        };
+            console.log(coords)
 
-        annotationDataset.push(newData);   // Push data to our array
+            event.stopPropagation();
 
-        let div = interactionDiv.selectAll('div.push').data(annotationDataset).join('div').classed('push', true);
-        div.style('position', 'absolute')
-        div.style('top', (d)=> d.y+'px')
-        div.style('left', (d)=> d.x+'px')
-        let svg = div.selectAll('svg').data(d=> [d]).join('svg');
-        let circ = svg.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'red');
+            let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+
+            let pushDiv = interactionDiv.append('div');
+            pushDiv.style('position', 'absolute')
+            pushDiv.style('top', (d)=> coords[1]+'px')
+            pushDiv.style('left', (d)=> coords[0]+'px')
+            let svg = pushDiv.append('svg');
+            let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
+
+            let currentTime = document.getElementById('video').currentTime;
+
+            let inputDiv = pushDiv.append('div').classed('text-input', true);
+            inputDiv.append('text').text(`${currentTime} :`)
+            inputDiv.append('textarea').attr('id', 'text-area-id');
+            let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+
+
+        }
         
 
-        // svg.selectAll("circle")  // For new circle, go through the update process
-        //   .data(dataset)
-        //   .enter()
-        //   .append("circle")
-        //   .attr(circleAttrs)  // Get attributes from circleAttrs var
-        //   .on("mouseover", handleMouseOver)
-        //   .on("mouseout", handleMouseOut);
+
+
+        // // // Normally we go from data to pixels, but here we're doing pixels to data
+        // var newData= {
+        // //  x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
+        // //  y: Math.round( yScale.invert(coords[1]))
+        //     x: coords[0],
+        //     y: coords[1]
+        // };
+
+        // annotationDataset.push(newData);   // Push data to our array
+
+        // /////NEED TO CREATE THE INITIAL PUSH DIV FIRST//
+        // let div = interactionDiv.selectAll('div.saved').data(annotationDataset).join('div').classed('saved', true);
+        // div.style('position', 'absolute')
+        // div.style('top', (d)=> d.y+'px')
+        // div.style('left', (d)=> d.x+'px')
+        // let svg = div.selectAll('svg').data(d=> [d]).join('svg');
+        // let circ = svg.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'red');
+
+    
       });
 }
 export function formatCanvas(){
