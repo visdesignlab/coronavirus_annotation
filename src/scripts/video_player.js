@@ -90,6 +90,7 @@ function updatePlayButton() {
 // formatTime takes a time length in seconds and returns the time in
 // minutes and seconds
 function formatTime(timeInSeconds) {
+  
   const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
 
   return {

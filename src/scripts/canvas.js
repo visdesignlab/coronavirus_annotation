@@ -44,8 +44,6 @@ export function formatPush(){
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
             
-            
-            
                                 let dataPush = {
                                     time: currentTime,
                                     comment: d3.select('#text-area-id').node().value,
@@ -55,10 +53,15 @@ export function formatPush(){
                                 dataPush.user = user;
                                 dataPush.displayName = user.displayName;
 
-                                console.log(dataPush)
-                        
-            
-                                
+                                annotationDataset.push(dataPush);
+
+                                pushedBool = false;
+                                d3.select('#push-div').remove();
+
+                                /**
+                                 * THIS IS WHERE YOU SDD THE OTHER STUFF
+                                 */
+
                             });
                     
                         }else{
