@@ -1,8 +1,13 @@
 
 import * as d3 from 'd3';
 import * as firebase from 'firebase';
+import { firebaseConfig } from './firebaseStuff';
 
 const annotationDataset = [];
+
+
+
+
 
 
 export function formatPush(){
@@ -49,8 +54,8 @@ export function formatPush(){
                                     comment: d3.select('#text-area-id').node().value,
                                 }
                                 
-                                
-                                dataPush.user = user;
+                                //dataPush.user = user;
+                                dataPush.uid = user.uid;
                                 dataPush.displayName = user.displayName;
 
                                 annotationDataset.push(dataPush);
@@ -61,6 +66,19 @@ export function formatPush(){
                                 /**
                                  * THIS IS WHERE YOU SDD THE OTHER STUFF
                                  */
+                              
+                                 // Create a new post reference with an auto-generated id
+                                 //var ref = firebase.database().ref(); //https://covid-annotation.firebaseio.com/
+                                 let ref = firebase.database().ref();                     
+                                 ref.push(dataPush);
+
+                                 console.log('reffffff',ref)
+
+                                 ref.on("value", function(snapshot) {
+                                    console.log('snapp',snapshot.val());
+                                 }, function (error) {
+                                    console.log("Error: " + error.code);
+                                 });
 
                             });
                     
