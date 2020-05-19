@@ -5,16 +5,15 @@ export function updateSideAnnotations(dbRef){
 
     console.log('is this reaching??',dbRef, d3.entries(dbRef));
 
-    let data = d3.entries(dbRef).map(m=> m.value);
+    let data = d3.entries(dbRef).map(m=> m.value).sort((a, b)=> a.time - b.time);
+  
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
     let memoDivs = wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
-    memoDivs.selectAll('text').data(d=> [d]).join('text').text(d=> {
-        console.log(d)
-        return `${d.displayName}: ${d.time} - ${d.comment}`;
-    })
-
-   
+    memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
+    memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
+    memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+    
 }
 
 export function renderNav(div, nav){

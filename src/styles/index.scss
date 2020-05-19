@@ -262,13 +262,28 @@ video, canvas, #interaction {
 }
 
 #annotation-wrap{
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
 }
+
 .memo{
  width:100%;
- height:50px;
- border: 1px solid black;
+ min-height:50px;
+ border: 1px solid gray;
+ padding:5px;
+}
+
+span.name{
+  font-size: 11px;
+}
+span.time{
+  float:right;
+  font-size: 11px;
+}
+span.comment{
+  display:block;
+  font-size: 11px;
+  font-weight: 300;
 }
 
 #interaction{
