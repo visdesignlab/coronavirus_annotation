@@ -8,7 +8,11 @@ export function updateSideAnnotations(dbRef){
     let data = d3.entries(dbRef).map(m=> m.value);
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
-    wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
+    let memoDivs = wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
+    memoDivs.selectAll('text').data(d=> [d]).join('text').text(d=> {
+        console.log(d)
+        return `${d.displayName}: ${d.time} - ${d.comment}`;
+    })
 
    
 }
