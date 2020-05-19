@@ -1,10 +1,10 @@
 import '../styles/index.scss';
 import * as d3 from 'd3';
 import * as vid from './video_player';
-import { renderNav, toggleMagic } from './sidebar';
+import { renderNav, toggleMagic, updateSideAnnotations } from './sidebar';
 import * as firebase from 'firebase';
 import * as firebaseui from 'firebaseui'
-import { firebaseConfig } from './firebaseStuff';
+import { firebaseConfig, checkDatabase } from './firebaseStuff';
 
 
 if(!firebase.apps.length){
@@ -25,7 +25,12 @@ if(mainWrap){
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
         let userWrap = d3.select('.user-wrap');
-        userWrap.append('text').text(`Signed in as: ${user.displayName}`)
+        userWrap.append('text').text(`Signed in as: ${user.displayName}`);
+
+        let ref = firebase.database().ref();                     
+        //ref.push(dataPush);
+        checkDatabase(ref, updateSideAnnotations);
+
       // User is signed in.
     } else {
         console.log("NO USER", user);

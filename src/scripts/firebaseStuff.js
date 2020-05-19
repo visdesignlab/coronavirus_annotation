@@ -18,6 +18,16 @@ export const firebaseConfig = {
 if(!firebase.apps.length){
     firebase.initializeApp(firebaseConfig)
 }
+
+export function checkDatabase(ref, callback){
+ 
+  ref.on("value", function(snapshot) {
+      callback(snapshot.val());
+  }, function (error) {
+      console.log("Error: " + error.code);
+  });
+
+}
   
 export const uiConfig = {
     callbacks: {

@@ -1,6 +1,18 @@
 import * as d3 from 'd3';
 import { formatCanvas, annotateCircle, formatPush } from './canvas';
 
+export function updateSideAnnotations(dbRef){
+
+    console.log('is this reaching??',dbRef, d3.entries(dbRef));
+
+    let data = d3.entries(dbRef).map(m=> m.value);
+    let wrap = d3.select('#sidebar').select('#annotation-wrap');
+
+    wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
+
+   
+}
+
 export function renderNav(div, nav){
 
     let buttons = d3.select(div).selectAll('button').data(nav).join('button');

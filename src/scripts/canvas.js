@@ -1,7 +1,8 @@
 
 import * as d3 from 'd3';
 import * as firebase from 'firebase';
-import { firebaseConfig } from './firebaseStuff';
+import { firebaseConfig, checkDatabase } from './firebaseStuff';
+import { updateSideAnnotations } from './sidebar';
 
 const annotationDataset = [];
 
@@ -69,42 +70,27 @@ export function formatPush(){
                               
                                  // Create a new post reference with an auto-generated id
                                  //var ref = firebase.database().ref(); //https://covid-annotation.firebaseio.com/
-                                 let ref = firebase.database().ref();                     
-                                 ref.push(dataPush);
+                                // let ref = firebase.database().ref();                     
+                                // ref.push(dataPush);
 
-                                 console.log('reffffff',ref)
-
-                                 ref.on("value", function(snapshot) {
-                                    console.log('snapp',snapshot.val());
-                                 }, function (error) {
-                                    console.log("Error: " + error.code);
-                                 });
+                                let ref = firebase.database().ref();                     
+                                ref.push(dataPush);
+                              
+                                checkDatabase(ref, updateSideAnnotations);
 
                             });
                     
                         }else{
                             pushedBool = false;
                             d3.select('#push-div').remove();
-            
                         }
-
                     }
                 // User is signed in.
                 } else {
                     console.log("NO USER", user);
                 // No user is signed in.
                 }
-            
-
         });
-
-       
-
-
-        
-        
-
-
 
         // // // Normally we go from data to pixels, but here we're doing pixels to data
         // var newData= {
