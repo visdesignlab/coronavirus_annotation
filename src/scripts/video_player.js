@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
-import { formatCanvas, formatPush } from './canvas';
+import { formatCanvas, formatPush, annotationBar } from './canvas';
 import { toggleMagic } from './sidebar';
+import { checkDatabase } from './firebaseStuff';
+import * as firebase from 'firebase';
 
 const shapeArray = [];
 
@@ -58,7 +60,6 @@ if (videoWorks) {
   videoControls.classList.remove('hidden');
 }
 
-console.log(videoDim.width)
 
 d3.select(videoControls).style('width', `${videoDim.width}px`)
 // Add functions here
@@ -317,6 +318,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pipButton.classList.add('hidden');
   }
 });
+
+let ref = firebase.database().ref();                     
+
+checkDatabase(ref, annotationBar);
 
 }
 

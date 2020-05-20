@@ -320,6 +320,20 @@ video{
   margin-bottom: 10px;
 }
 
+#annotation-layer{
+  position: relative;
+  top: -10px;
+}
+
+#annotation-layer svg{
+  width:980px;
+}
+
+#annotation-layer svg circle.memo{
+  fill-opacity:.4;
+  stroke: 1px solid red;
+}
+
 progress {
   -webkit-appearance: none;
   -moz-appearance: none;

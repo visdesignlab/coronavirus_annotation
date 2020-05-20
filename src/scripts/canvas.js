@@ -7,7 +7,31 @@ import { updateSideAnnotations } from './sidebar';
 const annotationDataset = [];
 
 
+export function annotationBar(dbRef){
+    let svg = d3.select('#annotation-layer').select('svg');
 
+    console.log(dbRef);
+
+    let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
+    let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
+   
+    function randomizer(){
+        var min= -.03; 
+        var max= .03;  
+        var random = Math.random() * (+max - +min) + +min; 
+        return random;
+    }
+    let jitterMove = d3.entries(dbRef).map(d=> d.value).map(m=> {
+        m.y = Math.random();
+        m.x = randomizer();
+        return m;
+    });
+
+    let rects = svg.selectAll('.memo').data(jitterMove).join('circle').attr('r', 3).classed('memo', true);
+    rects.attr('cx', (d)=> scale(d.time + d.x));
+    rects.attr('cy', d=> yScale(d.y))
+
+}
 
 
 
