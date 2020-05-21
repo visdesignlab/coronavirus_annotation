@@ -6,18 +6,23 @@ import { updateSideAnnotations } from './sidebar';
 
 const annotationDataset = [];
 
-export function updateVideoAnn(dbRef){
-    let data = d3.entries(dbRef).map(m=> m.value);
+export function updateVideoAnn(){
+   
     let svg = d3.select('#pushed-layer').select('svg')
     
     const video = document.querySelector('video');
     video.ontimeupdate = (event) => {
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
+        let memoDivs = d3.select('#sidebar').select('#annotation-wrap').selectAll('.memo');
+
         memoCirc.classed('selected', false);
-        let timeRange = [video.currentTime - 2, video.currentTime + 2];
+        memoDivs.classed('selected', false);
+        let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
 
         console.log('timerange', timeRange);
         let filtered = memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
+
+        memoDivs.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
 
         console.log('filtered',filtered.data());
 
@@ -26,8 +31,6 @@ export function updateVideoAnn(dbRef){
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
 
         pushedG.selectAll('circle').data(d=> [d]).join('circle').attr('r', 10);
-       
-
 
     };
 }
@@ -45,17 +48,33 @@ export function annotationBar(dbRef){
         var random = Math.random() * (+max - +min) + +min; 
         return random;
     }
-    let jitterMove = d3.entries(dbRef).map(d=> d.value).map(m=> {
+    let jitterMove = d3.entries(dbRef).map(d=> {
+        let value = d.value;
+        value.key = d.key;
+        return value;
+    }).map(m=> {
         m.y = Math.random();
         m.x = randomizer();
         return m;
     });
 
-    let rects = svg.selectAll('.memo').data(jitterMove).join('circle').attr('r', 3).classed('memo', true);
-    rects.attr('cx', (d)=> scale(d.time + d.x));
-    rects.attr('cy', d=> yScale(d.y));
+    let circ = svg.selectAll('.memo').data(jitterMove).join('circle').attr('r', 3).classed('memo', true);
+    circ.attr('cx', (d)=> scale(d.time + d.x));
+    circ.attr('cy', d=> yScale(d.y));
 
-    updateVideoAnn(dbRef);
+    circ.on('mouseover', (d)=>{
+        console.log(d);
+        let wrap = d3.select('#sidebar').select('#annotation-wrap');
+        let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
+        
+        memoDivs.classed('selected', true);
+    }).on('mouseout', (d)=> {
+        let wrap = d3.select('#sidebar').select('#annotation-wrap');
+        let memoDivs = wrap.selectAll('.memo').classed('selected', false);
+
+    })
+
+    updateVideoAnn();
 }
 
 export function formatPush(){

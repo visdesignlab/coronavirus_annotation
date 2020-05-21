@@ -303,8 +303,6 @@ video{
   z-index: 1;
 }
 
-
-
 .video-controls {
   position: absolute;
   top: calc(var(--video-height) + var(--top-margin));
@@ -351,6 +349,10 @@ video{
 
 #annotation-layer svg circle.memo.selected{
   fill:red;
+}
+
+#annotation-wrap div.memo.selected{
+  background-color:red;
 }
 
 progress {

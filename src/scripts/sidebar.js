@@ -5,7 +5,11 @@ export function updateSideAnnotations(dbRef){
 
     console.log('is this reaching??',dbRef, d3.entries(dbRef));
 
-    let data = d3.entries(dbRef).map(m=> m.value).sort((a, b)=> a.time - b.time);
+    let data = d3.entries(dbRef).map(m=> {
+        let value = m.value;
+        value.key = m.key;
+        return value;
+    }).sort((a, b)=> a.time - b.time);
   
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
