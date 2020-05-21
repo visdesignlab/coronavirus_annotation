@@ -6,7 +6,21 @@ import { updateSideAnnotations } from './sidebar';
 
 const annotationDataset = [];
 
+export function updateVideoAnn(dbRef){
+    let data = d3.entries(dbRef).map(m=> m.value);
+    console.log(data)
+    
+    const video = document.querySelector('video');
+    video.ontimeupdate = (event) => {
+        let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
+        let timeRange = [video.currentTime - 2, video.currentTime + 2];
 
+        console.log('timerange', timeRange);
+        memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
+
+
+    };
+}
 export function annotationBar(dbRef){
     let svg = d3.select('#annotation-layer').select('svg');
 
@@ -29,11 +43,12 @@ export function annotationBar(dbRef){
 
     let rects = svg.selectAll('.memo').data(jitterMove).join('circle').attr('r', 3).classed('memo', true);
     rects.attr('cx', (d)=> scale(d.time + d.x));
-    rects.attr('cy', d=> yScale(d.y))
+    rects.attr('cy', d=> yScale(d.y));
+
+    updateVideoAnn(dbRef);
+    
 
 }
-
-
 
 export function formatPush(){
     console.log('this is button');

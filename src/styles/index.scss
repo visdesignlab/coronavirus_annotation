@@ -6,7 +6,7 @@
   --youtube-red: #FE0900;
   --ui-gray: gray;
   --video-height:500px;
-  --top-margin:100px;
+  --top-margin:50px;
   
 }
 
@@ -332,6 +332,10 @@ video{
 #annotation-layer svg circle.memo{
   fill-opacity:.4;
   stroke: 1px solid red;
+}
+
+#annotation-layer svg circle.memo.selected{
+  fill:red;
 }
 
 progress {
