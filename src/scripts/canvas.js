@@ -13,6 +13,7 @@ export function updateVideoAnn(dbRef){
     const video = document.querySelector('video');
     video.ontimeupdate = (event) => {
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
+        memoCirc.classed('selected', false);
         let timeRange = [video.currentTime - 2, video.currentTime + 2];
 
         console.log('timerange', timeRange);
