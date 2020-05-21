@@ -8,7 +8,7 @@ const annotationDataset = [];
 
 export function updateVideoAnn(dbRef){
     let data = d3.entries(dbRef).map(m=> m.value);
-    console.log(data)
+    let svg = d3.select('#pushed-layer').select('svg')
     
     const video = document.querySelector('video');
     video.ontimeupdate = (event) => {
@@ -17,7 +17,16 @@ export function updateVideoAnn(dbRef){
         let timeRange = [video.currentTime - 2, video.currentTime + 2];
 
         console.log('timerange', timeRange);
-        memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
+        let filtered = memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
+
+        console.log('filtered',filtered.data());
+
+        let pushedG = svg.selectAll('g.pushed').data(filtered.data()).join('g').classed('pushed', true);
+
+        pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
+
+        pushedG.selectAll('circle').data(d=> [d]).join('circle').attr('r', 10);
+       
 
 
     };
@@ -47,8 +56,6 @@ export function annotationBar(dbRef){
     rects.attr('cy', d=> yScale(d.y));
 
     updateVideoAnn(dbRef);
-    
-
 }
 
 export function formatPush(){
@@ -68,13 +75,10 @@ export function formatPush(){
             if (user) {
 
                     if(event == interactionDiv.node()){
-            
                         if(!pushedBool){       
             
                             pushedBool = true;
-                    
                             let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
-            
                             let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                             pushDiv.style('position', 'absolute')
                             pushDiv.style('top', (d)=> coords[1]+'px')
@@ -93,6 +97,8 @@ export function formatPush(){
                                 let dataPush = {
                                     time: currentTime,
                                     comment: d3.select('#text-area-id').node().value,
+                                    posTop: coords[1],
+                                    posLeft: coords[0]
                                 }
                                 
                                 //dataPush.user = user;

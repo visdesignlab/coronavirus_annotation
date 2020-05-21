@@ -240,7 +240,7 @@ VIDEO CONTROLS
   align-items: center;
 }
 
-video, canvas, #interaction {
+video, canvas, #interaction, #pushed-layer {
   // width: 100%;
   // height: 100%;
   position: absolute;
@@ -286,6 +286,10 @@ span.comment{
   font-weight: 300;
 }
 
+#pushed-layer{
+  z-index:1000;
+}
+
 #interaction{
   z-index:2000;
 }
@@ -298,6 +302,8 @@ span.comment{
 video{
   z-index: 1;
 }
+
+
 
 .video-controls {
   position: absolute;
@@ -325,8 +331,17 @@ video{
   top: -10px;
 }
 
-#annotation-layer svg{
+#annotation-layer svg, #pushed-layer svg{
   width:980px;
+}
+
+#pushed-layer svg{
+  height: 100%;
+}
+
+#pushed-layer circle{
+  fill:red;
+  opacity:1;
 }
 
 #annotation-layer svg circle.memo{
