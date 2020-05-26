@@ -111,7 +111,8 @@ export function formatPush(){
             
                             let inputDiv = pushDiv.append('div').classed('text-input', true);
                             inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
-                            inputDiv.append('textarea').attr('id', 'text-area-id');
+                            inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');;
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
             
@@ -122,6 +123,7 @@ export function formatPush(){
                                     posLeft: coords[0],
                                     upvote: 0,
                                     downvote: 0,
+                                    tags: d3.select('#text-area-id').node().value
                                 }
                                 
                                 //dataPush.user = user;

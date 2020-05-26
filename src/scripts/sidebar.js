@@ -27,6 +27,10 @@ export function updateSideAnnotations(dbRef){
     let memoDivs = wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
+
+    let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
+    tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).text(d=> d.tags);
+
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
     upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up', true);
