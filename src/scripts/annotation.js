@@ -1,7 +1,7 @@
 import '../styles/index.scss';
 import * as d3 from 'd3';
 import * as vid from './video_player';
-import { renderNav, toggleMagic, updateSideAnnotations } from './sidebar';
+import { renderNav, toggleMagic, updateSideAnnotations} from './sidebar';
 import * as firebase from 'firebase';
 import * as firebaseui from 'firebaseui'
 import { firebaseConfig, checkDatabase } from './firebaseStuff';
