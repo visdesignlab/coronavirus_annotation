@@ -4,6 +4,7 @@ import * as firebase from 'firebase';
 import { firebaseConfig, checkDatabase } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 import { Math } from 'core-js';
+import { skipAheadCircle } from './video_player';
 
 const annotationDataset = [];
 
@@ -29,7 +30,7 @@ export function updateVideoAnn(){
 
     
         if(selectedMemoDivs){
-            selectedMemoDivs.nodes()[0].scrollIntoView()
+            selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
         
@@ -65,13 +66,15 @@ export function annotationBar(dbRef){
     circ.on('mouseover', (d)=>{
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
-        
         memoDivs.classed('selected', true);
+        memoDivs.nodes()[0].scrollIntoView();
     }).on('mouseout', (d)=> {
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-
-    })
+        memoDivs.nodes()[0].scrollIntoView();
+    }).on('click', (d)=> {
+        skipAheadCircle(d);
+    });
 
     updateVideoAnn();
 }
@@ -156,27 +159,7 @@ export function formatPush(){
                     console.log("NO USER", user);
                 // No user is signed in.
                 }
-        });
-
-        // // // Normally we go from data to pixels, but here we're doing pixels to data
-        // var newData= {
-        // //  x: Math.round( xScale.invert(coords[0])),  // Takes the pixel number to convert to number
-        // //  y: Math.round( yScale.invert(coords[1]))
-        //     x: coords[0],
-        //     y: coords[1]
-        // };
-
-        // annotationDataset.push(newData);   // Push data to our array
-
-        // /////NEED TO CREATE THE INITIAL PUSH DIV FIRST//
-        // let div = interactionDiv.selectAll('div.saved').data(annotationDataset).join('div').classed('saved', true);
-        // div.style('position', 'absolute')
-        // div.style('top', (d)=> d.y+'px')
-        // div.style('left', (d)=> d.x+'px')
-        // let svg = div.selectAll('svg').data(d=> [d]).join('svg');
-        // let circ = svg.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'red');
-
-    
+        });    
       });
 }
 export function formatCanvas(){

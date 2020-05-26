@@ -38,13 +38,11 @@ export function updateSideAnnotations(dbRef){
     var db = firebase.database();
 
     upvote.on('click', (d)=> {
-        
         let newUp = ++d.upvote;
         db.ref(`${d.key}/upvote`).set(`${newUp}`);
     });
 
     downvote.on('click', (d)=> {
-
         let newDown = ++d.downvote;
         db.ref(`${d.key}/downvote`).set(`${newDown}`);
     });

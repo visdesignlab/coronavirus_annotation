@@ -11,7 +11,6 @@ export function formatVidPlayer(div, videoPath){
   let videoSelect = d3.select(div).select('video');
   videoSelect.attr('id', 'video');
 
-    
   let src = videoSelect.append('source');
 
   src.attr('src', videoPath);
@@ -24,6 +23,22 @@ export function formatVidPlayer(div, videoPath){
     
   return div;
      
+}
+
+export function skipAheadCircle(data){
+  let skipTo = data.time;
+  
+  let wrap = d3.select('#sidebar').select('#annotation-wrap');
+  wrap.selectAll('.memo').classed('selected', false);
+
+  let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === data.key);
+  memoDivs.classed('selected', true);
+  memoDivs.nodes()[0].scrollIntoView();
+
+  let video = document.getElementById('video');
+  video.currentTime = skipTo;
+  progressBar.value = skipTo;
+  seek.value = skipTo;
 }
 
 function customControls(video){
@@ -58,7 +73,6 @@ if (videoWorks) {
   video.controls = false
   videoControls.classList.remove('hidden');
 }
-
 
 d3.select(videoControls).style('width', `${videoDim.width}px`)
 // Add functions here
