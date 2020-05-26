@@ -123,7 +123,7 @@ export function formatPush(){
                                     posLeft: coords[0],
                                     upvote: 0,
                                     downvote: 0,
-                                    tags: d3.select('#text-area-id').node().value
+                                    tags: d3.select('#tags').node().value
                                 }
                                 
                                 //dataPush.user = user;
