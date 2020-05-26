@@ -7,6 +7,7 @@ import * as firebase from 'firebase';
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import { skipAheadCircle } from './video_player';
 
 library.add(faCheck, fas, far, fab) 
 
@@ -46,6 +47,11 @@ export function updateSideAnnotations(dbRef){
         let newDown = ++d.downvote;
         db.ref(`${d.key}/downvote`).set(`${newDown}`);
     });
+
+    memoDivs.on('click', d=>{
+        console.log(d);
+        skipAheadCircle(d);
+    });
 }
 
 export function renderNav(div, nav){
@@ -58,7 +64,6 @@ export function renderNav(div, nav){
     if(d.key === 'draw'){
         if(d.selectedBool === false){
             d.selectedBool = true;
-           
             document.getElementById('video').setAttribute('pointer-events', 'none')
             d.callback();
         }else{
