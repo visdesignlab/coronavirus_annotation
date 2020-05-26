@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import * as firebase from 'firebase';
 import { firebaseConfig, checkDatabase } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
+import { Math } from 'core-js';
 
 const annotationDataset = [];
 
@@ -17,27 +18,26 @@ export function updateVideoAnn(){
 
         memoCirc.classed('selected', false);
         memoDivs.classed('selected', false);
+
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-
-        console.log('timerange', timeRange);
         let filtered = memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
-
-        memoDivs.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
-
-        console.log('filtered',filtered.data());
+        let selectedMemoDivs = memoDivs.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
 
         let pushedG = svg.selectAll('g.pushed').data(filtered.data()).join('g').classed('pushed', true);
-
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
-
         pushedG.selectAll('circle').data(d=> [d]).join('circle').attr('r', 10);
+
+    
+        if(selectedMemoDivs){
+            selectedMemoDivs.nodes()[0].scrollIntoView()
+            // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
+        }
+        
 
     };
 }
 export function annotationBar(dbRef){
     let svg = d3.select('#annotation-layer').select('svg');
-
-    console.log(dbRef);
 
     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
@@ -63,7 +63,6 @@ export function annotationBar(dbRef){
     circ.attr('cy', d=> yScale(d.y));
 
     circ.on('mouseover', (d)=>{
-        console.log(d);
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
         
@@ -78,7 +77,7 @@ export function annotationBar(dbRef){
 }
 
 export function formatPush(){
-    console.log('this is button');
+   
     let interactionDiv = d3.select('#interaction');
     interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
     interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
@@ -117,7 +116,9 @@ export function formatPush(){
                                     time: currentTime,
                                     comment: d3.select('#text-area-id').node().value,
                                     posTop: coords[1],
-                                    posLeft: coords[0]
+                                    posLeft: coords[0],
+                                    upvote: 0,
+                                    downvote: 0,
                                 }
                                 
                                 //dataPush.user = user;
@@ -182,7 +183,7 @@ export function formatCanvas(){
 
     let frame = 'video';
   
-    console.log('is this firing')
+ 
   
      let div = document.getElementById('main-wrap');
   
@@ -191,7 +192,7 @@ export function formatCanvas(){
   
       const context = canvas.getContext("2d");
       let videoDim = document.getElementById(frame).getBoundingClientRect();
-      console.log(video, 'size')
+    
   
       canvas.width = videoDim.width;
       canvas.height = videoDim.height;

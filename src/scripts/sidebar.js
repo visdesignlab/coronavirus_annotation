@@ -1,9 +1,19 @@
 import * as d3 from 'd3';
 import { formatCanvas, annotateCircle, formatPush } from './canvas';
+import { library, dom } from "@fortawesome/fontawesome-svg-core";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+
+
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+
+library.add(faCheck, fas, far, fab) 
+
+dom.i2svg() 
+dom.watch();
 
 export function updateSideAnnotations(dbRef){
-
-    console.log('is this reaching??',dbRef, d3.entries(dbRef));
 
     let data = d3.entries(dbRef).map(m=> {
         let value = m.value;
@@ -17,6 +27,10 @@ export function updateSideAnnotations(dbRef){
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+    memoDivs.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up', true);
+    memoDivs.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote}  `);
+    memoDivs.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
+    memoDivs.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
     
 }
 
@@ -30,13 +44,12 @@ export function renderNav(div, nav){
     if(d.key === 'draw'){
         if(d.selectedBool === false){
             d.selectedBool = true;
-            console.log('how do you pause the video');
-            console.log(n[i])
+           
             document.getElementById('video').setAttribute('pointer-events', 'none')
             d.callback();
         }else{
             d.selectedBool = false;
-            console.log(n[i])
+          
             d.callback();
         }
     }else{
@@ -48,7 +61,7 @@ export function renderNav(div, nav){
 export function toggleMagic(){
     d3.select('.togg-wrap').selectAll('input')
     .on('click', (d, i, n)=> {
-        console.log(n[i].value);
+       
         if(n[i].value === "draw"){
             formatCanvas();
         }else{

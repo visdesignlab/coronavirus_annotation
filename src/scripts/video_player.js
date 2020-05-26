@@ -19,7 +19,6 @@ export function formatVidPlayer(div, videoPath){
 
   customControls(videoSelect.node());
 
-  console.log('is this on')
   let interactionVal = d3.select('.togg-wrap').selectAll('input').data();
   interactionVal.value === 'draw' ? formatCanvas() : formatPush();
     
