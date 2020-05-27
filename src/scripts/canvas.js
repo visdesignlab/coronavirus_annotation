@@ -38,6 +38,8 @@ export function updateVideoAnn(){
     };
 }
 export function annotationBar(dbRef){
+
+    console.log('dbbbbb',dbRef)
     let svg = d3.select('#annotation-layer').select('svg');
 
     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
@@ -53,7 +55,7 @@ export function annotationBar(dbRef){
         let value = d.value;
         value.key = d.key;
         return value;
-    }).map(m=> {
+    }).filter(f=> f.reply === false).map(m=> {
         m.y = Math.random();
         m.x = randomizer();
         return m;

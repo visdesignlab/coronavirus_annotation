@@ -23,13 +23,35 @@ export function updateSideAnnotations(dbRef){
         return value;
     }).filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
 
-    console.log('dbRef', data)
-
     let replyData = d3.entries(dbRef).map(m=> {
         let value = m.value;
         value.key = m.key;
         return value;
     }).filter(f=> f.reply === true);
+
+
+
+    let nestReplies = data.map((d, i, n)=>{
+
+        return recurse(d, replyData);
+        
+    });
+
+    function recurse(parent, replyArray){
+
+        let replies = replyArray.filter(f=> {
+            console.log(f.reply, parent.key)
+            return f.replies === parent.key});
+        if(replies.length > 0){
+            parent.replyKeeper = replies;
+            parent.replyKeeper.map(m=> recurse(m, replyArray));
+            return parent;
+        }else{
+            parent.replyKeeper = [];
+            return parent;
+        }
+
+    }
   
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
@@ -51,12 +73,10 @@ export function updateSideAnnotations(dbRef){
 
     let reply = memoDivs.selectAll('button').data(d=> [d]).join('button').classed('btn btn-outline-secondary btn-sm', true).text('Reply');
 
-
     reply.on("click", function(d, i, n) {
 
         let event = d3.event.target;
         d3.event.stopPropagation();
-        let coords = d3.mouse(this);
 
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -69,30 +89,26 @@ export function updateSideAnnotations(dbRef){
                         inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
                         inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
                         let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-                
-                        console.log('replies', d);
-                
-                        let dataPush = {
-                            time: d.time,
-                            comment: d3.select('#text-area-id').node().value,
-                            upvote: 0,
-                            downvote: 0,
-                            tags: d3.select('#tags').node().value,
-                            replies: d.key,
-                            reply: true,
-                            uid: user.uid,
-                            displayName: user.displayName
-                        }
-            
-                           
-                                let ref = firebase.database().ref();                     
-                                ref.push(dataPush);
-                              
-                                //checkDatabase(ref, updateSideAnnotations);
 
-                         
-                    
-         
+                        submit.on('click',  ()=> {
+
+                            let dataPush = {
+                                time: d.time,
+                                comment: d3.select('#text-area-id').node().value,
+                                upvote: 0,
+                                downvote: 0,
+                                tags: d3.select('#tags').node().value,
+                                replies: d.key,
+                                reply: true,
+                                uid: user.uid,
+                                displayName: user.displayName
+                            }
+                
+                            let ref = firebase.database().ref();                     
+                            ref.push(dataPush);
+                                  
+                        });
+                
                 // User is signed in.
                 } else {
                     console.log("NO USER", user);
@@ -100,36 +116,6 @@ export function updateSideAnnotations(dbRef){
                 }
         });    
       });
-
-
-    // reply.on('click', (d, i, n)=>{
-
-    //     event.stopPropagation();
-
-    //     console.log('node wot',n[i].parentNode)
-    //     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input', true);
-    //     inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
-    //     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-    //     inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
-    //     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-
-    //     console.log('replies', d);
-
-    //     let dataPush = {
-    //         time: currentTime,
-    //         comment: d3.select('#text-area-id').node().value,
-    //         posTop: coords[1],
-    //         posLeft: coords[0],
-    //         upvote: 0,
-    //         downvote: 0,
-    //         tags: d3.select('#tags').node().value,
-    //         replies:'',
-    //         reply: true,
-    //         uid: user.uid,
-    //         displayName: user.displayName
-    //     }
-
-    // });
 
     var db = firebase.database();
 
