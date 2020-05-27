@@ -112,7 +112,7 @@ export function formatPush(){
                             let inputDiv = pushDiv.append('div').classed('text-input', true);
                             inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
                             inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');;
+                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
             
@@ -123,12 +123,16 @@ export function formatPush(){
                                     posLeft: coords[0],
                                     upvote: 0,
                                     downvote: 0,
-                                    tags: d3.select('#tags').node().value
+                                    tags: d3.select('#tags').node().value,
+                                    replies:'',
+                                    reply: false,
+                                    uid: user.uid,
+                                    displayName: user.displayName
                                 }
                                 
                                 //dataPush.user = user;
-                                dataPush.uid = user.uid;
-                                dataPush.displayName = user.displayName;
+                                // dataPush.uid = user.uid;
+                                // dataPush.displayName = user.displayName;
 
                                 annotationDataset.push(dataPush);
 

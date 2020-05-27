@@ -8,6 +8,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { skipAheadCircle } from './video_player';
+import { event } from 'd3';
 
 library.add(faCheck, fas, far, fab) 
 
@@ -20,7 +21,15 @@ export function updateSideAnnotations(dbRef){
         let value = m.value;
         value.key = m.key;
         return value;
-    }).sort((a, b)=> a.time - b.time);
+    }).filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
+
+    console.log('dbRef', data)
+
+    let replyData = d3.entries(dbRef).map(m=> {
+        let value = m.value;
+        value.key = m.key;
+        return value;
+    }).filter(f=> f.reply === true);
   
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
@@ -39,6 +48,88 @@ export function updateSideAnnotations(dbRef){
     let downvote = memoDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
     downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
+
+    let reply = memoDivs.selectAll('button').data(d=> [d]).join('button').classed('btn btn-outline-secondary btn-sm', true).text('Reply');
+
+
+    reply.on("click", function(d, i, n) {
+
+        let event = d3.event.target;
+        d3.event.stopPropagation();
+        let coords = d3.mouse(this);
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+
+                        console.log(d, i, n) 
+                        
+                        console.log('node wot',n[i].parentNode)
+                        let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
+                        inputDiv.append('text').text(`${user.displayName}:`)
+                        inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                        inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                        let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+                
+                        console.log('replies', d);
+                
+                        let dataPush = {
+                            time: d.time,
+                            comment: d3.select('#text-area-id').node().value,
+                            upvote: 0,
+                            downvote: 0,
+                            tags: d3.select('#tags').node().value,
+                            replies: d.key,
+                            reply: true,
+                            uid: user.uid,
+                            displayName: user.displayName
+                        }
+            
+                           
+                                let ref = firebase.database().ref();                     
+                                ref.push(dataPush);
+                              
+                                //checkDatabase(ref, updateSideAnnotations);
+
+                         
+                    
+         
+                // User is signed in.
+                } else {
+                    console.log("NO USER", user);
+                // No user is signed in.
+                }
+        });    
+      });
+
+
+    // reply.on('click', (d, i, n)=>{
+
+    //     event.stopPropagation();
+
+    //     console.log('node wot',n[i].parentNode)
+    //     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input', true);
+    //     inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
+    //     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+    //     inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+    //     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+
+    //     console.log('replies', d);
+
+    //     let dataPush = {
+    //         time: currentTime,
+    //         comment: d3.select('#text-area-id').node().value,
+    //         posTop: coords[1],
+    //         posLeft: coords[0],
+    //         upvote: 0,
+    //         downvote: 0,
+    //         tags: d3.select('#tags').node().value,
+    //         replies:'',
+    //         reply: true,
+    //         uid: user.uid,
+    //         displayName: user.displayName
+    //     }
+
+    // });
 
     var db = firebase.database();
 

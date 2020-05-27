@@ -270,9 +270,23 @@ video, canvas, #interaction, #pushed-layer {
  border: 1px solid gray;
  padding:5px;
  cursor: pointer;
+ padding-bottom:5px;
 }
 .memo .tag-span{
   display:block;
+}
+
+.memo .comment{
+  padding-bottom:10px;
+}
+
+.memo .upvote-text, .memo .downvote-text{
+  font-size: 11px;;
+}
+
+.memo button{
+  float:right;
+  margin-bottom:5px;
 }
 
 span.name{
