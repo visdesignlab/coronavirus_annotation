@@ -9,6 +9,7 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { skipAheadCircle } from './video_player';
 import { event } from 'd3';
+import { checkDatabase } from './firebaseStuff';
 
 library.add(faCheck, fas, far, fab) 
 
@@ -53,6 +54,8 @@ export function updateSideAnnotations(dbRef){
   
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
+    wrap.selectAll('*').remove();
+
     let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
@@ -89,6 +92,8 @@ export function updateSideAnnotations(dbRef){
                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
     
                     submit.on('click',  ()=> {
+                        d3.event.stopPropagation();
+
                         let dataPush = {
                             time: d.time,
                             comment: d3.select('#text-area-id').node().value,
@@ -130,7 +135,7 @@ export function updateSideAnnotations(dbRef){
 
     memoDivs.on('click', d=>{
         console.log('test click', typeof d3.event.target);
-        if(d3.event.target.tagName.toLowerCase() === 'textarea'){
+        if(d3.event.target.tagName.toLowerCase() === 'textarea' || d3.event.target.tagName.toLowerCase() === 'button'){
             console.log('do nothing');
         }else{ 
             skipAheadCircle(d);
@@ -193,6 +198,9 @@ export function updateSideAnnotations(dbRef){
                             }
                             let ref = firebase.database().ref();                     
                             ref.push(dataPush);  
+                            
+                         
+                            checkDatabase(ref, updateSideAnnotations);
                             
                             inputDiv.remove();
                         });
