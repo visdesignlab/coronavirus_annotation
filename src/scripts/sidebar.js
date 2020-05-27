@@ -71,7 +71,8 @@ export function updateSideAnnotations(dbRef){
     downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
 
-    let reply = memoDivs.selectAll('button').data(d=> [d]).join('button').classed('btn btn-outline-secondary btn-sm', true).text('Reply');
+    let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
+    reply.selectAll('i.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right')//.text('Reply');
 
     reply.on("click", function(d, i, n) {
 
