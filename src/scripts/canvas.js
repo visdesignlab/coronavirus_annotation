@@ -39,7 +39,6 @@ export function updateVideoAnn(){
 }
 export function annotationBar(dbRef){
 
-    console.log('dbbbbb',dbRef)
     let svg = d3.select('#annotation-layer').select('svg');
 
     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
@@ -114,7 +113,7 @@ export function formatPush(){
                             let inputDiv = pushDiv.append('div').classed('text-input', true);
                             inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
                             inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
             

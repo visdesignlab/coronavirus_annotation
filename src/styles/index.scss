@@ -250,13 +250,25 @@ video, canvas, #interaction, #pushed-layer {
 }
 
 .text-input{
-  width:200px;
+  width:210px;
   height:150px;
-  background: lightblue;
+  background: white;
   border-radius: 4px;
   position:relative;
   top:-10px;
   left:10px;
+  padding: 7px;
+  border: 2px solid gray;
+  font-size: 12px;
+}
+
+.text-input textarea{
+  width:190px;
+  border-radius: 4px;
+}
+
+.text-input #tags{
+  height:25px;
 }
 
 #annotation-wrap{
