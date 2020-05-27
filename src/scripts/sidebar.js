@@ -145,7 +145,6 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.each((d, i, n)=> {
-        
         if(d.replyKeeper.length > 0){
             recurseDraw(d3.select(n[i]));
         }
@@ -153,7 +152,7 @@ export function updateSideAnnotations(dbRef){
 
     function replyRender(replyDivs){
 
-        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
+        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
 
         let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
         tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).text(d=> d.tags);
