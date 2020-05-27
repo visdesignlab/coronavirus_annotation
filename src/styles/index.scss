@@ -262,12 +262,22 @@ video, canvas, #interaction, #pushed-layer {
   font-size: 12px;
 }
 
-.text-input textarea{
+.text-input textarea {
   width:190px;
   border-radius: 4px;
 }
 
-.text-input #tags{
+.text-input-sidebar{
+  border-left: 1px solid gray;
+  padding:5px;
+}
+
+.text-input-sidebar textarea{
+  width:200px;
+  border-radius: 4px;
+}
+
+.text-input #tags, .text-input-sidebar #tags{
   height:25px;
 }
 
@@ -283,6 +293,7 @@ video, canvas, #interaction, #pushed-layer {
  padding:5px;
  cursor: pointer;
  padding-bottom:5px;
+ margin-bottom:10px;
 }
 .memo .tag-span{
   display:block;
@@ -303,7 +314,9 @@ video, canvas, #interaction, #pushed-layer {
 
 .reply-memo{
   border-left: 1px solid gray;
+  border-top: 1px solid gray;
   padding:5px;
+  margin-top:10px;
 }
 
 span.name{

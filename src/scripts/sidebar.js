@@ -56,8 +56,10 @@ export function updateSideAnnotations(dbRef){
 
     wrap.selectAll('*').remove();
 
+    let formatMinute = d3.timeFormat();
+
     let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
-    memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
+    memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
@@ -65,15 +67,15 @@ export function updateSideAnnotations(dbRef){
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
-    upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up', true);
+    upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-lg', true);
     upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
 
     let downvote = memoDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
-    downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
+    downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down fa-lg', true);
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
 
     let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
-    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right')//.text('Reply');
+    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots fa-lg reply', true).style('float', 'right')//.text('Reply');
 
     reply.on("click", function(d, i, n) {
 
@@ -88,7 +90,7 @@ export function updateSideAnnotations(dbRef){
                     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
                     inputDiv.append('text').text(`${user.displayName}:`)
                     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                    inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                    inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
     
                     submit.on('click',  ()=> {
@@ -158,7 +160,7 @@ export function updateSideAnnotations(dbRef){
     
         replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
         let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
-        upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up', true);
+        upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
         upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
     
         let downvote = replyDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
