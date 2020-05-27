@@ -17,6 +17,7 @@ dom.watch();
 
 export function updateSideAnnotations(dbRef){
 
+
     let data = d3.entries(dbRef).map(m=> {
         let value = m.value;
         value.key = m.key;
@@ -29,33 +30,30 @@ export function updateSideAnnotations(dbRef){
         return value;
     }).filter(f=> f.reply === true);
 
-
-
     let nestReplies = data.map((d, i, n)=>{
-
-        return recurse(d, replyData);
-        
+        return recurse(d, replyData, 0);
     });
 
-    function recurse(parent, replyArray){
+    function recurse(parent, replyArray, level){
 
-        let replies = replyArray.filter(f=> {
-            console.log(f.reply, parent.key)
-            return f.replies === parent.key});
+        parent.level = level;
+        parent.replyBool = false;
+        let replies = replyArray.filter(f=> f.replies === parent.key);
+
         if(replies.length > 0){
             parent.replyKeeper = replies;
-            parent.replyKeeper.map(m=> recurse(m, replyArray));
+            let nextlevel = ++level;
+            parent.replyKeeper.map(m=> recurse(m, replyArray, nextlevel));
             return parent;
         }else{
             parent.replyKeeper = [];
             return parent;
         }
-
     }
   
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
-    let memoDivs = wrap.selectAll('.memo').data(data).join('div').classed('memo', true);
+    let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
 
@@ -72,50 +70,50 @@ export function updateSideAnnotations(dbRef){
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
 
     let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
-    reply.selectAll('i.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right')//.text('Reply');
+    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right')//.text('Reply');
 
     reply.on("click", function(d, i, n) {
 
-        let event = d3.event.target;
         d3.event.stopPropagation();
+        if(d.replyBool === false){
 
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
+            d.replyBool = true;
 
-                        console.log(d, i, n) 
-                        
-                        console.log('node wot',n[i].parentNode)
-                        let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
-                        inputDiv.append('text').text(`${user.displayName}:`)
-                        inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                        inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
-                        let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-
-                        submit.on('click',  ()=> {
-
-                            let dataPush = {
-                                time: d.time,
-                                comment: d3.select('#text-area-id').node().value,
-                                upvote: 0,
-                                downvote: 0,
-                                tags: d3.select('#tags').node().value,
-                                replies: d.key,
-                                reply: true,
-                                uid: user.uid,
-                                displayName: user.displayName
-                            }
-                
-                            let ref = firebase.database().ref();                     
-                            ref.push(dataPush);
-                                  
-                        });
-                
-                // User is signed in.
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+    
+                    let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
+                    inputDiv.append('text').text(`${user.displayName}:`)
+                    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                    inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    
+                    submit.on('click',  ()=> {
+                        let dataPush = {
+                            time: d.time,
+                            comment: d3.select('#text-area-id').node().value,
+                            upvote: 0,
+                            downvote: 0,
+                            tags: d3.select('#tags').node().value,
+                            replies: d.key,
+                            reply: true,
+                            uid: user.uid,
+                            displayName: user.displayName
+                        }
+                        let ref = firebase.database().ref();                     
+                        ref.push(dataPush);    
+                    });
+                    // User is signed in.
                 } else {
                     console.log("NO USER", user);
-                // No user is signed in.
+                    // No user is signed in.
                 }
-        });    
+            });   
+
+        }else{
+            d.replyBool = false;
+            d3.select(n[i].parentNode).select('.text-input-sidebar').remove();
+        }
       });
 
     var db = firebase.database();
@@ -131,9 +129,100 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.on('click', d=>{
-        console.log(d);
-        skipAheadCircle(d);
+        console.log('test click', typeof d3.event.target);
+        if(d3.event.target.tagName.toLowerCase() === 'textarea'){
+            console.log('do nothing');
+        }else{ 
+            skipAheadCircle(d);
+        }     
     });
+
+    memoDivs.each((d, i, n)=> {
+        
+        if(d.replyKeeper.length > 0){
+            recurseDraw(d3.select(n[i]));
+        }
+    })
+
+    function replyRender(replyDivs){
+
+        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.displayName);
+
+        let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
+        tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).text(d=> d.tags);
+    
+        replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+        let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
+        upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up', true);
+        upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
+    
+        let downvote = replyDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
+        downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
+        downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
+    
+        let reply = replyDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
+        reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right');
+
+        reply.on("click", function(d, i, n) {
+
+            d3.event.stopPropagation();
+            if(d.replyBool === false){
+    
+                d.replyBool = true;
+    
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+        
+                        let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
+                        inputDiv.append('text').text(`${user.displayName}:`)
+                        inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                        inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                        let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+        
+                        submit.on('click',  ()=> {
+                            let dataPush = {
+                                time: d.time,
+                                comment: d3.select('#text-area-id').node().value,
+                                upvote: 0,
+                                downvote: 0,
+                                tags: d3.select('#tags').node().value,
+                                replies: d.key,
+                                reply: true,
+                                uid: user.uid,
+                                displayName: user.displayName
+                            }
+                            let ref = firebase.database().ref();                     
+                            ref.push(dataPush);  
+                            
+                            inputDiv.remove();
+                        });
+                        // User is signed in.
+                    } else {
+                        console.log("NO USER", user);
+                        // No user is signed in.
+                    }
+                });   
+    
+            }else{
+                d.replyBool = false;
+                d3.select(n[i].parentNode).select('.text-input-sidebar').remove();
+            }
+          });
+    }
+
+    function recurseDraw(selectDiv){
+
+        let replyDivs = selectDiv.selectAll('.reply-memo').data(d=> d.replyKeeper).join('div').classed('reply-memo', true);
+        replyDivs.style('margin-left', d=> `${d.level * 10}px`);
+
+        replyDivs.each((d, i, n)=> {
+            replyRender(d3.select(n[i]));
+            if(d.replyKeeper.length > 0){
+                recurseDraw(d3.select(n[i]));
+            }
+        })
+
+    }
 }
 
 export function renderNav(div, nav){
