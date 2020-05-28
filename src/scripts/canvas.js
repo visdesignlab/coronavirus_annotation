@@ -6,8 +6,7 @@ import { updateSideAnnotations } from './sidebar';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 
-const annotationDataset = [];
-export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'purple'}, {key:'info', color:'orange'}];
+export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'purple'}, {key:'info', color:'orange'}, {key:'uncertainty', color:'green'}];
 
 export function updateVideoAnn(){
    
@@ -37,6 +36,24 @@ export function updateVideoAnn(){
         
 
     };
+}
+
+export function annotationMaker(user, currentTime, tag, coords, replyBool){
+    
+    return {
+        time: currentTime,
+        comment: d3.select('#text-area-id').node().value,
+        posTop: coords[1],
+        posLeft: coords[0],
+        upvote: 0,
+        downvote: 0,
+        tags: tag,
+        replies:'',
+        reply: replyBool,
+        uid: user.uid,
+        displayName: user.displayName,
+        resolved: false
+    }
 }
 
 export function dropDown(div, optionArray, dropText, dropId){
@@ -147,37 +164,10 @@ export function formatPush(){
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
                                 console.log(dropButton.text())
-                                let dataPush = {
-                                    time: currentTime,
-                                    comment: d3.select('#text-area-id').node().value,
-                                    posTop: coords[1],
-                                    posLeft: coords[0],
-                                    upvote: 0,
-                                    downvote: 0,
-                                    tags: dropButton.text(),//d3.select('#tag-drop').node().value,
-                                    replies:'',
-                                    reply: false,
-                                    uid: user.uid,
-                                    displayName: user.displayName
-                                }
-                                
-                                //dataPush.user = user;
-                                // dataPush.uid = user.uid;
-                                // dataPush.displayName = user.displayName;
-
-                                annotationDataset.push(dataPush);
+                                let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false);
 
                                 pushedBool = false;
                                 d3.select('#push-div').remove();
-
-                                /**
-                                 * THIS IS WHERE YOU SDD THE OTHER STUFF
-                                 */
-                              
-                                 // Create a new post reference with an auto-generated id
-                                 //var ref = firebase.database().ref(); //https://covid-annotation.firebaseio.com/
-                                // let ref = firebase.database().ref();                     
-                                // ref.push(dataPush);
 
                                 let ref = firebase.database().ref();                     
                                 ref.push(dataPush);

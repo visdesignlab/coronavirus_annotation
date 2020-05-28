@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions } from './canvas';
+import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions, annotationMaker } from './canvas';
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import * as firebase from 'firebase';
@@ -15,6 +15,23 @@ library.add(faCheck, fas, far, fab)
 
 dom.i2svg() 
 dom.watch();
+
+function recurse(parent, replyArray, level){
+
+    parent.level = level;
+    parent.replyBool = false;
+    let replies = replyArray.filter(f=> f.replies === parent.key);
+
+    if(replies.length > 0){
+        parent.replyKeeper = replies;
+        let nextlevel = ++level;
+        parent.replyKeeper.map(m=> recurse(m, replyArray, nextlevel));
+        return parent;
+    }else{
+        parent.replyKeeper = [];
+        return parent;
+    }
+}
 
 export function updateSideAnnotations(dbRef){
 
@@ -35,23 +52,6 @@ export function updateSideAnnotations(dbRef){
         return recurse(d, replyData, 0);
     });
 
-    function recurse(parent, replyArray, level){
-
-        parent.level = level;
-        parent.replyBool = false;
-        let replies = replyArray.filter(f=> f.replies === parent.key);
-
-        if(replies.length > 0){
-            parent.replyKeeper = replies;
-            let nextlevel = ++level;
-            parent.replyKeeper.map(m=> recurse(m, replyArray, nextlevel));
-            return parent;
-        }else{
-            parent.replyKeeper = [];
-            return parent;
-        }
-    }
-  
     let wrap = d3.select('#sidebar').select('#annotation-wrap');
 
     wrap.selectAll('*').remove();
@@ -63,7 +63,7 @@ export function updateSideAnnotations(dbRef){
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
-    tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).text(d=> d.tags);
+    tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
@@ -90,24 +90,14 @@ export function updateSideAnnotations(dbRef){
                     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
                     inputDiv.append('text').text(`${user.displayName}:`)
                     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                    //inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
-                    dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+                    let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
     
                     submit.on('click',  ()=> {
                         d3.event.stopPropagation();
 
-                        let dataPush = {
-                            time: d.time,
-                            comment: d3.select('#text-area-id').node().value,
-                            upvote: 0,
-                            downvote: 0,
-                            tags: d3.select('#tags').node().value,
-                            replies: d.key,
-                            reply: true,
-                            uid: user.uid,
-                            displayName: user.displayName
-                        }
+                        let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true);
+                        
                         let ref = firebase.database().ref();                     
                         ref.push(dataPush);    
                     });
@@ -153,7 +143,6 @@ export function updateSideAnnotations(dbRef){
 
     function replyRender(replyDivs){
         
-
         replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
 
         let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
@@ -189,23 +178,12 @@ export function updateSideAnnotations(dbRef){
                         let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
         
                         submit.on('click',  ()=> {
-                            let dataPush = {
-                                time: d.time,
-                                comment: d3.select('#text-area-id').node().value,
-                                upvote: 0,
-                                downvote: 0,
-                                tags: d3.select('#tags').node().value,
-                                replies: d.key,
-                                reply: true,
-                                uid: user.uid,
-                                displayName: user.displayName
-                            }
+                            let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true);
+
                             let ref = firebase.database().ref();                     
                             ref.push(dataPush);  
                             
-                         
                             checkDatabase(ref, updateSideAnnotations);
-                            
                             inputDiv.remove();
                         });
                         // User is signed in.
