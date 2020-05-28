@@ -38,17 +38,17 @@ export function updateVideoAnn(){
     };
 }
 
-export function annotationMaker(user, currentTime, tag, coords, replyBool){
+export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo){
     
     return {
         time: currentTime,
         comment: d3.select('#text-area-id').node().value,
-        posTop: coords[1],
-        posLeft: coords[0],
+        posTop: coords != null ? coords[1] : null,
+        posLeft: coords != null ? coords[0] : null,
         upvote: 0,
         downvote: 0,
         tags: tag,
-        replies:'',
+        replies: replyTo,
         reply: replyBool,
         uid: user.uid,
         displayName: user.displayName,
@@ -164,7 +164,7 @@ export function formatPush(){
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
                                 console.log(dropButton.text())
-                                let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false);
+                                let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
 
                                 pushedBool = false;
                                 d3.select('#push-div').remove();

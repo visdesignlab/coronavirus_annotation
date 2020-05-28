@@ -33,6 +33,22 @@ function recurse(parent, replyArray, level){
     }
 }
 
+function replyInputBox(d, i, n, user){
+    let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
+    inputDiv.append('text').text(`${user.displayName}:`)
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+    let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+
+    submit.on('click',  ()=> {
+        d3.event.stopPropagation();
+
+        let dataPush = annotationMaker(user, null, tagButton.text(), null, true, d.key);
+        let ref = firebase.database().ref();                     
+        ref.push(dataPush);    
+    });
+}
+
 export function updateSideAnnotations(dbRef){
 
 
@@ -86,21 +102,9 @@ export function updateSideAnnotations(dbRef){
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-    
-                    let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
-                    inputDiv.append('text').text(`${user.displayName}:`)
-                    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                    let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-                    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-    
-                    submit.on('click',  ()=> {
-                        d3.event.stopPropagation();
-
-                        let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true);
-                        
-                        let ref = firebase.database().ref();                     
-                        ref.push(dataPush);    
-                    });
+                    
+                    replyInputBox(d, i, n, user);
+                   
                     // User is signed in.
                 } else {
                     console.log("NO USER", user);
@@ -127,8 +131,11 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.on('click', d=>{
-        console.log('test click', typeof d3.event.target);
-        if(d3.event.target.tagName.toLowerCase() === 'textarea' || d3.event.target.tagName.toLowerCase() === 'button'){
+        console.log('test click', d3.event.target.tagName.toLowerCase());
+        if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
+        d3.event.target.tagName.toLowerCase() === 'button' || 
+        d3.event.target.tagName.toLowerCase() === 'a' || 
+        d3.event.target.tagName.toLowerCase() === 'svg'){
             console.log('do nothing');
         }else{ 
             skipAheadCircle(d);
@@ -146,8 +153,8 @@ export function updateSideAnnotations(dbRef){
         replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
 
         let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
-        tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).text(d=> d.tags);
-    
+        tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
+       
         replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
         let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
         upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
@@ -169,23 +176,22 @@ export function updateSideAnnotations(dbRef){
     
                 firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
+                        replyInputBox(d, i, n, user);
+                        // let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
+                        // inputDiv.append('text').text(`${user.displayName}:`)
+                        // inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                        // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+                        // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
         
-                        let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
-                        inputDiv.append('text').text(`${user.displayName}:`)
-                        inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                        //inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
-                        dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-                        let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-        
-                        submit.on('click',  ()=> {
-                            let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true);
+                        // submit.on('click',  ()=> {
+                        //     let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true, d.key);
 
-                            let ref = firebase.database().ref();                     
-                            ref.push(dataPush);  
+                        //     let ref = firebase.database().ref();                     
+                        //     ref.push(dataPush);  
                             
-                            checkDatabase(ref, updateSideAnnotations);
-                            inputDiv.remove();
-                        });
+                        //     checkDatabase(ref, updateSideAnnotations);
+                        //     inputDiv.remove();
+                        // });
                         // User is signed in.
                     } else {
                         console.log("NO USER", user);
