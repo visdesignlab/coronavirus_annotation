@@ -432,6 +432,12 @@ video{
   width:980px;
 }
 
+#annotation-layer rect{
+  width:2px;
+  height:10px;
+  fill-opacity: .4;
+}
+
 #pushed-layer svg{
   height: 100%;
 }
@@ -680,6 +686,6 @@ svg {
   width: 28px;
   height: 28px;
   fill: #fff;
-  stroke: #fff;
+  // stroke: #fff;
   cursor: pointer;
 }

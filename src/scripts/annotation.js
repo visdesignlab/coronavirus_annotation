@@ -11,10 +11,6 @@ if(!firebase.apps.length){
     firebase.initializeApp(firebaseConfig)
 }
 
-const nav = [
-    {"key":"Draw", "callback":vid.formatCanvas, "selectedBool":false}
-]
-
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');

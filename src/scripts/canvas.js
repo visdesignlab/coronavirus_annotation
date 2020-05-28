@@ -106,11 +106,13 @@ export function annotationBar(dbRef){
         return m;
     });
 
-    let circ = svg.selectAll('.memo').data(jitterMove).join('circle').attr('r', 3).classed('memo', true);
-    circ.attr('cx', (d)=> scale(d.time + d.x));
-    circ.attr('cy', d=> yScale(d.y));
+    let rect = svg.selectAll('.memo').data(jitterMove).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
+    rect.attr('x', (d)=> scale(d.time + d.x));
+    rect.attr('y', 10);
+    rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
+   // rect.style('stroke', (d)=> `${tagOptions.filter(f=> f.key === d.tags)[0].color}`);
 
-    circ.on('mouseover', (d)=>{
+    rect.on('mouseover', (d)=>{
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
         memoDivs.classed('selected', true);
