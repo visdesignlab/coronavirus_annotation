@@ -7,6 +7,7 @@ import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 
 const annotationDataset = [];
+export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'purple'}, {key:'info', color:'orange'}];
 
 export function updateVideoAnn(){
    
@@ -37,6 +38,34 @@ export function updateVideoAnn(){
 
     };
 }
+
+export function dropDown(div, optionArray, dropText, dropId){
+   
+    let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
+    dropdiv.style('display', 'inline-block')
+    let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true).text(dropText);
+    let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
+    dropContent.append('a').text('text').attr('font-size', 11);
+    let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
+    options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
+
+    options.on('click', (d, i, n)=> {
+        
+        button.text(d.key);
+        dropContent.classed('show', false);
+    });
+
+    button.on('click', (d, i, n)=> {
+        if(dropContent.classed('show')){
+            dropContent.classed('show', false);
+        }else{
+            dropContent.classed('show', true);
+        }
+    });
+    options.raise()
+    return button;
+}
+
 export function annotationBar(dbRef){
 
     let svg = d3.select('#annotation-layer').select('svg');
@@ -113,10 +142,11 @@ export function formatPush(){
                             let inputDiv = pushDiv.append('div').classed('text-input', true);
                             inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
                             inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                            inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
+                            // inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
+                            let dropButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
-            
+                                console.log(dropButton.text())
                                 let dataPush = {
                                     time: currentTime,
                                     comment: d3.select('#text-area-id').node().value,
@@ -124,7 +154,7 @@ export function formatPush(){
                                     posLeft: coords[0],
                                     upvote: 0,
                                     downvote: 0,
-                                    tags: d3.select('#tags').node().value,
+                                    tags: dropButton.text(),//d3.select('#tag-drop').node().value,
                                     replies:'',
                                     reply: false,
                                     uid: user.uid,

@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas, annotateCircle, formatPush } from './canvas';
+import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions } from './canvas';
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import * as firebase from 'firebase';
@@ -90,7 +90,8 @@ export function updateSideAnnotations(dbRef){
                     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
                     inputDiv.append('text').text(`${user.displayName}:`)
                     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                    inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
+                    //inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
+                    dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
     
                     submit.on('click',  ()=> {
@@ -151,6 +152,7 @@ export function updateSideAnnotations(dbRef){
     })
 
     function replyRender(replyDivs){
+        
 
         replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
 
@@ -182,7 +184,8 @@ export function updateSideAnnotations(dbRef){
                         let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
                         inputDiv.append('text').text(`${user.displayName}:`)
                         inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                        inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                        //inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Comment Tag');
+                        dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                         let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
         
                         submit.on('click',  ()=> {
