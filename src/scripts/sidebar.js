@@ -51,18 +51,11 @@ function replyInputBox(d, i, n, user){
 
 export function updateSideAnnotations(dbRef){
 
+    let unresolved = dbRef.filter(f=> f.resolved === false);
+    
+    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
 
-    let data = d3.entries(dbRef).map(m=> {
-        let value = m.value;
-        value.key = m.key;
-        return value;
-    }).filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
-
-    let replyData = d3.entries(dbRef).map(m=> {
-        let value = m.value;
-        value.key = m.key;
-        return value;
-    }).filter(f=> f.reply === true);
+    let replyData = unresolved.filter(f=> f.reply === true);
 
     let nestReplies = data.map((d, i, n)=>{
         return recurse(d, replyData, 0);
@@ -90,8 +83,15 @@ export function updateSideAnnotations(dbRef){
     downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down fa-lg', true);
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
 
-    let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
-    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots fa-lg reply', true).style('float', 'right')//.text('Reply');
+    let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text('Reply ');
+    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots fa-lg reply', true)//.style('float', 'right')//.text('Reply');
+
+    let resolve = memoDivs.selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
+    resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
+
+    resolve.on('click', (d)=> {
+        db.ref(`${d.key}/resolved`).set(`true`);
+    });
 
     reply.on("click", function(d, i, n) {
 
@@ -131,12 +131,12 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.on('click', d=>{
-        console.log('test click', d3.event.target.tagName.toLowerCase());
+       
         if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
         d3.event.target.tagName.toLowerCase() === 'button' || 
         d3.event.target.tagName.toLowerCase() === 'a' || 
         d3.event.target.tagName.toLowerCase() === 'svg'){
-            console.log('do nothing');
+           console.log('do nothing')
         }else{ 
             skipAheadCircle(d);
         }     
@@ -164,8 +164,16 @@ export function updateSideAnnotations(dbRef){
         downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
         downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
     
-        let reply = replyDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true);
+        let reply = replyDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text("Reply ");
         reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right');
+
+        let resolve = replyDivs.selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
+        resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
+
+        resolve.on('click', (d)=> {
+            db.ref(`${d.key}/resolved`).set(`true`);
+        });
+
 
         reply.on("click", function(d, i, n) {
 
@@ -177,22 +185,6 @@ export function updateSideAnnotations(dbRef){
                 firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
                         replyInputBox(d, i, n, user);
-                        // let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
-                        // inputDiv.append('text').text(`${user.displayName}:`)
-                        // inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                        // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-                        // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-        
-                        // submit.on('click',  ()=> {
-                        //     let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, true, d.key);
-
-                        //     let ref = firebase.database().ref();                     
-                        //     ref.push(dataPush);  
-                            
-                        //     checkDatabase(ref, updateSideAnnotations);
-                        //     inputDiv.remove();
-                        // });
-                        // User is signed in.
                     } else {
                         console.log("NO USER", user);
                         // No user is signed in.

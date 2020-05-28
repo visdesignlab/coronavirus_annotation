@@ -350,13 +350,18 @@ video, canvas, #interaction{
 .memo .tag-span{
   display:block;
 }
+.memo .reply-span, .memo .resolve-span{
+  float:right;
+  margin-left:10px;
+  font-size: 12px;
+}
 
 .memo .comment{
   padding-bottom:10px;
 }
 
 .memo .upvote-text, .memo .downvote-text{
-  font-size: 11px;;
+  font-size: 11px;
 }
 
 .memo button{
@@ -376,7 +381,7 @@ span.name{
 }
 span.time{
   float:right;
-  font-size: 11px;
+  font-size: 13px;
 }
 span.comment{
   display:block;

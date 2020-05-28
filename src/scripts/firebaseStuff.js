@@ -1,5 +1,5 @@
 import * as firebase from 'firebase';
-import * as firebaseui from 'firebaseui'
+import * as d3 from 'd3';
 
 
 
@@ -22,7 +22,15 @@ if(!firebase.apps.length){
 export function checkDatabase(ref, callback){
  
   ref.on("value", function(snapshot) {
-      callback(snapshot.val());
+    console.log('valuee',snapshot.val())
+
+      let data = d3.entries(snapshot.val()).map(m=> {
+        let value = m.value;
+        value.key = m.key;
+        return value;
+      });
+
+      callback(data);
   }, function (error) {
       console.log("Error: " + error.code);
   });
@@ -35,7 +43,7 @@ export const uiConfig = {
         // User successfully signed in.
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
-        console.log('testing', authResult);
+      
         return true;
       },
       uiShown: function() {

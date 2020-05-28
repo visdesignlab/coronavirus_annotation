@@ -29,7 +29,7 @@ export function updateVideoAnn(){
         let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
         circ.attr('r', 10);
         circ.on('mouseover', (d)=>{
-            console.log('circ mouse', d)
+          
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
             memoDivs.classed('selected', true);
@@ -42,7 +42,7 @@ export function updateVideoAnn(){
 
     
         if(selectedMemoDivs){
-            console.log(selectedMemoDivs)
+          
             selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
@@ -98,29 +98,17 @@ export function dropDown(div, optionArray, dropText, dropId){
 
 export function annotationBar(dbRef){
 
+    let unresolved = dbRef.filter(f=> f.resolved === false);
+    
+    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
+
     let svg = d3.select('#annotation-layer').select('svg');
 
     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
-   
-    function randomizer(){
-        var min= -.03; 
-        var max= .03;  
-        var random = Math.random() * (+max - +min) + +min; 
-        return random;
-    }
-    let jitterMove = d3.entries(dbRef).map(d=> {
-        let value = d.value;
-        value.key = d.key;
-        return value;
-    }).filter(f=> f.reply === false).map(m=> {
-        m.y = Math.random();
-        m.x = randomizer();
-        return m;
-    });
 
-    let rect = svg.selectAll('.memo').data(jitterMove).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
-    rect.attr('x', (d)=> scale(d.time + d.x));
+    let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
+    rect.attr('x', (d)=> scale(d.time));
     rect.attr('y', 10);
     rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
    // rect.style('stroke', (d)=> `${tagOptions.filter(f=> f.key === d.tags)[0].color}`);
@@ -178,7 +166,7 @@ export function formatPush(){
                             let dropButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
-                                console.log(dropButton.text())
+                                
                                 let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
 
                                 pushedBool = false;
@@ -243,7 +231,7 @@ export function formatCanvas(){
       var mouseY = (e.pageY);
     
         if(draw) {
-          console.log(e, this.offsetLeft)
+         
           context.beginPath();
           context.moveTo(oldX, oldY);
           context.lineTo(mouseX, mouseY);
@@ -257,7 +245,7 @@ export function formatCanvas(){
       div.onmouseup=function(e) {
         draw=false;
         shapeArray.push(context.save());
-        console.log(shapeArray, context.save())
+       
       }
   
       return div;
