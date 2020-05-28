@@ -62,8 +62,8 @@ const volume = document.getElementById('volume');
 const playbackAnimation = document.getElementById('playback-animation');
 const fullscreenButton = document.getElementById('fullscreen-button');
 const videoContainer = document.getElementById('video-container');
-const fullscreenIcons = fullscreenButton.querySelectorAll('use');
-const pipButton = document.getElementById('pip-button');
+// const fullscreenIcons = fullscreenButton.querySelectorAll('use');
+// const pipButton = document.getElementById('pip-button');
 
 const videoDim = document.getElementById('video').getBoundingClientRect();
 
@@ -322,9 +322,9 @@ seek.addEventListener('mousemove', updateSeekTooltip);
 seek.addEventListener('input', skipAhead);
 volume.addEventListener('input', updateVolume);
 volumeButton.addEventListener('click', toggleMute);
-fullscreenButton.addEventListener('click', toggleFullScreen);
+//fullscreenButton.addEventListener('click', toggleFullScreen);
 videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
-pipButton.addEventListener('click', togglePip);
+//pipButton.addEventListener('click', togglePip);
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!('pictureInPictureEnabled' in document)) {
