@@ -441,10 +441,17 @@ video{
 
 #interaction svg{
   height: 100%;
+
+}
+
+#interaction svg.push{
+  height:20px;
+  width:20px;
 }
 
 #interaction circle{
  // fill:red;
+ stroke: gray;
   opacity:1;
 }
 
@@ -462,7 +469,7 @@ video{
 }
 
 #annotation-wrap div.memo.selected{
-  background-color:red;
+  background-color:#E5E8E8;
 }
 
 progress {

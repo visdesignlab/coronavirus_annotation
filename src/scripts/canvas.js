@@ -139,23 +139,25 @@ export function formatPush(){
 
     interactionDiv.on("click", function() {
 
+        console.log('test')
+
         let event = d3.event.target;
         d3.event.stopPropagation();
         let coords = d3.mouse(this);
 
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-
-                    if(event == interactionDiv.node()){
+                console.log('is this reaching in the user', interactionDiv.node(), event)
+                    if(event == interactionDiv.select('svg').node()){
                         if(!pushedBool){       
-            
+                            console.log('is this reaching')
                             pushedBool = true;
                             let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
                             let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                             pushDiv.style('position', 'absolute')
                             pushDiv.style('top', (d)=> coords[1]+'px')
                             pushDiv.style('left', (d)=> coords[0]+'px')
-                            let svg = pushDiv.append('svg');
+                            let svg = pushDiv.append('svg').classed('push', true);
                             let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
             
                             let currentTime = document.getElementById('video').currentTime;
