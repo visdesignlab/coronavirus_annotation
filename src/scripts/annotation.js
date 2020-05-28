@@ -14,7 +14,8 @@ let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
     //renderNav(d3.select('.button-wrap').node(), nav);
-    toggleMagic();
+    
+    //toggleMagic();
 }
 
 firebase.auth().onAuthStateChanged(function(user) {
