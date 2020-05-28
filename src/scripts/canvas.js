@@ -28,6 +28,7 @@ export function updateVideoAnn(){
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
         let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
         circ.attr('r', 10);
+        circ.attr('fill', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
         circ.on('mouseover', (d)=>{
           
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
@@ -37,7 +38,7 @@ export function updateVideoAnn(){
         }).on('mouseout', (d)=> {
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-            memoDivs.nodes()[0].scrollIntoView();
+           // memoDivs.nodes()[0].scrollIntoView();
         })
 
     
@@ -121,7 +122,7 @@ export function annotationBar(dbRef){
     }).on('mouseout', (d)=> {
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-        memoDivs.nodes()[0].scrollIntoView();
+       // memoDivs.nodes()[0].scrollIntoView();
     }).on('click', (d)=> {
         skipAheadCircle(d);
     });
@@ -163,7 +164,7 @@ export function formatPush(){
                             inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
                             inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
                             // inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
-                            let dropButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+                            let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
                                 

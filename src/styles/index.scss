@@ -444,13 +444,13 @@ video{
 }
 
 #interaction circle{
-  fill:red;
+ // fill:red;
   opacity:1;
 }
 
 #annotation-layer svg circle.memo{
   fill-opacity:.4;
-  stroke: 1px solid red;
+  //stroke: 1px solid red;
 }
 
 #annotation-layer svg rect.memo.selected{
