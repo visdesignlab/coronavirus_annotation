@@ -285,7 +285,7 @@ VIDEO CONTROLS
   align-items: center;
 }
 
-video, canvas, #interaction, #pushed-layer {
+video, canvas, #interaction{
   // width: 100%;
   // height: 100%;
   position: absolute;
@@ -385,10 +385,6 @@ span.comment{
   margin-bottom:10px;
 }
 
-#pushed-layer{
-  z-index:1000;
-}
-
 #interaction{
   z-index:2000;
 }
@@ -428,7 +424,7 @@ video{
   top: -10px;
 }
 
-#annotation-layer svg, #pushed-layer svg{
+#annotation-layer svg, #interaction svg{
   width:980px;
 }
 
@@ -438,11 +434,11 @@ video{
   fill-opacity: .4;
 }
 
-#pushed-layer svg{
+#interaction svg{
   height: 100%;
 }
 
-#pushed-layer circle{
+#interaction circle{
   fill:red;
   opacity:1;
 }
@@ -452,8 +448,12 @@ video{
   stroke: 1px solid red;
 }
 
-#annotation-layer svg circle.memo.selected{
-  fill:red;
+#annotation-layer svg rect.memo.selected{
+  fill:white;
+  fill-opacity:1;
+  width:3px;
+  height:11px;
+
 }
 
 #annotation-wrap div.memo.selected{

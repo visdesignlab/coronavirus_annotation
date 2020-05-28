@@ -10,7 +10,7 @@ export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'p
 
 export function updateVideoAnn(){
    
-    let svg = d3.select('#pushed-layer').select('svg')
+    let svg = d3.select('#interaction').select('svg')
     
     const video = document.querySelector('video');
     video.ontimeupdate = (event) => {
@@ -26,10 +26,23 @@ export function updateVideoAnn(){
 
         let pushedG = svg.selectAll('g.pushed').data(filtered.data()).join('g').classed('pushed', true);
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
-        pushedG.selectAll('circle').data(d=> [d]).join('circle').attr('r', 10);
+        let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
+        circ.attr('r', 10);
+        circ.on('mouseover', (d)=>{
+            console.log('circ mouse', d)
+            let wrap = d3.select('#sidebar').select('#annotation-wrap');
+            let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
+            memoDivs.classed('selected', true);
+            memoDivs.nodes()[0].scrollIntoView();
+        }).on('mouseout', (d)=> {
+            let wrap = d3.select('#sidebar').select('#annotation-wrap');
+            let memoDivs = wrap.selectAll('.memo').classed('selected', false);
+            memoDivs.nodes()[0].scrollIntoView();
+        })
 
     
         if(selectedMemoDivs){
+            console.log(selectedMemoDivs)
             selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
@@ -195,15 +208,13 @@ export function formatCanvas(){
 
     let frame = 'video';
   
- 
+    let div = document.getElementById('main-wrap');
   
-     let div = document.getElementById('main-wrap');
+    let canvas = d3.select(div).select('canvas').node();
+    canvas.setAttribute('id', 'vid-canvas');
   
-      let canvas = d3.select(div).select('canvas').node();
-      canvas.setAttribute('id', 'vid-canvas');
-  
-      const context = canvas.getContext("2d");
-      let videoDim = document.getElementById(frame).getBoundingClientRect();
+    const context = canvas.getContext("2d");
+    let videoDim = document.getElementById(frame).getBoundingClientRect();
     
   
       canvas.width = videoDim.width;

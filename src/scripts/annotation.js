@@ -24,7 +24,6 @@ firebase.auth().onAuthStateChanged(function(user) {
         userWrap.append('text').text(`Signed in as: ${user.displayName}`);
 
         let ref = firebase.database().ref();                     
-        //ref.push(dataPush);
         checkDatabase(ref, updateSideAnnotations);
 
       // User is signed in.
