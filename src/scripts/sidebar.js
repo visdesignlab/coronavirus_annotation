@@ -77,11 +77,12 @@ export function updateSideAnnotations(dbRef){
     let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> {
-        let time = d.videoTime;
+        let time = +parseInt(d.videoTime);
         var minutes = Math.floor(time / 60);
-        var seconds = time - minutes * 60;
-        console.log(`${minutes}:${('0' + seconds).slice(-2)}`)
-        return `${minutes}:${('0' + seconds).slice(-2)}`});
+        var seconds = (time - (minutes * 60));
+        console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
+        return `${minutes}:${('0' + seconds).slice(-2)}`;
+    });
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);

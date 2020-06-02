@@ -10,7 +10,7 @@ export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'p
 export function formatVideoTime(videoTime){
     let time = videoTime;
     var minutes = Math.floor(time / 60);
-    var seconds = time - minutes * 60;
+    var seconds = time - (minutes * 60);
     console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
