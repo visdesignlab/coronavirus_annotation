@@ -51,7 +51,7 @@ function replyInputBox(d, i, n, user){
 
 export function updateSideAnnotations(dbRef){
 
-    let dataAnno = d3.entries(dbRef.annotation)
+    let dataAnno = d3.entries(dbRef.comments)
                 .map(m=> {
                     let value = m.value;
                     value.key = m.key;
@@ -60,7 +60,7 @@ export function updateSideAnnotations(dbRef){
 
     let unresolved = dataAnno.filter(f=> f.resolved === false);
     
-    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
+    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.videoTime - b.videoTime);
 
     let replyData = unresolved.filter(f=> f.reply === true);
 
@@ -76,7 +76,12 @@ export function updateSideAnnotations(dbRef){
 
     let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
-    memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.time);
+    memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> {
+        let time = d.videoTime;
+        var minutes = Math.floor(time / 60);
+        var seconds = time - minutes * 60;
+        console.log(`${minutes}:${('0' + seconds).slice(-2)}`)
+        return `${minutes}:${('0' + seconds).slice(-2)}`});
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
@@ -97,7 +102,7 @@ export function updateSideAnnotations(dbRef){
     resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
 
     resolve.on('click', (d)=> {
-        db.ref(`${d.key}/resolved`).set(`true`);
+        db.ref(`comments/${d.key}/resolved`).set(`true`);
     });
 
     reply.on("click", function(d, i, n) {
@@ -129,12 +134,12 @@ export function updateSideAnnotations(dbRef){
 
     upvote.on('click', (d)=> {
         let newUp = ++d.upvote;
-        db.ref(`annotation/${d.key}/upvote`).set(`${newUp}`);
+        db.ref(`comments/${d.key}/upvote`).set(`${newUp}`);
     });
 
     downvote.on('click', (d)=> {
         let newDown = ++d.downvote;
-        db.ref(`annotation/${d.key}/downvote`).set(`${newDown}`);
+        db.ref(`comments/${d.key}/downvote`).set(`${newDown}`);
     });
 
     memoDivs.on('click', d=>{
@@ -178,7 +183,7 @@ export function updateSideAnnotations(dbRef){
         resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
 
         resolve.on('click', (d)=> {
-            db.ref(`${d.key}/resolved`).set(`true`);
+            db.ref(`comments/${d.key}/resolved`).set(`true`);
         });
 
 

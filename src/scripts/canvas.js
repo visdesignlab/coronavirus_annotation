@@ -7,7 +7,13 @@ import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 
 export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'purple'}, {key:'info', color:'orange'}, {key:'uncertainty', color:'green'}];
-
+export function formatVideoTime(videoTime){
+    let time = videoTime;
+    var minutes = Math.floor(time / 60);
+    var seconds = time - minutes * 60;
+    console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
+    return `${minutes}:${('0' + seconds).slice(-2)}`;
+}
 export function updateVideoAnn(){
    
     let svg = d3.select('#interaction').select('svg')
@@ -21,8 +27,8 @@ export function updateVideoAnn(){
         memoDivs.classed('selected', false);
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-        let filtered = memoCirc.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
-        let selectedMemoDivs = memoDivs.filter(f=> f.time < timeRange[1] && f.time > timeRange[0]).classed('selected', true);
+        let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
+        let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
 
         let pushedG = svg.selectAll('g.pushed').data(filtered.data()).join('g').classed('pushed', true);
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
@@ -53,9 +59,10 @@ export function updateVideoAnn(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo){
-    
+ 
     return {
-        time: currentTime,
+        videoTime: currentTime,
+        postTime: new Date().toString(), //.toDateString(),
         comment: d3.select('#text-area-id').node().value,
         posTop: coords != null ? coords[1] : null,
         posLeft: coords != null ? coords[0] : null,
@@ -99,7 +106,7 @@ export function dropDown(div, optionArray, dropText, dropId){
 
 export function annotationBar(dbRef){
 
-    let dataAnno = d3.entries(dbRef.annotation)
+    let dataAnno = d3.entries(dbRef.comments)
     .map(m=> {
         let value = m.value;
         value.key = m.key;
@@ -108,7 +115,7 @@ export function annotationBar(dbRef){
 
     let unresolved = dataAnno.filter(f=> f.resolved === false);
     
-    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
+    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.videoTime - b.videoTime);
 
     let svg = d3.select('#annotation-layer').select('svg');
 
@@ -116,7 +123,7 @@ export function annotationBar(dbRef){
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
 
     let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
-    rect.attr('x', (d)=> scale(d.time));
+    rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
     rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
    // rect.style('stroke', (d)=> `${tagOptions.filter(f=> f.key === d.tags)[0].color}`);
@@ -170,22 +177,23 @@ export function formatPush(){
                             let currentTime = document.getElementById('video').currentTime;
             
                             let inputDiv = pushDiv.append('div').classed('text-input', true);
-                            inputDiv.append('text').text(`${user.displayName}@ ${currentTime} :`)
+                            inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`)
                             inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
                             // inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
                             let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
                             let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
                             submit.on('click', ()=> {
+                                d3.event.stopPropagation();
                                 
                                 let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
 
                                 pushedBool = false;
                                 d3.select('#push-div').remove();
 
-                                let ref = firebase.database().ref("annotation");                     
-                                ref.push(dataPush);
+                                let refCom = firebase.database().ref("comments");                     
+                                refCom.push(dataPush);
                               
-                                checkDatabase(ref, updateSideAnnotations);
+                                checkDatabase(firebase.database().ref(), updateSideAnnotations);
 
                             });
                     
