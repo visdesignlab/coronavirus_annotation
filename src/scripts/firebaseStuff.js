@@ -24,13 +24,16 @@ export function checkDatabase(ref, callback){
   ref.on("value", function(snapshot) {
     console.log('valuee',snapshot.val())
 
-      let data = d3.entries(snapshot.val()).map(m=> {
-        let value = m.value;
-        value.key = m.key;
-        return value;
-      });
+      // let data = d3.entries(snapshot.val()).map(m=> {
+      //   let value = m.value;
+      //   value.key = m.key;
+      //   return value;
+      // });
 
-      callback(data);
+      // console.log('data',data)
+
+      // callback(data);
+      callback(snapshot.val());
   }, function (error) {
       console.log("Error: " + error.code);
   });

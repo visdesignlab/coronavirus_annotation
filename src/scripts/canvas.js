@@ -99,7 +99,14 @@ export function dropDown(div, optionArray, dropText, dropId){
 
 export function annotationBar(dbRef){
 
-    let unresolved = dbRef.filter(f=> f.resolved === false);
+    let dataAnno = d3.entries(dbRef.annotation)
+    .map(m=> {
+        let value = m.value;
+        value.key = m.key;
+        return value;
+        });
+
+    let unresolved = dataAnno.filter(f=> f.resolved === false);
     
     let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
 
@@ -175,7 +182,7 @@ export function formatPush(){
                                 pushedBool = false;
                                 d3.select('#push-div').remove();
 
-                                let ref = firebase.database().ref();                     
+                                let ref = firebase.database().ref("annotation");                     
                                 ref.push(dataPush);
                               
                                 checkDatabase(ref, updateSideAnnotations);

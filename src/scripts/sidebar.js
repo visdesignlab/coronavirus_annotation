@@ -51,7 +51,14 @@ function replyInputBox(d, i, n, user){
 
 export function updateSideAnnotations(dbRef){
 
-    let unresolved = dbRef.filter(f=> f.resolved === false);
+    let dataAnno = d3.entries(dbRef.annotation)
+                .map(m=> {
+                    let value = m.value;
+                    value.key = m.key;
+                    return value;
+                    });
+
+    let unresolved = dataAnno.filter(f=> f.resolved === false);
     
     let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.time - b.time);
 
@@ -122,12 +129,12 @@ export function updateSideAnnotations(dbRef){
 
     upvote.on('click', (d)=> {
         let newUp = ++d.upvote;
-        db.ref(`${d.key}/upvote`).set(`${newUp}`);
+        db.ref(`annotation/${d.key}/upvote`).set(`${newUp}`);
     });
 
     downvote.on('click', (d)=> {
         let newDown = ++d.downvote;
-        db.ref(`${d.key}/downvote`).set(`${newDown}`);
+        db.ref(`annotation/${d.key}/downvote`).set(`${newDown}`);
     });
 
     memoDivs.on('click', d=>{
