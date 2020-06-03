@@ -6,11 +6,23 @@ import { updateSideAnnotations } from './sidebar';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 
-export const tagOptions = [{key:'question', color:'red'}, {key:'issue', color:'purple'}, {key:'info', color:'orange'}, {key:'uncertainty', color:'green'}];
+export const tagOptions = [
+    {key:'question', color:'#0FF176'}, 
+    {key:'issue', color:'#FFC300'}, 
+    {key:'note', color:'#FF5733'}, 
+    {key:'additional input', color:'#C70039'}, 
+    {key:'critique', color:'#900C3F'}, 
+    {key:'note', color:'#7D3C98'}, 
+    {key:'suggestion', color:'#2E86C1'}, 
+    {key:'dissent', color:'gray'},
+    {key:'digging deeper', color:'#2ECC71'}, 
+    {key:'reference', color:'#F1C40F'},
+    {key: 'none', color: 'black'}
+];
 export function formatVideoTime(videoTime){
-    let time = videoTime;
+    let time = parseInt(videoTime);
     var minutes = Math.floor(time / 60);
-    var seconds = time - (minutes * 60);
+    var seconds = (time - (minutes * 60));
     console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
@@ -44,8 +56,7 @@ export function updateVideoAnn(){
         }).on('mouseout', (d)=> {
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-           // memoDivs.nodes()[0].scrollIntoView();
-        })
+        });
 
     
         if(selectedMemoDivs){
@@ -59,7 +70,7 @@ export function updateVideoAnn(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo){
- 
+
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -68,7 +79,7 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         posLeft: coords != null ? coords[0] : null,
         upvote: 0,
         downvote: 0,
-        tags: tag,
+        tags: tag === 'Tag' ? 'none' : tag,
         replies: replyTo,
         reply: replyBool,
         uid: user.uid,

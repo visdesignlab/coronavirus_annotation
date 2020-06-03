@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions, annotationMaker } from './canvas';
+import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions, annotationMaker, formatVideoTime } from './canvas';
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import * as firebase from 'firebase';
@@ -42,9 +42,8 @@ function replyInputBox(d, i, n, user){
 
     submit.on('click',  ()=> {
         d3.event.stopPropagation();
-
         let dataPush = annotationMaker(user, null, tagButton.text(), null, true, d.key);
-        let ref = firebase.database().ref();                     
+        let ref = firebase.database().ref("comments");               
         ref.push(dataPush);    
     });
 }
@@ -77,17 +76,21 @@ export function updateSideAnnotations(dbRef){
     let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> {
-        let time = +parseInt(d.videoTime);
-        var minutes = Math.floor(time / 60);
-        var seconds = (time - (minutes * 60));
-        console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
-        return `${minutes}:${('0' + seconds).slice(-2)}`;
+        return formatVideoTime(d.videoTime);
     });
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+
+    memoDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
+    .selectAll('text').data(d=> [d]).join('text').text(d=> {
+        let test = new Date(d.postTime);
+        console.log(test.toUTCString())
+        return `on ${test.toUTCString()}`});
+
+
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
     upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-lg', true);
     upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
@@ -169,6 +172,11 @@ export function updateSideAnnotations(dbRef){
         tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
        
         replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+        replyDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
+        .selectAll('text').data(d=> [d]).join('text').text(d=> {
+            let test = new Date(d.postTime);
+            return `on ${test.toUTCString()}`});
+
         let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
         upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
         upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
