@@ -1,24 +1,11 @@
 
 import * as d3 from 'd3';
 import * as firebase from 'firebase';
-import { firebaseConfig, checkDatabase } from './firebaseStuff';
-import { updateSideAnnotations } from './sidebar';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
+import { annotationType, tagOptions, annotationInitiation } from './templates';
 
-export const tagOptions = [
-    {key:'question', color:'#0FF176'}, 
-    {key:'issue', color:'#FFC300'}, 
-    {key:'note', color:'#FF5733'}, 
-    {key:'additional input', color:'#C70039'}, 
-    {key:'critique', color:'#900C3F'}, 
-    {key:'note', color:'#7D3C98'}, 
-    {key:'suggestion', color:'#2E86C1'}, 
-    {key:'dissent', color:'gray'},
-    {key:'digging deeper', color:'#2ECC71'}, 
-    {key:'reference', color:'#F1C40F'},
-    {key: 'none', color: 'black'}
-];
+
 export function formatVideoTime(videoTime){
     let time = parseInt(videoTime);
     var minutes = Math.floor(time / 60);
@@ -26,6 +13,7 @@ export function formatVideoTime(videoTime){
     console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
+
 export function updateVideoAnn(){
    
     let svg = d3.select('#interaction').select('svg')
@@ -88,7 +76,7 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
     }
 }
 
-export function dropDown(div, optionArray, dropText, dropId){
+export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool){
    
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
     dropdiv.style('display', 'inline-block')
@@ -96,12 +84,18 @@ export function dropDown(div, optionArray, dropText, dropId){
     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
     dropContent.append('a').text('text').attr('font-size', 11);
     let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
-    options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
-
+    if(!callbackBool){
+        options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
+    }
+   
     options.on('click', (d, i, n)=> {
-        
         button.text(d.key);
+        button.node().value = d.key;
         dropContent.classed('show', false);
+        if(callbackBool){
+            d3.select('.template-wrap').selectAll('*').remove();
+            d.tempCall(div, user, coords);
+        }
     });
 
     button.on('click', (d, i, n)=> {
@@ -122,7 +116,7 @@ export function annotationBar(dbRef){
         let value = m.value;
         value.key = m.key;
         return value;
-        });
+    });
 
     let unresolved = dataAnno.filter(f=> f.resolved === false);
     
@@ -164,55 +158,60 @@ export function formatPush(){
 
     interactionDiv.on("click", function() {
 
-        console.log('test')
-
         let event = d3.event.target;
         d3.event.stopPropagation();
         let coords = d3.mouse(this);
-
+      
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                console.log('is this reaching in the user', interactionDiv.node(), event)
-                    if(event == interactionDiv.select('svg').node()){
-                        if(!pushedBool){       
-                            console.log('is this reaching')
-                            pushedBool = true;
-                            let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
-                            let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
-                            pushDiv.style('position', 'absolute')
-                            pushDiv.style('top', (d)=> coords[1]+'px')
-                            pushDiv.style('left', (d)=> coords[0]+'px')
-                            let svg = pushDiv.append('svg').classed('push', true);
-                            let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
-            
-                            let currentTime = document.getElementById('video').currentTime;
-            
-                            let inputDiv = pushDiv.append('div').classed('text-input', true);
-                            inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`)
-                            inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-                            // inputDiv.append('textarea').attr('id', 'tags').attr('placeholder', 'Tag');
-                            let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-                            let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-                            submit.on('click', ()=> {
-                                d3.event.stopPropagation();
-                                
-                                let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
-
-                                pushedBool = false;
-                                d3.select('#push-div').remove();
-
-                                let refCom = firebase.database().ref("comments");                     
-                                refCom.push(dataPush);
-                              
-                                checkDatabase(firebase.database().ref(), updateSideAnnotations);
-
-                            });
-                    
-                        }else{
-                            pushedBool = false;
-                            d3.select('#push-div').remove();
-                        }
+                if(event == interactionDiv.select('svg').node()){
+                    if(d3.select('#push-div').empty()){
+                        annotationInitiation(user, interactionDiv, coords);
+                    }else{
+                        d3.select('#push-div').remove();
                     }
+                }
+               
+        //             if(event == interactionDiv.select('svg').node()){
+        //                 if(!pushedBool){       
+        //                    
+        //                     pushedBool = true;
+        //                     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
+        //                     let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+        //                     pushDiv.style('position', 'absolute')
+        //                     pushDiv.style('top', (d)=> coords[1]+'px')
+        //                     pushDiv.style('left', (d)=> coords[0]+'px')
+        //                     let svg = pushDiv.append('svg').classed('push', true);
+        //                     let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
+            
+        //                     let currentTime = document.getElementById('video').currentTime;
+            
+        //                     let inputDiv = pushDiv.append('div').classed('text-input', true);
+        //                     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`)
+        //                     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+        //                     let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+        //                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+        //                     submit.on('click', ()=> {
+
+        //                         d3.event.stopPropagation();
+                               
+        //                         let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
+
+        //                         pushedBool = false;
+        //                         d3.select('#push-div').remove();
+
+        //                         let refCom = firebase.database().ref("comments");                     
+        //                         refCom.push(dataPush);
+                              
+        //                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
+
+        //                     });
+                    
+        //                 }else{
+        //                     pushedBool = false;
+        //                     d3.select('#push-div').remove();
+        //                 }
+        //             }
                 // User is signed in.
                 } else {
                     console.log("NO USER", user);

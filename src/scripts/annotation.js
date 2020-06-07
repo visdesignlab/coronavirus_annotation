@@ -39,7 +39,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     let currentUser = firebase.auth().currentUser;
 
     if(specialUserList.indexOf(currentUser.uid) > -1){
-      console.log('this is a special user');
+
       let userWrap = d3.select('.user-wrap');
       userWrap.selectAll('*').remove();
       userWrap.append('text').text(`Signed in as Admin: ${currentUser.displayName}`);

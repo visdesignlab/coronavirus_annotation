@@ -1,15 +1,15 @@
 import * as d3 from 'd3';
-import { formatCanvas, annotateCircle, formatPush, dropDown, tagOptions, annotationMaker, formatVideoTime } from './canvas';
+import { formatCanvas, annotateCircle, formatPush, dropDown, annotationMaker, formatVideoTime } from './canvas';
 import { library, dom } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import * as firebase from 'firebase';
-
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import { skipAheadCircle } from './video_player';
 import { event } from 'd3';
 import { checkDatabase } from './firebaseStuff';
+import { annotationType, tagOptions, annotationInitiation } from './templates';
 
 library.add(faCheck, fas, far, fab) 
 
@@ -152,7 +152,7 @@ export function updateSideAnnotations(dbRef){
         d3.event.target.tagName.toLowerCase() === 'button' || 
         d3.event.target.tagName.toLowerCase() === 'a' || 
         d3.event.target.tagName.toLowerCase() === 'svg'){
-           console.log('do nothing')
+        
         }else{ 
             skipAheadCircle(d);
         }     

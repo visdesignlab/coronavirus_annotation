@@ -97,6 +97,11 @@ button.btn.dropbtn.dropdown-toggle {
   text-align:center;
   transition: all 0.15s;
 }
+.ann-type-drop button{
+  width:100%;
+}
+
+
 button.btn.dropbtn.dropdown-toggle:hover{
    color:#DDDDDD !important;
    border-color:#DDDDDD !important;
@@ -299,6 +304,19 @@ video, canvas, #interaction{
 .text-input{
   width:210px;
   height:150px;
+  background: white;
+  border-radius: 4px;
+  position:relative;
+  top:-10px;
+  left:10px;
+  padding: 7px;
+  border: 2px solid gray;
+  font-size: 12px;
+}
+
+.comment-initiated{
+  width:210px;
+  min-height:70px;
   background: white;
   border-radius: 4px;
   position:relative;
