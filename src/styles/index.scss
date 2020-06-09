@@ -101,7 +101,6 @@ button.btn.dropbtn.dropdown-toggle {
   width:100%;
 }
 
-
 button.btn.dropbtn.dropdown-toggle:hover{
    color:#DDDDDD !important;
    border-color:#DDDDDD !important;
@@ -113,7 +112,6 @@ button.btn.dropbtn.dropdown-toggle:active{
      border-color:#BBBBBB;
     }
 }
-
 
 .column {
   height: 100%;  /*allows both columns to span the full height of the browser window*/
@@ -315,7 +313,8 @@ video, canvas, #interaction{
 }
 
 .comment-initiated{
-  width:210px;
+  min-width:210px;
+  max-width:310px;
   min-height:70px;
   background: white;
   border-radius: 4px;
@@ -365,6 +364,10 @@ video, canvas, #interaction{
  cursor: pointer;
  padding-bottom:5px;
  margin-bottom:10px;
+}
+
+#text-area-id{
+  width:290px;;
 }
 
 .memo .tag-span{

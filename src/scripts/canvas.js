@@ -95,6 +95,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
         if(callbackBool){
             d3.select('.template-wrap').selectAll('*').remove();
             d.tempCall(div, user, coords);
+           
         }
     });
 
