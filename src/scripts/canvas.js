@@ -63,6 +63,7 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
         comment: d3.select('#text-area-id').node().value,
+        commentMark: 'push',
         posTop: coords != null ? coords[1] : null,
         posLeft: coords != null ? coords[0] : null,
         upvote: 0,
@@ -95,7 +96,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
         if(callbackBool){
             d3.select('.template-wrap').selectAll('*').remove();
             d.tempCall(div, user, coords);
-           
         }
     });
 

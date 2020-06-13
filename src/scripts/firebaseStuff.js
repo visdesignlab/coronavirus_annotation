@@ -8,6 +8,7 @@ export const firebaseConfig = {
     apiKey: "AIzaSyC7cqpyFRK5Pzh6tReSEhU0zdfhXAaRbeU",
     authDomain: "covid-annotation.firebaseapp.com",
     databaseURL: "https://covid-annotation.firebaseio.com",
+    storageBucket: "gs://covid-annotation.appspot.com/",
     projectId: "covid-annotation",
     storageBucket: "covid-annotation.appspot.com",
     messagingSenderId: "297369575962",
@@ -24,15 +25,6 @@ export function checkDatabase(ref, callback){
   ref.on("value", function(snapshot) {
     console.log('valuee',snapshot.val())
 
-      // let data = d3.entries(snapshot.val()).map(m=> {
-      //   let value = m.value;
-      //   value.key = m.key;
-      //   return value;
-      // });
-
-      // console.log('data',data)
-
-      // callback(data);
       callback(snapshot.val());
   }, function (error) {
       console.log("Error: " + error.code);

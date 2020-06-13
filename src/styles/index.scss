@@ -26,10 +26,22 @@ html {
   }
 }
 
+#annotation-right{
+  position:absolute;
+  top:var(--top-margin);
+  // background-color: red;
+}
+
+#time-update{
+  text-align: center;
+  width:100%;
+}
+
 #main-wrap{
   width:75%;
   flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
   overflow-y: auto;  /*adds scroll to this container*/
+  margin-top:50px;
 }
 
 //#main-wrap video, 
@@ -47,17 +59,19 @@ html {
   flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
   overflow-y: auto;  /*adds scroll to this container*/
   display:flex;
+  margin-top:50px;
 }
 
 .user-wrap{
   width:100%;
   height:50px;
-  position: relative;
+  position: absolute;
   top:0;
   text-align: center;
   padding-top:10px;
   background-color: var(--ui-gray);
   color: white;
+  z-index: 100;
 }
 
 .togg-wrap{
@@ -114,7 +128,7 @@ button.btn.dropbtn.dropdown-toggle:active{
 }
 
 .column {
-  height: 100%;  /*allows both columns to span the full height of the browser window*/
+  height: calc(100% - 50px);  /*allows both columns to span the full height of the browser window*/
   display: flex;
   flex-direction: column;  /*places the left and right headers above the bottom content*/
 }
@@ -367,7 +381,7 @@ video, canvas, #interaction{
 }
 
 #text-area-id{
-  width:290px;;
+  width:290px;
 }
 
 .memo .tag-span{
@@ -734,6 +748,22 @@ svg {
   width: 28px;
   height: 28px;
   fill: #fff;
+  // stroke: #fff;
+  cursor: pointer;
+}
+
+#annotation-right #control svg{
+  width:65px;
+  height:35px;
+}
+#annotation-right{
+  margin:auto;
+}
+
+#pause-r path, #play-r path{
+  width: 28px;
+  height: 28px;
+  fill: red;
   // stroke: #fff;
   cursor: pointer;
 }

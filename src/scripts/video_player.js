@@ -95,9 +95,13 @@ function updatePlayButton() {
   playbackIcons.forEach(icon => icon.classList.toggle('hidden'));
 
   if (video.paused) {
-    playButton.setAttribute('data-title', 'Play (k)')
+    playButton.setAttribute('data-title', 'Play (k)');
+    d3.select("#play-r").classed('hidden', false);
+    d3.select("#pause-r").classed('hidden', true);
   } else {
-    playButton.setAttribute('data-title', 'Pause (k)')
+    playButton.setAttribute('data-title', 'Pause (k)');
+    d3.select("#play-r").classed('hidden', true);
+    d3.select("#pause-r").classed('hidden', false);
   }
 }
 
@@ -130,6 +134,7 @@ function updateTimeElapsed() {
   const time = formatTime(Math.round(video.currentTime));
   timeElapsed.innerText = `${time.minutes}:${time.seconds}`;
   timeElapsed.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
+  d3.select('#time-update').select('text').text(`${time.minutes}m ${time.seconds}s`);
 }
 
 // updateProgress indicates how far through the video
@@ -324,6 +329,11 @@ volume.addEventListener('input', updateVolume);
 volumeButton.addEventListener('click', toggleMute);
 //fullscreenButton.addEventListener('click', toggleFullScreen);
 videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
+
+d3.select("#play-r").on('click', togglePlay);
+d3.select("#pause-r").on('click', togglePlay);
+
+
 //pipButton.addEventListener('click', togglePip);
 
 document.addEventListener('DOMContentLoaded', () => {

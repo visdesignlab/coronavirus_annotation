@@ -138,12 +138,13 @@ export function questionTemplate(div, user, coords){
     let currentTime = document.getElementById('video').currentTime;
 
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
+    inputDiv.append('h6').text('Ask a question:');
     inputDiv.append('p').classed('text-tab', true)
     .text('Have a question about something? Please specify if it is biology or tool related.')
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related tool here.');
     let tagButton = dropDown(inputDiv, questionOps, 'Type', 'tag-drop');
   
     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);

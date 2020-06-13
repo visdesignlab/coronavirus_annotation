@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+  <div class="user-wrap"></div>
   <div id="sidebar" class="column">
-    <div class="user-wrap"></div>
+   
     <div id="annotation-wrap"></div>
     <!-- <div class='togg-wrap'>
       <input id="toggle-on" class="toggle toggle-left" name="toggle" value="spot" type="radio" checked>
@@ -27,22 +28,17 @@
               <use href="#pause"></use>
             </svg>
           </div>
-
-        <video></video>
-
-        <div class="video-controls hidden" id="video-controls">
+          <video></video>
+          <div class="video-controls hidden" id="video-controls">
         <!-- Custom controls are defined here -->
           <div class="video-progress">
             <progress id="progress-bar" value="0" min="0"></progress>
-            <!-- maybe add svg here for rects that scale with range -->
             <input class="seek" id="seek" value="0" min="0" type="range" step="1">
             <div class="seek-tooltip" id="seek-tooltip">00:00</div>
           </div>
-
           <div id="annotation-layer">
             <svg></svg>
           </div>
-  
           <div class="bottom-controls">
             <div class="left-controls">
               <button data-title="Play (k)" id="play">
@@ -85,17 +81,32 @@
                 </button> -->
               </div>
             </div>
-        </div>
-    </div>
-    <canvas></canvas>
-
-    <div id="interaction">
+          </div>
+          </div>
+        <canvas></canvas>
+        <div id="interaction">
       <svg></svg>
-    </div> 
+        </div> 
+      </div>
+    </div>
+  
   </div>
-
+  <div id="annotation-right">
+    <div id="control">
+      <svg>
+        <g id="play-r" viewBox="0 0 24 24">
+          <path d="M8.016 5.016l10.969 6.984-10.969 6.984v-13.969z"></path>
+        </g>
+        <g id="pause-r" class="hidden" viewBox="0 0 24 24">
+          <path d="M14.016 5.016h3.984v13.969h-3.984v-13.969zM6 18.984v-13.969h3.984v13.969h-3.984z"></path>
+        </g>
+      </svg>
+    </div>
+    <div id="time-update"><text>00:00</text></div>
+  </div>
   <svg style="display: none">
     <defs>
+
       <symbol id="pause" viewBox="0 0 24 24">
         <path d="M14.016 5.016h3.984v13.969h-3.984v-13.969zM6 18.984v-13.969h3.984v13.969h-3.984z"></path>
       </symbol>
