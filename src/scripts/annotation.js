@@ -5,6 +5,8 @@ import { renderNav, toggleMagic, updateSideAnnotations} from './sidebar';
 import * as firebase from 'firebase';
 import "firebase/auth";
 import { firebaseConfig, checkDatabase } from './firebaseStuff';
+import { annotationType } from './templates';
+import { dropDown } from './canvas';
 
 
 
@@ -25,6 +27,23 @@ if(mainWrap){
     d3.select('#annotation-right').style('width', width+"px");
 
     d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
+
+   
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        
+       
+        let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
+
+        d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+  
+        // User is signed in.
+      } else {
+          console.log("NO USER", user);
+        // No user is signed in.
+      }
+    });
 
     //d3.select('#annotation-right').select('#control').select('')
 

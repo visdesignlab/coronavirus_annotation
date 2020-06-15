@@ -53,18 +53,18 @@ export function defaultTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
     let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    submit.on('click', ()=> {
+    // submit.on('click', ()=> {
 
-        d3.event.stopPropagation();
-        let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
-        d3.select('#push-div').remove(); 
-        let refCom = firebase.database().ref("comments");                     
-        refCom.push(dataPush);
-        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    //     d3.event.stopPropagation();
+    //     let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
+    //     d3.select('#push-div').remove(); 
+    //     let refCom = firebase.database().ref("comments");                     
+    //     refCom.push(dataPush);
+    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
 
-    });
+    // });
 }
 
 export function suggestionTemplate(div, user, coords){
@@ -80,18 +80,18 @@ export function suggestionTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Make a suggestion here to improve the tool or animation');
    // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    submit.on('click', ()=> {
+    // submit.on('click', ()=> {
 
-        d3.event.stopPropagation();
-        let dataPush = annotationMaker(user, currentTime, 'suggestion', coords, false, null);
-        d3.select('#push-div').remove(); 
-        let refCom = firebase.database().ref("comments");                     
-        refCom.push(dataPush);
-        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    //     d3.event.stopPropagation();
+    //     let dataPush = annotationMaker(user, currentTime, 'suggestion', coords, false, null);
+    //     d3.select('#push-div').remove(); 
+    //     let refCom = firebase.database().ref("comments");                     
+    //     refCom.push(dataPush);
+    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
 
-    });
+    // });
 }
 
 export function bioInfoTemplate(div, user, coords){
@@ -108,18 +108,18 @@ export function bioInfoTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
    // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    submit.on('click', ()=> {
+    // submit.on('click', ()=> {
 
-        d3.event.stopPropagation();
-        let dataPush = annotationMaker(user, currentTime, 'bio-context', coords, false, null);
-        d3.select('#push-div').remove(); 
-        let refCom = firebase.database().ref("comments");                     
-        refCom.push(dataPush);
-        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    //     d3.event.stopPropagation();
+    //     let dataPush = annotationMaker(user, currentTime, 'bio-context', coords, false, null);
+    //     d3.select('#push-div').remove(); 
+    //     let refCom = firebase.database().ref("comments");                     
+    //     refCom.push(dataPush);
+    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
 
-    });
+    // });
 }
 
 export function questionTemplate(div, user, coords){
@@ -147,25 +147,23 @@ export function questionTemplate(div, user, coords){
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related tool here.');
     let tagButton = dropDown(inputDiv, questionOps, 'Type', 'tag-drop');
   
-    let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    submit.on('click', ()=> {
-        if(tagButton.text() === 'Type'){
-           window.alert("Please pick a question type");
-        }else{
+    // submit.on('click', ()=> {
+    //     if(tagButton.text() === 'Type'){
+    //        window.alert("Please pick a question type");
+    //     }else{
 
-            console.log('testing this out', d3.select('.dropdown.ann-type-drop').select('button').attr('value'), tagButton.text())
+    //         console.log('testing this out', d3.select('.dropdown.ann-type-drop').select('button').attr('value'), tagButton.text())
 
-            d3.event.stopPropagation();
-            let dataPush = annotationMaker(user, currentTime, `${d3.select('.dropdown.ann-type-drop').select('button').attr('value')}-${tagButton.text()}`, coords, false, null);
-            d3.select('#push-div').remove(); 
-            let refCom = firebase.database().ref("comments");                     
-            refCom.push(dataPush);
-            checkDatabase(firebase.database().ref(), updateSideAnnotations);
-        }
-      
-
-    });
+    //         d3.event.stopPropagation();
+    //         let dataPush = annotationMaker(user, currentTime, `${d3.select('.dropdown.ann-type-drop').select('button').attr('value')}-${tagButton.text()}`, coords, false, null);
+    //         d3.select('#push-div').remove(); 
+    //         let refCom = firebase.database().ref("comments");                     
+    //         refCom.push(dataPush);
+    //         checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    //     }
+    // });
 }
 
 export function citationTemplate(div){
