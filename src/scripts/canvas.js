@@ -79,19 +79,20 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
     }
 }
 
-export function radioBlob(div, choiceArray){
+export function radioBlob(div){
 
     let form = div.append('form').classed('tabber', true);
     let labelOne = form.append('label')
-    labelOne.text('Draw');
+    labelOne.text('Push');
     labelOne.node().for = 't1';
 
     let inputOne = form.append('input').attr('id', 't1')
     inputOne.node().name = 'comment';//'name', 'comment')
     inputOne.node().type = 'radio';
     inputOne.node().checked = true;
+    form.node().value = 't1';
 
-    let labelTwo = form.append('label').text('Push');
+    let labelTwo = form.append('label').text('Draw');
     labelTwo.node().for = 't2';
 
     let inputTwo = form.append('input').attr('id', 't2')
@@ -99,13 +100,16 @@ export function radioBlob(div, choiceArray){
     inputTwo.node().type = 'radio';//.attr('type', 'radio');
     inputTwo.node().checked = false;
 
+
     let blob = form.append('div').classed('blob', true);
 
     labelOne.on('click', ()=> {
         if(inputOne.node().checked == false){
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
-            choiceArray.push('t1');
+         
+            form.node().value = 't1';
+            
         }
     })
 
@@ -114,9 +118,14 @@ export function radioBlob(div, choiceArray){
             console.log('this reaches')
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
-            choiceArray.push('t2');
+          
+            form.node().value = 't2';
+           
+            formatCanvas();
         }
     });
+
+   return form;
 
 }
 
@@ -142,18 +151,23 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             div.select('#comment-submit-button').remove();
             d.tempCall(div, user, coords);
 
-            radioBlob(div, []);
+            let form = radioBlob(div, []);
+
+            let interactionVal = d3.select('.tabber').node().value;
+            interactionVal === 't1' ? formatPush() : formatCanvas();
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
             submit.on('click', ()=> {
         
                 d3.event.stopPropagation();
-                let dataPush = annotationMaker(user, currentTime, 'none', coords, false, null);
-                d3.select('#push-div').remove(); 
-                let refCom = firebase.database().ref("comments");                     
-                refCom.push(dataPush);
-                checkDatabase(firebase.database().ref(), updateSideAnnotations);
+
+                console.log(form.node().value);
+                // let dataPush = annotationMaker(user, currentTime, 'none', coords, false, null);
+                // d3.select('#push-div').remove(); 
+                // let refCom = firebase.database().ref("comments");                     
+                // refCom.push(dataPush);
+                // checkDatabase(firebase.database().ref(), updateSideAnnotations);
         
             });
 

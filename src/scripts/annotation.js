@@ -37,6 +37,8 @@ if(mainWrap){
         let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
 
         d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+
+       
   
         // User is signed in.
       } else {
