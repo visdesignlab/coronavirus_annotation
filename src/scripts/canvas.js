@@ -162,17 +162,34 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
+            console.log('form',form.node().value)
+
             submit.on('click', ()=> {
         
                 d3.event.stopPropagation();
 
-                let currentTime = document.getElementById('video').currentTime;
-                let coords = [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')];
-                let dataPush = annotationMaker(user, currentTime, 'none', coords, false, null);
-                d3.select('#push-div').remove(); 
-                let refCom = firebase.database().ref("comments");                     
-                refCom.push(dataPush);
-                checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                if(form.node().value === 't1'){
+                    
+
+                    console.log('d',d)
+                    let currentTime = document.getElementById('video').currentTime;
+                    let coords = [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')];
+                    let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
+                    
+                    let refCom = firebase.database().ref("comments");                     
+                    refCom.push(dataPush);
+                    checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                    d3.select('#push-div').remove(); 
+
+                }else{
+                    console.log('draw would be submitted here', d);
+                }
+
+                d3.select('.template-wrap').selectAll('*').remove();
+                d3.select('form').remove();
+                d3.select('#comment-submit-button').remove();
+
+                
         
             });
 

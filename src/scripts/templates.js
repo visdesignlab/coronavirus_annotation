@@ -6,10 +6,10 @@ import * as firebase from 'firebase';
 
 
 export const annotationType = [
-    {key:'question', tempCall: questionTemplate}, 
-    {key:'add context for biology', tempCall: bioInfoTemplate}, 
-    {key:'suggestion for animation/tool', tempCall: suggestionTemplate},
-    {key:'other', tempCall: defaultTemplate},  
+    {key:'question', tag:'question', tempCall: questionTemplate}, 
+    {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
+    {key:'suggestion for animation/tool', tag:'suggestion', tempCall: suggestionTemplate},
+    {key:'other', tag:'none', tempCall: defaultTemplate},  
 ]
 export const tagOptions = [
     {key:'question-biology', color:'#0FF176'}, 
