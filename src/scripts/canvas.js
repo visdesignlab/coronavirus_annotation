@@ -4,6 +4,8 @@ import * as firebase from 'firebase';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 import { annotationType, tagOptions, annotationInitiation } from './templates';
+import { checkDatabase } from './firebaseStuff';
+import { updateSideAnnotations } from './sidebar';
 
 
 export function formatVideoTime(videoTime){
@@ -164,12 +166,13 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
         
                 d3.event.stopPropagation();
 
-                console.log(form.node().value);
-                // let dataPush = annotationMaker(user, currentTime, 'none', coords, false, null);
-                // d3.select('#push-div').remove(); 
-                // let refCom = firebase.database().ref("comments");                     
-                // refCom.push(dataPush);
-                // checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                let currentTime = document.getElementById('video').currentTime;
+                let coords = [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')];
+                let dataPush = annotationMaker(user, currentTime, 'none', coords, false, null);
+                d3.select('#push-div').remove(); 
+                let refCom = firebase.database().ref("comments");                     
+                refCom.push(dataPush);
+                checkDatabase(firebase.database().ref(), updateSideAnnotations);
         
             });
 
@@ -244,7 +247,7 @@ export function formatPush(){
 
     interactionDiv.on("click", function() {
 
-        console.log('what the fuck', d3.event.target)
+     
 
         let event = d3.event.target;
         d3.event.stopPropagation();
@@ -252,12 +255,7 @@ export function formatPush(){
       
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                // if(event == interactionDiv.select('svg').node()){
-                //     if(d3.select('#push-div').empty()){
-                //         annotationInitiation(user, interactionDiv, coords);
-                //     }else{
-                //         d3.select('#push-div').remove();
-                //     }
+  
                 if(d3.select('#push-div').empty() && d3.select('.tabber').node().value != 't2'){
 
                     let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
@@ -266,6 +264,7 @@ export function formatPush(){
                     pushDiv.style('left', (d)=> coords[0]+'px')
                     let svg = pushDiv.append('svg').classed('push', true);
                     let circ = svg.append('circle').attr('r', 7).attr('cx', 6).attr('cy', d=> 7).attr('fill', 'cornflowerblue');
+                   
                         
                     let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
@@ -274,48 +273,7 @@ export function formatPush(){
                 }else{
                     d3.select('#push-div').remove();
                 }
-               // }
-               
-        //             if(event == interactionDiv.select('svg').node()){
-        //                 if(!pushedBool){       
-        //                    
-        //                     pushedBool = true;
-        //                     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
-        //                     let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
-        //                     pushDiv.style('position', 'absolute')
-        //                     pushDiv.style('top', (d)=> coords[1]+'px')
-        //                     pushDiv.style('left', (d)=> coords[0]+'px')
-        //                     let svg = pushDiv.append('svg').classed('push', true);
-        //                     let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
-            
-        //                     let currentTime = document.getElementById('video').currentTime;
-            
-        //                     let inputDiv = pushDiv.append('div').classed('text-input', true);
-        //                     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`)
-        //                     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-        //                     let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-        //                     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-        //                     submit.on('click', ()=> {
 
-        //                         d3.event.stopPropagation();
-                               
-        //                         let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
-
-        //                         pushedBool = false;
-        //                         d3.select('#push-div').remove();
-
-        //                         let refCom = firebase.database().ref("comments");                     
-        //                         refCom.push(dataPush);
-                              
-        //                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-
-        //                     });
-                    
-        //                 }else{
-        //                     pushedBool = false;
-        //                     d3.select('#push-div').remove();
-        //                 }
-        //             }
                 // User is signed in.
                 } else {
                     console.log("NO USER", user);
