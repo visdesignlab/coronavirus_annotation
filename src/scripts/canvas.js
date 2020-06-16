@@ -109,6 +109,8 @@ export function radioBlob(div){
             inputTwo.node().checked = false;
          
             form.node().value = 't1';
+
+            formatPush();
             
         }
     })
@@ -227,13 +229,22 @@ export function annotationBar(dbRef){
 }
 
 export function formatPush(){
+
+    console.log('testing')
+    let canvas = d3.select('canvas').node()
+    const context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.height = 0;
+    canvas.width = 0;
    
     let interactionDiv = d3.select('#interaction');
     interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
     interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
-    let pushedBool = false;
 
     interactionDiv.on("click", function() {
+
+        console.log('what the fuck', d3.event.target)
 
         let event = d3.event.target;
         d3.event.stopPropagation();
@@ -241,13 +252,29 @@ export function formatPush(){
       
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                if(event == interactionDiv.select('svg').node()){
-                    if(d3.select('#push-div').empty()){
-                        annotationInitiation(user, interactionDiv, coords);
-                    }else{
-                        d3.select('#push-div').remove();
-                    }
+                // if(event == interactionDiv.select('svg').node()){
+                //     if(d3.select('#push-div').empty()){
+                //         annotationInitiation(user, interactionDiv, coords);
+                //     }else{
+                //         d3.select('#push-div').remove();
+                //     }
+                if(d3.select('#push-div').empty() && d3.select('.tabber').node().value != 't2'){
+
+                    let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+                    pushDiv.style('position', 'absolute')
+                    pushDiv.style('top', (d)=> coords[1]+'px')
+                    pushDiv.style('left', (d)=> coords[0]+'px')
+                    let svg = pushDiv.append('svg').classed('push', true);
+                    let circ = svg.append('circle').attr('r', 7).attr('cx', 6).attr('cy', d=> 7).attr('fill', 'cornflowerblue');
+                        
+                    let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
+                    inputDiv.append('h6').text('Comment for this spot');
+
+                    // annotationInitiation(user, interactionDiv, coords);
+                }else{
+                    d3.select('#push-div').remove();
                 }
+               // }
                
         //             if(event == interactionDiv.select('svg').node()){
         //                 if(!pushedBool){       
@@ -302,6 +329,8 @@ export function formatCanvas(){
     let frame = 'video';
   
     let div = document.getElementById('main-wrap');
+
+    d3.select('#interaction').selectAll('*').remove();
   
     let canvas = d3.select(div).select('canvas').node();
     canvas.setAttribute('id', 'vid-canvas');
@@ -349,7 +378,7 @@ export function formatCanvas(){
       }
       div.onmouseup=function(e) {
         draw=false;
-        shapeArray.push(context.save());
+       // shapeArray.push(context.save());
        
       }
   
