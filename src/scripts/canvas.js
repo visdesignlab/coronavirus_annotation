@@ -354,6 +354,20 @@ export function formatCanvas(){
       div.onmouseup=function(e) {
         draw=false;
        // shapeArray.push(context.save());
+
+       let urlTest = canvas.toDataURL("image/png");
+
+       console.log('url', urlTest);
+
+       var storage = firebase.storage();
+       var storageRef = storage.ref();
+       var imagesRef = storageRef.child('images/image-test.jpg');
+
+       var message = urlTest;
+       imagesRef.putString(message, 'data_url').then(function(snapshot) {
+         console.log('Uploaded a data_url string!');
+       });
+
        
       }
   
