@@ -7,6 +7,8 @@ import { annotationType, tagOptions, annotationInitiation } from './templates';
 import { checkDatabase } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 
+export const doodleKeeper = []
+
 
 export function formatVideoTime(videoTime){
     let time = parseInt(videoTime);
@@ -164,14 +166,12 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
             console.log('form',form.node().value)
 
-            submit.on('click', ()=> {
+            submit.on('click', async ()=> {
         
                 d3.event.stopPropagation();
 
                 if(form.node().value === 't1'){
                     
-
-                    console.log('d',d)
                     let currentTime = document.getElementById('video').currentTime;
                     let coords = [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')];
                     let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
@@ -182,7 +182,20 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     d3.select('#push-div').remove(); 
 
                 }else{
-                    console.log('draw would be submitted here', d);
+                    console.log('draw would be submitted here', d, doodleKeeper);
+
+                    var storage = firebase.storage();
+                    var storageRef = storage.ref();
+                  
+             
+                    var message = doodleKeeper[doodleKeeper.length - 1].data;
+                    let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+             
+                    var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.jpg`);
+             
+                    imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                      console.log('Uploaded a data_url string!');
+                    });
                 }
 
                 d3.select('.template-wrap').selectAll('*').remove();
@@ -314,16 +327,16 @@ export function formatCanvas(){
     let videoDim = document.getElementById(frame).getBoundingClientRect();
     
   
-      canvas.width = videoDim.width;
-      canvas.height = videoDim.height;
+    canvas.width = videoDim.width;
+    canvas.height = videoDim.height;
   
-      context.strokeStyle = "red";
-      context.lineWidth = 5;
+    context.strokeStyle = "red";
+    context.lineWidth = 5;
      
-      var oldX, oldY;
-      var draw=false;
+    var oldX, oldY;
+    var draw=false;
   
-      div.onmousedown=function(e) {
+    div.onmousedown=function(e) {
   
           let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
   
@@ -331,8 +344,8 @@ export function formatCanvas(){
           oldY = (e.pageY);
      
           draw=true;
-      }
-      div.onmousemove=function(e) {
+    }
+    div.onmousemove=function(e) {
   
       let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
   
@@ -350,8 +363,8 @@ export function formatCanvas(){
           oldY=mouseY;
         }
       
-      }
-      div.onmouseup=function(e) {
+    }
+    div.onmouseup= async function(e) {
         draw=false;
        // shapeArray.push(context.save());
 
@@ -361,12 +374,20 @@ export function formatCanvas(){
 
        var storage = firebase.storage();
        var storageRef = storage.ref();
-       var imagesRef = storageRef.child('images/image-test.jpg');
+     
 
        var message = urlTest;
-       imagesRef.putString(message, 'data_url').then(function(snapshot) {
-         console.log('Uploaded a data_url string!');
-       });
+       let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+
+       var imagesRef = storageRef.child('images/image-test2.jpg');
+       console.log(listPromis)
+
+       doodleKeeper.push({index:listPromis.items.length, data:message});
+
+    //    imagesRef.putString(message, 'data_url').then(function(snapshot) {
+    //      console.log('Uploaded a data_url string!');
+    //    });
+        
 
        
       }
