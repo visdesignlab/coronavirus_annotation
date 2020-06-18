@@ -107,8 +107,9 @@ export function radioBlob(div){
 
     let blob = form.append('div').classed('blob', true);
 
-    labelOne.on('click', ()=> {
-        if(inputOne.node().checked == false){
+    inputOne.on('click', ()=> {
+        console.log('input 1', inputOne.node().checked == false)
+      //  if(inputOne.node().checked == false){
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
          
@@ -116,11 +117,12 @@ export function radioBlob(div){
 
             formatPush();
             
-        }
+     //   }
     })
 
-    labelTwo.on('click', ()=> {
-        if(inputTwo.node().checked === false){
+    inputTwo.on('click', ()=> {
+        console.log('input 2')
+      //  if(inputTwo.node().checked === false){
             console.log('this reaches')
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
@@ -128,7 +130,7 @@ export function radioBlob(div){
             form.node().value = 't2';
            
             formatCanvas();
-        }
+       // }
     });
 
    return form;
