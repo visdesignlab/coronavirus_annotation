@@ -86,26 +86,31 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
 export function radioBlob(div){
 
     let form = div.append('form').classed('tabber', true);
-    let labelOne = form.append('label')
+    let labelOne = form.append('label').classed('container', true);
     labelOne.text('Push');
     labelOne.node().for = 't1';
 
-    let inputOne = form.append('input').attr('id', 't1')
-    inputOne.node().name = 'comment';//'name', 'comment')
+    let inputOne = labelOne.append('input').attr('id', 't1')
+    inputOne.node().name = 'radio';//'name', 'comment')
     inputOne.node().type = 'radio';
     inputOne.node().checked = true;
+
+    let inputCheck1 = labelOne.append('span').classed('checkmark', true);
     form.node().value = 't1';
 
-    let labelTwo = form.append('label').text('Draw');
+
+    let labelTwo = form.append('label').classed('container', true).text('Draw');
     labelTwo.node().for = 't2';
 
-    let inputTwo = form.append('input').attr('id', 't2')
-    inputTwo.node().name = 'comment';//.attr('name', 'comment')
+    let inputTwo = labelTwo.append('input').attr('id', 't2')
+    inputTwo.node().name = 'radio';//.attr('name', 'comment')
     inputTwo.node().type = 'radio';//.attr('type', 'radio');
     inputTwo.node().checked = false;
 
+    let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
-    let blob = form.append('div').classed('blob', true);
+
+    
 
     inputOne.on('click', ()=> {
         console.log('input 1', inputOne.node().checked == false)
