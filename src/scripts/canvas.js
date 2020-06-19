@@ -14,7 +14,7 @@ export function formatVideoTime(videoTime){
     let time = parseInt(videoTime);
     var minutes = Math.floor(time / 60);
     var seconds = (time - (minutes * 60));
-    console.log(`${minutes}:${('0' + seconds).slice(-2)}`);
+
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
 
@@ -64,7 +64,7 @@ export function updateVideoAnn(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo){
-
+    console.log('tag in annotation', tag)
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -139,8 +139,6 @@ export function radioBlob(div){
 
 }
 
-
-
 export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
    
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
@@ -172,14 +170,16 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             let interactionVal = d3.select('.tabber').node().value;
             interactionVal === 't1' ? formatPush() : formatCanvas();
 
-            console.log('d',d)
+           
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
          
-            console.log('form',form.node().value)
 
             submit.on('click', async ()=> {
         
                 d3.event.stopPropagation();
+
+                let tags = d3.select('.tag-wrap').selectAll('.badge');
+                console.log('taggsssss',tags, tags.data());
 
                 if(d.key === 'question'){
                     console.log(d3.select('.q-tag-drop').select('button').node().value);
@@ -194,14 +194,15 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                        let dataPush = annotationMaker(user, currentTime, `${d3.select('.dropdown.ann-type-drop').select('button').attr('value')}-${d3.select('.q-tag-drop').select('button').node().value}`, coords, false, null);
+                      
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null);
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
                         d3.select('#push-div').remove(); 
     
                     }else{
-                        console.log('draw would be submitted here', d, doodleKeeper);
+                       
     
                         var storage = firebase.storage();
                         var storageRef = storage.ref();
@@ -219,6 +220,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     d3.select('.template-wrap').selectAll('*').remove();
                     d3.select('form').remove();
                     d3.select('#comment-submit-button').remove();
+                    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
 
                    }
 
@@ -230,7 +232,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null);
                         
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
@@ -238,7 +240,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         d3.select('#push-div').remove(); 
     
                     }else{
-                        console.log('draw would be submitted here', d, doodleKeeper);
+                    
     
                         var storage = firebase.storage();
                         var storageRef = storage.ref();
@@ -256,19 +258,15 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     d3.select('.template-wrap').selectAll('*').remove();
                     d3.select('form').remove();
                     d3.select('#comment-submit-button').remove();
+                    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
                 }
-
-
-
-
-
             });
         }
         if(questionBool){
-            console.log('d', d);
+           
             d3.select('.tag-wrap').remove();
             d3.select('.input-group.mb-3').remove();
-            addTagFunctionality(div, [d.key]);
+            addTagFunctionality(div, [d.key, 'question']);
         }
     });
 
@@ -429,7 +427,7 @@ export function formatCanvas(){
 
        let urlTest = canvas.toDataURL("image/png");
 
-       console.log('url', urlTest);
+     
 
        var storage = firebase.storage();
        var storageRef = storage.ref();
@@ -438,8 +436,8 @@ export function formatCanvas(){
        var message = urlTest;
        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
 
-       var imagesRef = storageRef.child('images/image-test2.jpg');
-       console.log(listPromis)
+ 
+      
 
        doodleKeeper.push({index:listPromis.items.length, data:message});
 
