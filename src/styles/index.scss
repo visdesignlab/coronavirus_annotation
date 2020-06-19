@@ -6,7 +6,7 @@
   --ui-gray: gray;
   --video-height:500px;
   --top-margin:50px;
-  --sidbar-width:25%;
+  --sidbar-width:20%;
 }
 
 
@@ -38,7 +38,7 @@ html {
 }
 
 #main-wrap{
-  width:75%;
+  width:calc(100% - var(--sidbar-width));
   flex-grow: 1;  /*ensures that the container will take up the full height of the parent container*/
   overflow-y: auto;  /*adds scroll to this container*/
   margin-top:50px;

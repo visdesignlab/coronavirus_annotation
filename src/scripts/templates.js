@@ -73,25 +73,53 @@ export function suggestionTemplate(div, user, coords){
     let currentTime = document.getElementById('video').currentTime;
 
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-    inputDiv.append('h6').text('Add some context for biology');
-    inputDiv.append('p').classed('text-tab', true)
-    .text('Have a critique of the animation or tool? Make a suggestion to improve it.');
+   // inputDiv.append('h6').text('Make a suggestion ');
+
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Make a suggestion here to improve the tool or animation');
-   // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+    let suggestionText = `Have a critique of the animation or tool? Make a suggestion to improve it.`;
 
-    // submit.on('click', ()=> {
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', suggestionText);
 
-    //     d3.event.stopPropagation();
-    //     let dataPush = annotationMaker(user, currentTime, 'suggestion', coords, false, null);
-    //     d3.select('#push-div').remove(); 
-    //     let refCom = firebase.database().ref("comments");                     
-    //     refCom.push(dataPush);
-    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    let suggestionTags = ['suggestion', 'improvement', 'animation']
 
-    // });
+    let tagWrap = inputDiv.append('div').classed('tag-wrap', true);
+
+    let tags = tagWrap.selectAll('span.badge').data(suggestionTags).join('span').classed('badge badge-secondary', true);
+    tags.text(d=> `${d}  `);
+    let x = tags.append('text').text('X');
+    x.style('padding', '5px')
+    x.style('cursor', 'pointer');
+    x.on('click', (d, i, n)=> {
+        d3.select(n[i].parentNode).remove();
+    });
+
+    let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
+    let tagText = tagInput.append('input');
+    tagText.classed('form-control', true);
+    tagText.node().type = 'text';
+    tagText.node()['aria-label'] = 'tag add';
+    tagText.node()['aria-describedby'] = 'basic-addon2';
+
+    let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
+
+    let addTagButton = addTagButtonWrap.append('button');
+    addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
+    
+    addTagButton.on('click', ()=> {
+        console.log(tagText.node().value);
+        suggestionTags.push(tagText.node().value);
+        
+
+        let tags = tagWrap.selectAll('span.badge').data(suggestionTags).join('span').classed('badge badge-secondary', true);
+        tags.text(d=> `${d}  `);
+        let x = tags.append('text').text('X');
+        x.style('padding', '5px')
+        x.style('cursor', 'pointer');
+        x.on('click', (d, i, n)=> {
+        d3.select(n[i].parentNode).remove();
+    });
+    });
 }
 
 export function bioInfoTemplate(div, user, coords){
@@ -107,19 +135,7 @@ export function bioInfoTemplate(div, user, coords){
     inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
-   // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    // submit.on('click', ()=> {
-
-    //     d3.event.stopPropagation();
-    //     let dataPush = annotationMaker(user, currentTime, 'bio-context', coords, false, null);
-    //     d3.select('#push-div').remove(); 
-    //     let refCom = firebase.database().ref("comments");                     
-    //     refCom.push(dataPush);
-    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
-
-    // });
 }
 
 export function questionTemplate(div, user, coords){
@@ -147,23 +163,6 @@ export function questionTemplate(div, user, coords){
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related tool here.');
     let tagButton = dropDown(inputDiv, questionOps, 'Type', 'tag-drop');
   
-    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
-
-    // submit.on('click', ()=> {
-    //     if(tagButton.text() === 'Type'){
-    //        window.alert("Please pick a question type");
-    //     }else{
-
-    //         console.log('testing this out', d3.select('.dropdown.ann-type-drop').select('button').attr('value'), tagButton.text())
-
-    //         d3.event.stopPropagation();
-    //         let dataPush = annotationMaker(user, currentTime, `${d3.select('.dropdown.ann-type-drop').select('button').attr('value')}-${tagButton.text()}`, coords, false, null);
-    //         d3.select('#push-div').remove(); 
-    //         let refCom = firebase.database().ref("comments");                     
-    //         refCom.push(dataPush);
-    //         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-    //     }
-    // });
 }
 
 export function citationTemplate(div){
