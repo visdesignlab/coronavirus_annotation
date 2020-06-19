@@ -24,6 +24,48 @@ export const tagOptions = [
     {key: 'none', color: 'black'}
 ];
 
+export function addTagFunctionality(inputDiv, tagArray){
+
+    let tagWrap = inputDiv.append('div').classed('tag-wrap', true);
+
+    let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+    tags.text(d=> `${d}  `);
+    let x = tags.append('text').text('X');
+    x.style('padding', '5px')
+    x.style('cursor', 'pointer');
+    x.on('click', (d, i, n)=> {
+        d3.select(n[i].parentNode).remove();
+        tagArray = tagArray.filter(f=> f != d);
+    });
+
+    let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
+    let tagText = tagInput.append('input');
+    tagText.classed('form-control', true);
+    tagText.node().type = 'text';
+    tagText.node()['aria-label'] = 'tag add';
+    tagText.node()['aria-describedby'] = 'basic-addon2';
+
+    let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
+
+    let addTagButton = addTagButtonWrap.append('button');
+    addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
+    
+    addTagButton.on('click', ()=> {
+       
+        tagArray.push(tagText.node().value);
+        
+        let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+        tags.text(d=> `${d}  `);
+        let x = tags.append('text').text('X');
+        x.style('padding', '5px')
+        x.style('cursor', 'pointer');
+        x.on('click', (d, i, n)=> {
+            d3.select(n[i].parentNode).remove();
+            tagArray = tagArray.filter(f=> f != d);
+        });
+    });
+}
+
 export function annotationInitiation(user, interactionDiv, coords){
 
     let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]);
@@ -53,18 +95,11 @@ export function defaultTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
     let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
-    // let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
-    // submit.on('click', ()=> {
+    let defaultTags = []
 
-    //     d3.event.stopPropagation();
-    //     let dataPush = annotationMaker(user, currentTime, tagButton.text(), coords, false, null);
-    //     d3.select('#push-div').remove(); 
-    //     let refCom = firebase.database().ref("comments");                     
-    //     refCom.push(dataPush);
-    //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
+    addTagFunctionality(inputDiv, defaultTags);
 
-    // });
 }
 
 export function suggestionTemplate(div, user, coords){
@@ -83,44 +118,12 @@ export function suggestionTemplate(div, user, coords){
 
     let suggestionTags = ['suggestion', 'improvement', 'animation']
 
-    let tagWrap = inputDiv.append('div').classed('tag-wrap', true);
+    addTagFunctionality(inputDiv, suggestionTags);
 
-    let tags = tagWrap.selectAll('span.badge').data(suggestionTags).join('span').classed('badge badge-secondary', true);
-    tags.text(d=> `${d}  `);
-    let x = tags.append('text').text('X');
-    x.style('padding', '5px')
-    x.style('cursor', 'pointer');
-    x.on('click', (d, i, n)=> {
-        d3.select(n[i].parentNode).remove();
-    });
 
-    let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
-    let tagText = tagInput.append('input');
-    tagText.classed('form-control', true);
-    tagText.node().type = 'text';
-    tagText.node()['aria-label'] = 'tag add';
-    tagText.node()['aria-describedby'] = 'basic-addon2';
-
-    let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
-
-    let addTagButton = addTagButtonWrap.append('button');
-    addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
-    
-    addTagButton.on('click', ()=> {
-        console.log(tagText.node().value);
-        suggestionTags.push(tagText.node().value);
-        
-
-        let tags = tagWrap.selectAll('span.badge').data(suggestionTags).join('span').classed('badge badge-secondary', true);
-        tags.text(d=> `${d}  `);
-        let x = tags.append('text').text('X');
-        x.style('padding', '5px')
-        x.style('cursor', 'pointer');
-        x.on('click', (d, i, n)=> {
-        d3.select(n[i].parentNode).remove();
-    });
-    });
 }
+
+
 
 export function bioInfoTemplate(div, user, coords){
 
@@ -135,6 +138,10 @@ export function bioInfoTemplate(div, user, coords){
     inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
+
+    let bioTags = ['biology', 'context'];
+
+    addTagFunctionality(inputDiv, bioTags);
 
 }
 
@@ -154,14 +161,17 @@ export function questionTemplate(div, user, coords){
     let currentTime = document.getElementById('video').currentTime;
 
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-    inputDiv.append('h6').text('Ask a question:');
-    inputDiv.append('p').classed('text-tab', true)
-    .text('Have a question about something? Please specify if it is biology or tool related.')
+    // inputDiv.append('h6').text('Ask a question:');
+    // inputDiv.append('p').classed('text-tab', true)
+    // .text('Have a question about something? Please specify if it is biology or tool related.')
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related tool here.');
-    let tagButton = dropDown(inputDiv, questionOps, 'Type', 'tag-drop');
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related question here.');
+    let tagButton = dropDown(inputDiv, questionOps, 'Type', 'q-tag-drop', null, null, false, true);
+    //div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool
+
+    
   
 }
 

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import * as firebase from 'firebase';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
-import { annotationType, tagOptions, annotationInitiation } from './templates';
+import { annotationType, tagOptions, annotationInitiation, addTagFunctionality } from './templates';
 import { checkDatabase } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 
@@ -139,11 +139,15 @@ export function radioBlob(div){
 
 }
 
-export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool){
+
+
+export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
    
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
     dropdiv.style('display', 'inline-block')
-    let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true).text(dropText);
+    let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
+    let texting = button.append('text').text(dropText).classed('select-text', true);
+    button.node().value = dropText;
     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
     dropContent.append('a').text('text').attr('font-size', 11);
     let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
@@ -152,7 +156,9 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     }
    
     options.on('click', (d, i, n)=> {
-        button.text(d.key);
+       let testToo = button.selectAll('text.select-text').data([d.key]).join('text').classed('select-text', true);//text(d.key);
+       testToo.text(d=> d)
+
         button.node().value = d.key;
         dropContent.classed('show', false);
         if(callbackBool){
@@ -166,47 +172,103 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             let interactionVal = d3.select('.tabber').node().value;
             interactionVal === 't1' ? formatPush() : formatCanvas();
 
+            console.log('d',d)
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
-
+         
             console.log('form',form.node().value)
 
             submit.on('click', async ()=> {
         
                 d3.event.stopPropagation();
 
-                if(form.node().value === 't1'){
+                if(d.key === 'question'){
+                    console.log(d3.select('.q-tag-drop').select('button').node().value);
+
+                   if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
+                    console.log('select a type');
+
+                    window.alert("select a type of question")
+                   }else{
+
+                    if(form.node().value === 't1'){
                     
-                    let currentTime = document.getElementById('video').currentTime;
-                    let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                    
-                    let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
-                    
-                    let refCom = firebase.database().ref("comments");                     
-                    refCom.push(dataPush);
-                    checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                    d3.select('#push-div').remove(); 
+                        let currentTime = document.getElementById('video').currentTime;
+                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                        let dataPush = annotationMaker(user, currentTime, `${d3.select('.dropdown.ann-type-drop').select('button').attr('value')}-${d3.select('.q-tag-drop').select('button').node().value}`, coords, false, null);
+                        let refCom = firebase.database().ref("comments");                     
+                        refCom.push(dataPush);
+                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                        d3.select('#push-div').remove(); 
+    
+                    }else{
+                        console.log('draw would be submitted here', d, doodleKeeper);
+    
+                        var storage = firebase.storage();
+                        var storageRef = storage.ref();
+                      
+                        var message = doodleKeeper[doodleKeeper.length - 1].data;
+                        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+                 
+                        var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+                 
+                        imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                          console.log('Uploaded a data_url string!');
+                        });
+                    }
+
+                    d3.select('.template-wrap').selectAll('*').remove();
+                    d3.select('form').remove();
+                    d3.select('#comment-submit-button').remove();
+
+                   }
+
 
                 }else{
-                    console.log('draw would be submitted here', d, doodleKeeper);
 
-                    var storage = firebase.storage();
-                    var storageRef = storage.ref();
-                  
-                    var message = doodleKeeper[doodleKeeper.length - 1].data;
-                    let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
-             
-                    var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
-             
-                    imagesRef.putString(message, 'data_url').then(function(snapshot) {
-                      console.log('Uploaded a data_url string!');
-                    });
+                    if(form.node().value === 't1'){
+                    
+                        let currentTime = document.getElementById('video').currentTime;
+                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                        
+                        let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
+                        
+                        let refCom = firebase.database().ref("comments");                     
+                        refCom.push(dataPush);
+                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                        d3.select('#push-div').remove(); 
+    
+                    }else{
+                        console.log('draw would be submitted here', d, doodleKeeper);
+    
+                        var storage = firebase.storage();
+                        var storageRef = storage.ref();
+                      
+                        var message = doodleKeeper[doodleKeeper.length - 1].data;
+                        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+                 
+                        var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+                 
+                        imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                          console.log('Uploaded a data_url string!');
+                        });
+                    }
+
+                    d3.select('.template-wrap').selectAll('*').remove();
+                    d3.select('form').remove();
+                    d3.select('#comment-submit-button').remove();
                 }
 
-                d3.select('.template-wrap').selectAll('*').remove();
-                d3.select('form').remove();
-                d3.select('#comment-submit-button').remove();
+
+
+
 
             });
+        }
+        if(questionBool){
+            console.log('d', d);
+            d3.select('.tag-wrap').remove();
+            d3.select('.input-group.mb-3').remove();
+            addTagFunctionality(div, [d.key]);
         }
     });
 
