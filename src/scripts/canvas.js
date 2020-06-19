@@ -109,9 +109,6 @@ export function radioBlob(div){
 
     let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
-
-    
-
     inputOne.on('click', ()=> {
         console.log('input 1', inputOne.node().checked == false)
       //  if(inputOne.node().checked == false){
@@ -180,7 +177,8 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                 if(form.node().value === 't1'){
                     
                     let currentTime = document.getElementById('video').currentTime;
-                    let coords = [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')];
+                    let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                    
                     let dataPush = annotationMaker(user, currentTime, d.tag, coords, false, null);
                     
                     let refCom = firebase.database().ref("comments");                     
@@ -194,11 +192,10 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     var storage = firebase.storage();
                     var storageRef = storage.ref();
                   
-             
                     var message = doodleKeeper[doodleKeeper.length - 1].data;
                     let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
              
-                    var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.jpg`);
+                    var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
              
                     imagesRef.putString(message, 'data_url').then(function(snapshot) {
                       console.log('Uploaded a data_url string!');
@@ -209,11 +206,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                 d3.select('form').remove();
                 d3.select('#comment-submit-button').remove();
 
-                
-        
             });
-
-
         }
     });
 
@@ -270,7 +263,6 @@ export function annotationBar(dbRef){
 
 export function formatPush(){
 
-    console.log('testing')
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
 
@@ -283,8 +275,6 @@ export function formatPush(){
     interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
 
     interactionDiv.on("click", function() {
-
-     
 
         let event = d3.event.target;
         d3.event.stopPropagation();
@@ -301,7 +291,7 @@ export function formatPush(){
                     pushDiv.style('left', (d)=> coords[0]+'px')
                     let svg = pushDiv.append('svg').classed('push', true);
                     let circ = svg.append('circle').attr('r', 7).attr('cx', 6).attr('cy', d=> 7).attr('fill', 'cornflowerblue');
-                   
+
                         
                     let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
