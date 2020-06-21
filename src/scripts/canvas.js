@@ -215,6 +215,8 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         imagesRef.putString(message, 'data_url').then(function(snapshot) {
                           console.log('Uploaded a data_url string!');
                         });
+
+                        console.log('testttt', listPromis);
                     }
 
                     d3.select('.template-wrap').selectAll('*').remove();
@@ -253,6 +255,12 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         imagesRef.putString(message, 'data_url').then(function(snapshot) {
                           console.log('Uploaded a data_url string!');
                         });
+
+                        console.log('testttt', listPromis);
+
+                        storageRef.child('images/').listAll().then(im=>{
+                            console.log(im);
+                        })
                     }
 
                     d3.select('.template-wrap').selectAll('*').remove();

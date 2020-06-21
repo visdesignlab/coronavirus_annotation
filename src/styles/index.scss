@@ -313,6 +313,12 @@ video, canvas, #interaction{
   border-radius: 4px;
 }
 
+#interaction img{
+  position:absolute;
+  left:0;
+  top:0;
+}
+
 .text-input{
   width:210px;
   height:150px;

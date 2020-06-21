@@ -7,6 +7,7 @@ import "firebase/auth";
 import { firebaseConfig, checkDatabase } from './firebaseStuff';
 import { annotationType } from './templates';
 import { dropDown } from './canvas';
+import { image } from 'd3';
 
 
 
@@ -33,13 +34,33 @@ if(mainWrap){
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         
-       
         let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
-
         d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
 
-       
-  
+        var storage = firebase.storage();
+        var storageRef = storage.ref();
+                      
+     
+        let interDIV = d3.select('#interaction');
+        interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+        // interDIV.style('position', 'absolute');
+        // interDIV.style('top', '50px');
+
+        storageRef.child('images/').listAll().then(im=>{
+                  console.log('amage?', im);
+                  im.items.forEach(f=>{
+                    console.log('each', );
+                    f.getDownloadURL().then(url=>{
+
+                      let im = document.createElement("img");
+                      im.src = url;
+                      interDIV.node().append(im);
+
+                    })
+                  })
+          })
+
+    
         // User is signed in.
       } else {
           console.log("NO USER", user);
