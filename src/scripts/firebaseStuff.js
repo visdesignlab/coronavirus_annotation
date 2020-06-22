@@ -23,7 +23,6 @@ if(!firebase.apps.length){
 export function checkDatabase(ref, callback){
  
   ref.on("value", function(snapshot) {
-    console.log('valuee',snapshot.val())
 
       callback(snapshot.val());
   }, function (error) {

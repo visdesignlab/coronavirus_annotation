@@ -160,10 +160,7 @@ export function questionTemplate(div, user, coords){
         
     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-    // inputDiv.append('h6').text('Ask a question:');
-    // inputDiv.append('p').classed('text-tab', true)
-    // .text('Have a question about something? Please specify if it is biology or tool related.')
+    let inputDiv = div.select('.template-wrap').append('div');
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 

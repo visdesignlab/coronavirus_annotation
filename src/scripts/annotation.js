@@ -19,7 +19,7 @@ let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
 
-    console.log('video with',d3.select('video').node().getBoundingClientRect())
+  
     let vidDim = d3.select('video').node().getBoundingClientRect();
 
     let width = (window.innerWidth - (vidDim.x + vidDim.width));
@@ -43,27 +43,24 @@ if(mainWrap){
      
         let interDIV = d3.select('#interaction');
         interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
-        // interDIV.style('position', 'absolute');
-        // interDIV.style('top', '50px');
 
-        storageRef.child('images/').listAll().then(im=>{
-                  console.log('amage?', im);
-                  im.items.forEach(f=>{
-                    console.log('each', );
-                    f.getDownloadURL().then(url=>{
 
-                      let im = document.createElement("img");
-                      im.src = url;
-                      interDIV.node().append(im);
-
-                    })
-                  })
-          })
+        // storageRef.child('images/').listAll().then(im=>{
+                 
+        //           im.items.forEach(f=>{
+                  
+        //             f.getDownloadURL().then(url=>{
+        //               let im = document.createElement("img");
+        //               im.src = url;
+        //               interDIV.node().append(im);
+        //             });
+        //           });
+        //   });
 
     
         // User is signed in.
       } else {
-          console.log("NO USER", user);
+        console.log("NO USER", user);
         // No user is signed in.
       }
     });

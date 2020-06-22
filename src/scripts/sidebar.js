@@ -81,7 +81,7 @@ export function updateSideAnnotations(dbRef){
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> {
-        console.log('d',d.tags.split(','));
+       
         return d.tags.split(',')}).join('span').classed('badge badge-secondary', true).text(d=> d);//.style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
@@ -89,7 +89,7 @@ export function updateSideAnnotations(dbRef){
     memoDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
     .selectAll('text').data(d=> [d]).join('text').text(d=> {
         let test = new Date(d.postTime);
-        console.log(test.toUTCString())
+      
         return `on ${test.toUTCString()}`});
 
 

@@ -18,12 +18,25 @@ export function formatVideoTime(videoTime){
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
 
-export function updateVideoAnn(){
+export async function updateVideoAnn(){
+
+    console.log('is this fucking working?')
+    var storage = firebase.storage();
+    var storageRef = storage.ref();
+    let doods = await storageRef.child('images/').listAll();
    
     let svg = d3.select('#interaction').select('svg')
     
     const video = document.querySelector('video');
-    video.ontimeupdate = (event) => {
+
+    let vidDim = d3.select('video').node().getBoundingClientRect();
+     
+    let interDIV = d3.select('#interaction');
+    interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+
+
+    video.ontimeupdate = async (event) => {
+
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
         let memoDivs = d3.select('#sidebar').select('#annotation-wrap').selectAll('.memo');
 
@@ -34,7 +47,30 @@ export function updateVideoAnn(){
         let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
         let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
 
-        let pushedG = svg.selectAll('g.pushed').data(filtered.data()).join('g').classed('pushed', true);
+        let filteredPushes = filtered.filter(f=> {
+            return f.commentMark === 'push';
+        });
+
+        let filteredDoodles = filtered.filter(f=> {
+            return f.commentMark === 'doodle';
+        });
+
+        let doodleData = filteredDoodles.data();
+
+        let imgs = interDIV.selectAll('img');
+        console.log('imafses',imgs.data())
+
+        let test = doodleData.map(async (dood)=> {
+
+            let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
+            return urlDood;
+        });
+
+        let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
+        images.attr('src', d=> d);
+        
+        let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
+
         pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
         let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
         circ.attr('r', 10);
@@ -46,15 +82,12 @@ export function updateVideoAnn(){
             memoDivs.nodes()[0].scrollIntoView();
 
         }).on('mouseout', (d)=> {
-
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-
         });
 
     
         if(selectedMemoDivs){
-          
             selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
@@ -63,13 +96,27 @@ export function updateVideoAnn(){
     };
 }
 
-export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo){
-    console.log('tag in annotation', tag)
+export function clearSidebar(){
+    d3.select('#push-div').remove(); 
+    d3.select('.template-wrap').selectAll('*').remove();
+    d3.select('form').remove();
+    d3.select('#comment-submit-button').remove();
+    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
+    let canvas = d3.select('canvas').node()
+    const context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.height = 0;
+    canvas.width = 0;
+}
+
+export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark){
+   
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
         comment: d3.select('#text-area-id').node().value,
-        commentMark: 'push',
+        commentMark: mark,
         posTop: coords != null ? coords[1] : null,
         posLeft: coords != null ? coords[0] : null,
         upvote: 0,
@@ -110,8 +157,7 @@ export function radioBlob(div){
     let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
     inputOne.on('click', ()=> {
-        console.log('input 1', inputOne.node().checked == false)
-      //  if(inputOne.node().checked == false){
+    
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
          
@@ -119,13 +165,11 @@ export function radioBlob(div){
 
             formatPush();
             
-     //   }
+    
     })
 
     inputTwo.on('click', ()=> {
-        console.log('input 2')
-      //  if(inputTwo.node().checked === false){
-            console.log('this reaches')
+   
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
           
@@ -179,15 +223,14 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                 d3.event.stopPropagation();
 
                 let tags = d3.select('.tag-wrap').selectAll('.badge');
-                console.log('taggsssss',tags, tags.data());
+              
 
                 if(d.key === 'question'){
-                    console.log(d3.select('.q-tag-drop').select('button').node().value);
-
+                 
                    if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
-                    console.log('select a type');
+                   
+                    window.alert("select a type of question");
 
-                    window.alert("select a type of question")
                    }else{
 
                     if(form.node().value === 't1'){
@@ -195,37 +238,40 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                       
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null);
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push');
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        d3.select('#push-div').remove(); 
+                        clearSidebar();
+                        
     
-                    }else{
-                       
-    
-                        var storage = firebase.storage();
-                        var storageRef = storage.ref();
-                      
-                        var message = doodleKeeper[doodleKeeper.length - 1].data;
-                        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
-                 
-                        var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
-                 
-                        imagesRef.putString(message, 'data_url').then(function(snapshot) {
-                          console.log('Uploaded a data_url string!');
-                        });
+                        }else{
+                        
+        
+                            var storage = firebase.storage();
+                            var storageRef = storage.ref();
+                        
+                            var message = doodleKeeper[doodleKeeper.length - 1].data;
+                            let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+                            var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+                        
+                            imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                            
+                                let currentTime = document.getElementById('video').currentTime;
+                                let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                            
+                                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
+                                dataPush.doodle = true;
+                                dataPush.doodleName = snapshot.metadata.name;
+                                let refCom = firebase.database().ref("comments");
+                                            
+                                refCom.push(dataPush);
+                                checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                                clearSidebar();
 
-                        console.log('testttt', listPromis);
-                    }
-
-                    d3.select('.template-wrap').selectAll('*').remove();
-                    d3.select('form').remove();
-                    d3.select('#comment-submit-button').remove();
-                    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
-
-                   }
-
+                            });
+                        }
+                    } 
 
                 }else{
 
@@ -234,12 +280,12 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null);
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push');
                         
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        d3.select('#push-div').remove(); 
+                        clearSidebar();
     
                     }else{
                     
@@ -253,20 +299,23 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
                  
                         imagesRef.putString(message, 'data_url').then(function(snapshot) {
-                          console.log('Uploaded a data_url string!');
+                           
+                            let currentTime = document.getElementById('video').currentTime;
+                            let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                          
+
+                            let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
+                            dataPush.doodle = true;
+                            dataPush.doodleName = snapshot.metadata.name;
+                            let refCom = firebase.database().ref("comments");
+                         
+            
+                            refCom.push(dataPush);
+                            checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                            clearSidebar();
                         });
 
-                        console.log('testttt', listPromis);
-
-                        storageRef.child('images/').listAll().then(im=>{
-                            console.log(im);
-                        })
                     }
-
-                    d3.select('.template-wrap').selectAll('*').remove();
-                    d3.select('form').remove();
-                    d3.select('#comment-submit-button').remove();
-                    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
                 }
             });
         }
@@ -310,8 +359,8 @@ export function annotationBar(dbRef){
     let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
-    rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
-   // rect.style('stroke', (d)=> `${tagOptions.filter(f=> f.key === d.tags)[0].color}`);
+   // rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
+  
 
     rect.on('mouseover', (d)=>{
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
@@ -328,7 +377,6 @@ export function annotationBar(dbRef){
 
     updateVideoAnn();
 }
-
 export function formatPush(){
 
     let canvas = d3.select('canvas').node()
@@ -449,12 +497,7 @@ export function formatCanvas(){
 
        doodleKeeper.push({index:listPromis.items.length, data:message});
 
-    //    imagesRef.putString(message, 'data_url').then(function(snapshot) {
-    //      console.log('Uploaded a data_url string!');
-    //    });
-        
 
-       
       }
   
       return div;
