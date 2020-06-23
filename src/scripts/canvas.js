@@ -20,7 +20,7 @@ export function formatVideoTime(videoTime){
 
 export async function updateVideoAnn(){
 
-    console.log('is this fucking working?')
+    
     var storage = firebase.storage();
     var storageRef = storage.ref();
     let doods = await storageRef.child('images/').listAll();
@@ -32,8 +32,7 @@ export async function updateVideoAnn(){
     let vidDim = d3.select('video').node().getBoundingClientRect();
      
     let interDIV = d3.select('#interaction');
-    interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
-
+    interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
     video.ontimeupdate = async (event) => {
 
@@ -46,7 +45,7 @@ export async function updateVideoAnn(){
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
         let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
-
+        console.log('filtered',filtered)
         let filteredPushes = filtered.filter(f=> {
             return f.commentMark === 'push';
         });
@@ -57,24 +56,25 @@ export async function updateVideoAnn(){
 
         let doodleData = filteredDoodles.data();
 
-        let imgs = interDIV.selectAll('img');
-        console.log('imafses',imgs.data())
-
         let test = doodleData.map(async (dood)=> {
-
             let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
             return urlDood;
         });
 
         let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
         images.attr('src', d=> d);
+
+     
         
         let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
-
-        pushedG.attr('transform', d=> `translate(${d.posLeft}, ${d.posTop})`)
+       // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
+       
         let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
         circ.attr('r', 10);
-        circ.attr('fill', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
+        circ.attr('cx', d=> d.posLeft);
+        circ.attr('cy', d=> d.posTop);
+       // circ.attr('fill', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
+        circ.attr('fill', 'red')
         circ.on('mouseover', (d)=>{
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
@@ -199,7 +199,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
    
     options.on('click', (d, i, n)=> {
        let testToo = button.selectAll('text.select-text').data([d.key]).join('text').classed('select-text', true);//text(d.key);
-       testToo.text(d=> d)
+       testToo.text(d=> d);
 
         button.node().value = d.key;
         dropContent.classed('show', false);
@@ -361,7 +361,6 @@ export function annotationBar(dbRef){
     rect.attr('y', 10);
    // rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
   
-
     rect.on('mouseover', (d)=>{
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
