@@ -23,12 +23,15 @@ export function formatVidPlayer(div, videoPath){
 }
 
 export function skipAheadCircle(data){
-  let skipTo = data.time;
+
+  let skipTo = data.videoTime;
+  const progressBar = document.getElementById('progress-bar');
   
   let wrap = d3.select('#sidebar').select('#annotation-wrap');
   wrap.selectAll('.memo').classed('selected', false);
 
   let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === data.key);
+  console.log('memooooo',memoDivs.node(), memoDivs.nodes(), memoDivs.nodes()[0])
   memoDivs.classed('selected', true);
   memoDivs.nodes()[0].scrollIntoView();
 

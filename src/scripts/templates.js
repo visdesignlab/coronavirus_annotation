@@ -8,6 +8,7 @@ import * as firebase from 'firebase';
 export const annotationType = [
     {key:'question', tag:'question', tempCall: questionTemplate}, 
     {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
+    {key:'critique or issue', tag:'issue', tempCall: issueTemplate}, 
     {key:'suggestion for animation/tool', tag:'suggestion', tempCall: suggestionTemplate},
     {key:'other', tag:'none', tempCall: defaultTemplate},  
 ]
@@ -15,7 +16,8 @@ export const tagOptions = [
     {key:'question-biology', color:'#0FF176'}, 
     {key:'question-animation', color:'#FFC300'}, 
     {key:'suggestion', color:'#FF5733'}, 
-     {key:'bio-context', color:'#C70039'}, 
+    {key:'issue', color:'#C70039'}, 
+    {key:'bio-context', color:'#C70039'}, 
     // {key:'critique', color:'#900C3F'}, 
     // {key:'note', color:'#7D3C98'}, 
     // {key:'dissent', color:'gray'},
@@ -112,11 +114,40 @@ export function suggestionTemplate(div, user, coords){
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    let suggestionText = `Have a critique of the animation or tool? Make a suggestion to improve it.`;
+    let suggestionText = 
+    `Have a critique of the animation or tool? 
+    Make a suggestion to improve it.
+    Is it missing something in the animation that should be there? Is there something wrong in the structure or function?
+    `;
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', suggestionText);
 
     let suggestionTags = ['suggestion', 'improvement', 'animation']
+
+    addTagFunctionality(inputDiv, suggestionTags);
+
+
+}
+
+export function issueTemplate(div, user, coords){
+
+    d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'issue')[0].color);
+    let currentTime = document.getElementById('video').currentTime;
+
+    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
+   // inputDiv.append('h6').text('Make a suggestion ');
+
+    inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+
+    let suggestionText = 
+    `Have a critique or issue? 
+     Is it missing something in the animation that should be there?
+     Is there something wrong in the structure or function?
+    `;
+
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', suggestionText);
+
+    let suggestionTags = ['critique', 'issue', 'animation', 'missing']
 
     addTagFunctionality(inputDiv, suggestionTags);
 

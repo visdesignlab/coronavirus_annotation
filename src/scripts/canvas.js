@@ -87,7 +87,7 @@ export async function updateVideoAnn(){
         });
 
     
-        if(selectedMemoDivs){
+        if(!selectedMemoDivs.empty()){
             selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
@@ -145,7 +145,6 @@ export function radioBlob(div){
     let inputCheck1 = labelOne.append('span').classed('checkmark', true);
     form.node().value = 't1';
 
-
     let labelTwo = form.append('label').classed('container', true).text('Draw');
     labelTwo.node().for = 't2';
 
@@ -160,21 +159,15 @@ export function radioBlob(div){
     
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
-         
             form.node().value = 't1';
-
             formatPush();
-            
-    
-    })
+    });
 
     inputTwo.on('click', ()=> {
    
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
-          
             form.node().value = 't2';
-           
             formatCanvas();
        // }
     });
