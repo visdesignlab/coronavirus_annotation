@@ -17,12 +17,7 @@ export const tagOptions = [
     {key:'question-animation', color:'#FFC300'}, 
     {key:'suggestion', color:'#FF5733'}, 
     {key:'issue', color:'#C70039'}, 
-    {key:'bio-context', color:'#C70039'}, 
-    // {key:'critique', color:'#900C3F'}, 
-    // {key:'note', color:'#7D3C98'}, 
-    // {key:'dissent', color:'gray'},
-    // {key:'digging deeper', color:'#2ECC71'}, 
-    // {key:'reference', color:'#F1C40F'},
+    {key:'context', color:'#0000FF'}, 
     {key: 'none', color: 'black'}
 ];
 
@@ -95,6 +90,15 @@ export function defaultTemplate(div, user, coords){
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
+    let templatehtml = 
+    `
+    <br>
+    <p>Couldn't find a type of comment that fits?</p>
+    <p>Add your comment and please include as many tags that describe the comment</p> 
+    `;
+
+    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
+
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
     let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
 
@@ -114,13 +118,17 @@ export function suggestionTemplate(div, user, coords){
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    let suggestionText = 
-    `Have a critique of the animation or tool? 
-    Make a suggestion to improve it.
-    Is it missing something in the animation that should be there? Is there something wrong in the structure or function?
+    let suggestionhtml = 
+    `
+    <br>
+    <p>Have a critique of the animation or tool? <br> Make a suggestion to improve it.</p>
+     <p>Is it missing something in the animation that should be there?</p> 
+     <p>Is there something wrong in the structure or function?</p>
     `;
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', suggestionText);
+    inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
+
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
 
     let suggestionTags = ['suggestion', 'improvement', 'animation']
 
@@ -134,8 +142,7 @@ export function issueTemplate(div, user, coords){
     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'issue')[0].color);
     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-   // inputDiv.append('h6').text('Make a suggestion ');
+    let inputDiv = div.select('.template-wrap').append('div');
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
@@ -154,6 +161,21 @@ export function issueTemplate(div, user, coords){
 
 }
 
+export function commentTemplate(div, user, color, templatehtml, placeholder, tempTags){
+    d3.select('.dropdown.ann-type-drop').select('button').style('color', color);
+
+    let currentTime = document.getElementById('video').currentTime;
+    let inputDiv = div.select('.template-wrap').append('div');
+
+    inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+
+    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
+
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', placeholder);
+
+    addTagFunctionality(inputDiv, tempTags);
+}
+
 
 
 export function bioInfoTemplate(div, user, coords){
@@ -161,18 +183,23 @@ export function bioInfoTemplate(div, user, coords){
     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'bio-context')[0].color);
 
     let currentTime = document.getElementById('video').currentTime;
-
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
 
-    inputDiv.append('h6').text('Add some context for biology');
-    inputDiv.append('p').classed('text-tab', true).text('This could be additional information and references that support an aspect of the biology or animation. If you add a rederence, please add the DOI for the paper.')
     inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+
+    let templatehtml = 
+    `
+    <p>Add some context for biology.This could be additional information and references that support an aspect of the biology or animation.</p>
+    <p>If you add a rederence, please add the DOI for the paper.</p> 
+    `;
+
+    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
 
-    let bioTags = ['biology', 'context'];
+    let tempTags = ['biology', 'context'];
 
-    addTagFunctionality(inputDiv, bioTags);
+    addTagFunctionality(inputDiv, tempTags);
 
 }
 
@@ -184,16 +211,22 @@ export function questionTemplate(div, user, coords){
         {key:'biology', color:'#0FF176'},
         {key: 'animation', color:'#FFC300'}
     ];
-
-    let questionText = {
-        body: `Choose the type of question in the drop down. This can be biology or animation related. Please be descriptive as possible.`
-    };
         
     let currentTime = document.getElementById('video').currentTime;
 
     let inputDiv = div.select('.template-wrap').append('div');
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+
+    let templatehtml = 
+    `
+    <br>
+    <p>Choose the type of question in the drop down. </p>
+    <p>This can be biology or animation related. </p>
+    <p>Please be descriptive as possible.</p> 
+    `;
+
+    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related question here.');
     let tagButton = dropDown(inputDiv, questionOps, 'Type', 'q-tag-drop', null, null, false, true);

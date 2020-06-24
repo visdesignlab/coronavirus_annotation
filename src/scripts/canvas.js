@@ -110,7 +110,7 @@ export function clearSidebar(){
     canvas.width = 0;
 }
 
-export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark){
+export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag){
    
     return {
         videoTime: currentTime,
@@ -126,7 +126,9 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         reply: replyBool,
         uid: user.uid,
         displayName: user.displayName,
-        resolved: false
+        resolved: false,
+        initTag: initTag
+
     }
 }
 
@@ -176,6 +178,32 @@ export function radioBlob(div){
 
 }
 
+function doodleSubmit(user, tags, d){
+
+    var storage = firebase.storage();
+    var storageRef = storage.ref();
+
+    var message = doodleKeeper[doodleKeeper.length - 1].data;
+   
+    var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+
+    imagesRef.putString(message, 'data_url').then(function(snapshot) {
+    
+        let currentTime = document.getElementById('video').currentTime;
+        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+    
+        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d.tag);
+        dataPush.doodle = true;
+        dataPush.doodleName = snapshot.metadata.name;
+        let refCom = firebase.database().ref("comments");
+                    
+        refCom.push(dataPush);
+        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+        clearSidebar();
+
+    });
+}
+
 export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
    
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
@@ -209,19 +237,19 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
            
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
+
+            console.log('data', d)
          
 
             submit.on('click', async ()=> {
         
                 d3.event.stopPropagation();
-
                 let tags = d3.select('.tag-wrap').selectAll('.badge');
               
 
                 if(d.key === 'question'){
                  
                    if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
-                   
                     window.alert("select a type of question");
 
                    }else{
@@ -231,7 +259,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                       
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push');
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag);
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
@@ -240,29 +268,29 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     
                         }else{
                         
-        
-                            var storage = firebase.storage();
-                            var storageRef = storage.ref();
+                            doodleKeeper(user, tags, d);
+                            // var storage = firebase.storage();
+                            // var storageRef = storage.ref();
                         
-                            var message = doodleKeeper[doodleKeeper.length - 1].data;
-                            let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
-                            var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+                            // var message = doodleKeeper[doodleKeeper.length - 1].data;
+                            // let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+                            // var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
                         
-                            imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                            // imagesRef.putString(message, 'data_url').then(function(snapshot) {
                             
-                                let currentTime = document.getElementById('video').currentTime;
-                                let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                            //     let currentTime = document.getElementById('video').currentTime;
+                            //     let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                             
-                                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
-                                dataPush.doodle = true;
-                                dataPush.doodleName = snapshot.metadata.name;
-                                let refCom = firebase.database().ref("comments");
+                            //     let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
+                            //     dataPush.doodle = true;
+                            //     dataPush.doodleName = snapshot.metadata.name;
+                            //     let refCom = firebase.database().ref("comments");
                                             
-                                refCom.push(dataPush);
-                                checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                                clearSidebar();
+                            //     refCom.push(dataPush);
+                            //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                            //     clearSidebar();
 
-                            });
+                            // });
                         }
                     } 
 
@@ -273,7 +301,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push');
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag);
                         
                         let refCom = firebase.database().ref("comments");                     
                         refCom.push(dataPush);
@@ -282,31 +310,31 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     
                     }else{
                     
-    
-                        var storage = firebase.storage();
-                        var storageRef = storage.ref();
+                        doodleSubmit(user, tags, d);
+                        // var storage = firebase.storage();
+                        // var storageRef = storage.ref();
                       
-                        var message = doodleKeeper[doodleKeeper.length - 1].data;
-                        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
+                        // var message = doodleKeeper[doodleKeeper.length - 1].data;
+                        // let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
                  
-                        var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
+                        // var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
                  
-                        imagesRef.putString(message, 'data_url').then(function(snapshot) {
+                        // imagesRef.putString(message, 'data_url').then(function(snapshot) {
                            
-                            let currentTime = document.getElementById('video').currentTime;
-                            let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                        //     let currentTime = document.getElementById('video').currentTime;
+                        //     let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                           
 
-                            let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
-                            dataPush.doodle = true;
-                            dataPush.doodleName = snapshot.metadata.name;
-                            let refCom = firebase.database().ref("comments");
+                        //     let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
+                        //     dataPush.doodle = true;
+                        //     dataPush.doodleName = snapshot.metadata.name;
+                        //     let refCom = firebase.database().ref("comments");
                          
             
-                            refCom.push(dataPush);
-                            checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                            clearSidebar();
-                        });
+                        //     refCom.push(dataPush);
+                        //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                        //     clearSidebar();
+                        // });
 
                     }
                 }
@@ -350,9 +378,9 @@ export function annotationBar(dbRef){
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
 
     let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
+    rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
-   // rect.attr('fill', (d)=> tagOptions.filter(f=> f.key === d.tags)[0].color);
   
     rect.on('mouseover', (d)=>{
         let wrap = d3.select('#sidebar').select('#annotation-wrap');

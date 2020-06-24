@@ -332,6 +332,10 @@ video, canvas, #interaction{
   font-size: 12px;
 }
 
+.temp-text{
+  font-size: 12px;
+}
+
 .comment-initiated{
   min-width:210px;
   max-width:310px;
@@ -384,6 +388,7 @@ video, canvas, #interaction{
  cursor: pointer;
  padding-bottom:5px;
  margin-bottom:10px;
+ border-radius: 7px;
 }
 
 #text-area-id{

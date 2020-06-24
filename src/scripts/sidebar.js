@@ -81,16 +81,23 @@ export function updateSideAnnotations(dbRef){
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> {
-       
-        return d.tags.split(',')}).join('span').classed('badge badge-secondary', true).text(d=> d);//.style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
+        return d.tags.split(',');
+    }).join('span').classed('badge badge-secondary', true).text(d=> d);
+        // .style('background-color', d=> {
+        //     console.log('d in sidebar', d);
+        //     return tagOptions.filter(f=> f.key === d.tags)[0].color})
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
 
     memoDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
     .selectAll('text').data(d=> [d]).join('text').text(d=> {
         let test = new Date(d.postTime);
-      
         return `on ${test.toUTCString()}`});
+
+    memoDivs.style('border', d=> {
+        return `1px solid ${tagOptions.filter(f=> f.key === d.initTag)[0].color}`});
+
+    
 
 
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
