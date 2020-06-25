@@ -7,17 +7,16 @@ import * as firebase from 'firebase';
 
 export const annotationType = [
     {key:'question', tag:'question', tempCall: questionTemplate}, 
-    {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
+    // {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
     {key:'critique or issue', tag:'issue', tempCall: issueTemplate}, 
     {key:'suggestion for animation/tool', tag:'suggestion', tempCall: suggestionTemplate},
     {key:'other', tag:'none', tempCall: defaultTemplate},  
 ]
 export const tagOptions = [
-    {key:'question-biology', color:'#0FF176'}, 
-    {key:'question-animation', color:'#FFC300'}, 
-    {key:'suggestion', color:'#FF5733'}, 
-    {key:'issue', color:'#C70039'}, 
-    {key:'context', color:'#0000FF'}, 
+    {key:'question', color:'#2E86C1'}, 
+    {key:'suggestion', color:'#2ECC71'}, 
+    {key:'issue', color:'#F1C40F'}, 
+    {key:'context', color:'#F10F42'}, 
     {key: 'none', color: 'black'}
 ];
 
@@ -146,13 +145,16 @@ export function issueTemplate(div, user, coords){
 
     inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    let suggestionText = 
-    `Have a critique or issue? 
+    let suggestionhtml = 
+    ` <br>
+    <p>Have a critique or issue? 
      Is it missing something in the animation that should be there?
-     Is there something wrong in the structure or function?
+     Is there something wrong in the structure or function?<p>
     `;
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', suggestionText);
+    inputDiv.append('div').classed('temp-text', true).html(suggestionhtml);
+
+    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something');
 
     let suggestionTags = ['critique', 'issue', 'animation', 'missing']
 

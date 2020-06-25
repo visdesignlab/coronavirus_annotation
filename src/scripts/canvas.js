@@ -207,9 +207,9 @@ function doodleSubmit(user, tags, d){
 export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
    
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
-    dropdiv.style('display', 'inline-block')
+   // dropdiv.style('display', 'inline-block');
     let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
-    let texting = button.append('text').text(dropText).classed('select-text', true);
+    let texting = button.text(dropText);
     button.node().value = dropText;
     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
     dropContent.append('a').text('text').attr('font-size', 11);
@@ -219,8 +219,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     }
    
     options.on('click', (d, i, n)=> {
-       let testToo = button.selectAll('text.select-text').data([d.key]).join('text').classed('select-text', true);//text(d.key);
-       testToo.text(d=> d);
+       let testToo = button.text(d.key);
 
         button.node().value = d.key;
         dropContent.classed('show', false);
@@ -235,7 +234,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             let interactionVal = d3.select('.tabber').node().value;
             interactionVal === 't1' ? formatPush() : formatCanvas();
 
-           
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
             console.log('data', d)
