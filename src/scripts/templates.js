@@ -40,6 +40,7 @@ export function addTagFunctionality(inputDiv, tagArray){
     tagText.classed('form-control', true);
     tagText.node().type = 'text';
     tagText.node()['aria-label'] = 'tag add';
+    tagText.node().placeholder = "Type to add..."
 
     const node = document.getElementById("tag-input");
     node.addEventListener("keyup", function(event) {

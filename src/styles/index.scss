@@ -889,15 +889,16 @@ svg {
   // position: relative;
   // top:32px;
   z-index: 100;
-  padding-left:5px;
+  padding:2px 2px 2px 2px;
+  
 }
 
 .tag-wrap span{
   // border:1px solid gray;
   // border-radius: 3px;
- padding:7px;
- background-color: aliceblue;
- border: 1px solid gray;
+ padding:5px;
+ background-color: #E8E8E8;
+ border: 3px solid white;
  color:gray;
  font-weight: 100;
  display:inline;
@@ -919,4 +920,8 @@ svg {
  padding:0;
  border:0;
 }
+
+.tag-input-wrap input{
+font-size:11px;
+ }
 
