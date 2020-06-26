@@ -9,6 +9,8 @@ import { annotationType } from './templates';
 import { dropDown } from './canvas';
 import { image } from 'd3';
 
+export const currentUserKeeper = [];
+
 
 
 if(!firebase.apps.length){
@@ -33,6 +35,8 @@ if(mainWrap){
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
+
+        currentUserKeeper.push(user);
         
         let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
         d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);

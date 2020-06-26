@@ -10,6 +10,7 @@ import { skipAheadCircle } from './video_player';
 import { event } from 'd3';
 import { checkDatabase } from './firebaseStuff';
 import { annotationType, tagOptions, annotationInitiation } from './templates';
+import { currentUserKeeper } from './annotation';
 
 library.add(faCheck, fas, far, fab) 
 
@@ -97,9 +98,6 @@ export function updateSideAnnotations(dbRef){
     memoDivs.style('border', d=> {
         return `1px solid ${tagOptions.filter(f=> f.key === d.initTag)[0].color}`});
 
-    
-
-
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
     upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-lg', true);
     upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
@@ -111,7 +109,9 @@ export function updateSideAnnotations(dbRef){
     let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text('Reply ');
     reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots fa-lg reply', true)//.style('float', 'right')//.text('Reply');
 
-    let resolve = memoDivs.selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
+    let resolve = memoDivs.filter(f=> {
+        return f.uid === currentUserKeeper[currentUserKeeper.length - 1].uid
+    }).selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
     resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
 
     resolve.on('click', (d)=> {
