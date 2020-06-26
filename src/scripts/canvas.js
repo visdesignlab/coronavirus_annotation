@@ -471,8 +471,8 @@ export function formatCanvas(){
   
           let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
   
-          oldX = (e.pageX - sideWidth.width);
-          oldY = (e.pageY);
+          oldX = (e.pageX - (sideWidth.width + 11));
+          oldY = (e.pageY - 40);
      
           draw=true;
     }
@@ -480,8 +480,9 @@ export function formatCanvas(){
   
       let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
   
-      var mouseX = (e.pageX - sideWidth.width);
-      var mouseY = (e.pageY);
+     // var mouseX = (e.pageX - sideWidth.width);
+      var mouseX = (e.pageX - (sideWidth.width + 11));
+      var mouseY = (e.pageY - 40);
     
         if(draw) {
          
