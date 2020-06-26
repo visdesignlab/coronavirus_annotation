@@ -22,7 +22,9 @@ export const tagOptions = [
 
 export function addTagFunctionality(inputDiv, tagArray){
 
-    let tagWrap = inputDiv.append('div').classed('tag-wrap', true);
+    let inputWrap = inputDiv.append('div').classed('tag-input-wrap', true);
+
+    let tagWrap = inputWrap.append('div').classed('tag-wrap', true);
 
     let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
     tags.text(d=> `${d}  `);
@@ -33,33 +35,62 @@ export function addTagFunctionality(inputDiv, tagArray){
         d3.select(n[i].parentNode).remove();
         tagArray = tagArray.filter(f=> f != d);
     });
-
-    let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
-    let tagText = tagInput.append('input');
+    
+     let tagText = inputWrap.append('input').attr('id', 'tag-input');
     tagText.classed('form-control', true);
     tagText.node().type = 'text';
     tagText.node()['aria-label'] = 'tag add';
-    tagText.node()['aria-describedby'] = 'basic-addon2';
 
-    let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
-
-    let addTagButton = addTagButtonWrap.append('button');
-    addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
-    
-    addTagButton.on('click', ()=> {
-       
-        tagArray.push(tagText.node().value);
+    const node = document.getElementById("tag-input");
+    node.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
         
-        let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-        tags.text(d=> `${d}  `);
-        let x = tags.append('text').text('X');
-        x.style('padding', '5px')
-        x.style('cursor', 'pointer');
-        x.on('click', (d, i, n)=> {
-            d3.select(n[i].parentNode).remove();
-            tagArray = tagArray.filter(f=> f != d);
-        });
-    });
+        if(node.value != ""){
+            tagArray.push(node.value);
+        
+            let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+            tags.text(d=> `${d}  `);
+            let x = tags.append('text').text('X');
+            x.style('padding', '5px')
+            x.style('cursor', 'pointer');
+            x.on('click', (d, i, n)=> {
+                d3.select(n[i].parentNode).remove();
+                tagArray = tagArray.filter(f=> f != d);
+            });
+
+            node.value = "";
+        }else{
+            console.log('nothing to add');
+        }
+    }
+});
+
+    // let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
+    // let tagText = tagInput.append('input');
+    // tagText.classed('form-control', true);
+    // tagText.node().type = 'text';
+    // tagText.node()['aria-label'] = 'tag add';
+    // tagText.node()['aria-describedby'] = 'basic-addon2';
+
+    // let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
+
+    // let addTagButton = addTagButtonWrap.append('button');
+    // addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
+    
+    // addTagButton.on('click', ()=> {
+       
+    //     tagArray.push(tagText.node().value);
+        
+    //     let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+    //     tags.text(d=> `${d}  `);
+    //     let x = tags.append('text').text('X');
+    //     x.style('padding', '5px')
+    //     x.style('cursor', 'pointer');
+    //     x.on('click', (d, i, n)=> {
+    //         d3.select(n[i].parentNode).remove();
+    //         tagArray = tagArray.filter(f=> f != d);
+    //     });
+    // });
 }
 
 export function annotationInitiation(user, interactionDiv, coords){
@@ -129,7 +160,7 @@ export function suggestionTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
 
-    let suggestionTags = ['suggestion', 'improvement', 'animation']
+    let suggestionTags = ['suggestion']
 
     addTagFunctionality(inputDiv, suggestionTags);
 

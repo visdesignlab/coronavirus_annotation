@@ -84,9 +84,6 @@ export function updateSideAnnotations(dbRef){
     tags.selectAll('.badge').data(d=> {
         return d.tags.split(',');
     }).join('span').classed('badge badge-secondary', true).text(d=> d);
-        // .style('background-color', d=> {
-        //     console.log('d in sidebar', d);
-        //     return tagOptions.filter(f=> f.key === d.tags)[0].color})
 
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
 

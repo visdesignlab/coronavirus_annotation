@@ -84,8 +84,9 @@ html {
   top:0;
   text-align: center;
   padding-top:10px;
-  background-color: var(--ui-gray);
-  color: white;
+  //background-color: var(--ui-gray);
+  border-bottom: 1px solid #E8E8E8;
+  color: var(--ui-gray);
   z-index: 100;
 }
 
@@ -836,7 +837,7 @@ svg {
 }
 
 .fa-bug path{
-  fill:white;
+  fill:var(--ui-gray);
 }
 
 /* Create a custom radio button */
@@ -882,135 +883,40 @@ svg {
 	background: white;
 }
 
-// ////TOGGLE
+.tag-wrap{
+  // border:1px solid gray;
+  // border-radius: 3px;
+  // position: relative;
+  // top:32px;
+  z-index: 100;
+  padding-left:5px;
+}
 
-// .tabber {
-//   position: relative;
-//   display: flex;
-//   align-items: stretch;
-//   justify-content: stretch;
-  
-//   label {
-//     user-select: none;
-//     padding: 3rem;
-//     cursor: pointer;
-//     will-change: transform;
-//     transform: translateZ(0px);
-//     transition:
-//       transform 125ms ease-in-out,
-//       filter 125ms ease-in-out;
-//     // filter: blur(.25rem);
-    
-//     &:hover {
-//       transform: scale(1.15);
-//       // filter: blur(0px);
-//     }
-//   }
-  
-//   input[type="radio"] {
-//     display: none;
-    
-//     // static
-//     &#t1 ~ .blob {
-//       transform-origin: right center;
-//     }
-    
-//     &#t2 ~ .blob {
-//       transform-origin: left center;
-//     }
-    
-//     // animated
-//     &#t1:checked {
-      
-//       ~ .blob {
-//         background: cornflowerblue;
-//         animation-name: stretchyRev;
-//       }
-//     }
-    
-//     &#t2:checked {
-      
-//       ~ .blob {
-//         background-color: skyblue;
-//         animation-name: stretchy;
-//       }
-//     }
-//   }
-  
-//   .blob {
-//     top: 20px;
-//     left: 10px;
-//     width: 28%;
-//     height: 50%;
-//     position: absolute;
-//     z-index: -1;
-//     border-radius: 4rem;
-//     animation-duration: .5s;
-//     animation-direction: forwards;
-//     animation-iteration-count: 1;
-//     animation-fill-mode: forwards;
-//     transition:
-//       transform 150ms ease,
-//       background 150ms ease;
-//     filter: url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><defs><filter id=\"goo\"><feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"10\" result=\"blur\" /><feColorMatrix in=\"blur\" mode=\"matrix\" values=\"1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9\" result=\"goo\" /><feComposite in=\"SourceGraphic\" in2=\"goo\" operator=\"atop\"/></filter></defs></svg>#goo");
-    
-//     &:before, &:after {
-//       display: block;
-//       content: "";
-//       position: absolute;
-//       top: 0;
-//       background-color: inherit;
-//       height: 100%;
-//       width: 30%;
-//       border-radius: 100%;
-//       transform: scale(1.15);
-//       transition: transform 150ms ease;
-//       animation-name: pulse;
-//       animation-duration: .5s;
-//       animation-iteration-count: infinite;
-//       animation-direction: alternate;
-//     }
-    
-//     &:before {
-//       left: 0;
-//       animation-delay: .15s;
-//     }
-    
-//     &:after {
-//       right: -5px;
-//     }
-//   }
-// }
+.tag-wrap span{
+  // border:1px solid gray;
+  // border-radius: 3px;
+ padding:7px;
+ background-color: aliceblue;
+ border: 1px solid gray;
+ color:gray;
+ font-weight: 100;
+ display:inline;
+}
 
-// @keyframes stretchy {
-//   0% {
-//     transform: translateX(0) scaleX(1);
-//   }
-//   50% {
-//     transform: translateX(0) scaleX(2);
-//   }
-//   100% {
-//     transform: translateX(100%) scaleX(1);
-//   }
-// }
+.tag-input-wrap{
+    border:1px solid gray;
+    border-radius: 3px;
+    display:flex;
+    padding:2px;
+    flex-basis: 100%;
+    min-width:300px;
+    height:auto;
+}
 
-// @keyframes stretchyRev {
-//   0% {
-//     transform: translateX(100%) scaleX(1);
-//   }
-//   50% {
-//     transform: translateX(0) scaleX(2);
-//   }
-//   100% {
-//     transform: translateX(0) scaleX(1);
-//   }
-// }
+.tag-input-wrap input{
+ box-sizing: content-box;
+ height:30px;
+ padding:0;
+ border:0;
+}
 
-// @keyframes pulse {
-//   0%, 50% {
-//     transform: scaleX(1);
-//   }
-//   25%, 75% {
-//     transform: scaleX(1.5);
-//   }
-// }

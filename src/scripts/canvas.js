@@ -485,7 +485,6 @@ export function formatCanvas(){
       var mouseY = (e.pageY - 40);
     
         if(draw) {
-         
           context.beginPath();
           context.moveTo(oldX, oldY);
           context.lineTo(mouseX, mouseY);
@@ -502,20 +501,13 @@ export function formatCanvas(){
 
        let urlTest = canvas.toDataURL("image/png");
 
-     
-
        var storage = firebase.storage();
        var storageRef = storage.ref();
      
-
        var message = urlTest;
        let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
 
- 
-      
-
        doodleKeeper.push({index:listPromis.items.length, data:message});
-
 
       }
   
