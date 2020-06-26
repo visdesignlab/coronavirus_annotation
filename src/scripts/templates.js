@@ -87,7 +87,7 @@ export function defaultTemplate(div, user, coords){
     let currentTime = document.getElementById('video').currentTime;
 
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-    inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+   // inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let templatehtml = 
     `
@@ -115,7 +115,7 @@ export function suggestionTemplate(div, user, coords){
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
    // inputDiv.append('h6').text('Make a suggestion ');
 
-    inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+    //inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let suggestionhtml = 
     `
@@ -143,7 +143,7 @@ export function issueTemplate(div, user, coords){
 
     let inputDiv = div.select('.template-wrap').append('div');
 
-    inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+    //inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let suggestionhtml = 
     ` <br>
@@ -169,7 +169,7 @@ export function commentTemplate(div, user, color, templatehtml, placeholder, tem
     let currentTime = document.getElementById('video').currentTime;
     let inputDiv = div.select('.template-wrap').append('div');
 
-    inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+   // inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
@@ -187,7 +187,7 @@ export function bioInfoTemplate(div, user, coords){
     let currentTime = document.getElementById('video').currentTime;
     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
 
-    inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+  //  inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let templatehtml = 
     `
@@ -218,7 +218,7 @@ export function questionTemplate(div, user, coords){
 
     let inputDiv = div.select('.template-wrap').append('div');
 
-    inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+   // inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let templatehtml = 
     `

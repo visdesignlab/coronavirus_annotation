@@ -45,19 +45,7 @@ if(mainWrap){
         interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
 
 
-        // storageRef.child('images/').listAll().then(im=>{
-                 
-        //           im.items.forEach(f=>{
-                  
-        //             f.getDownloadURL().then(url=>{
-        //               let im = document.createElement("img");
-        //               im.src = url;
-        //               interDIV.node().append(im);
-        //             });
-        //           });
-        //   });
 
-    
         // User is signed in.
       } else {
         console.log("NO USER", user);
@@ -65,7 +53,7 @@ if(mainWrap){
       }
     });
 
-    //d3.select('#annotation-right').select('#control').select('')
+ 
 
 }
 
@@ -94,6 +82,11 @@ firebase.auth().onAuthStateChanged(function(user) {
       let userWrap = d3.select('.user-wrap');
       userWrap.selectAll('*').remove();
       userWrap.append('text').text(`Signed in as Admin: ${currentUser.displayName}`);
+      let bugLink = userWrap.append('a');
+      bugLink.attr('href', 'https://github.com/visdesignlab/coronavirus_annotation/issues');
+      bugLink.attr('target', "_blank");
+      bugLink.append('span').classed("fas fa-bug", true);
+
     }else{
       let userWrap = d3.select('.user-wrap');
       userWrap.selectAll('*').remove();
