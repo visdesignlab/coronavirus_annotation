@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 import * as d3 from 'd3';
 
-
+export const dataKeeper = [];
 
 // Your web app's Firebase configuration
 export const firebaseConfig = {
@@ -25,6 +25,8 @@ export function checkDatabase(ref, callback){
   ref.on("value", function(snapshot) {
 
       callback(snapshot.val());
+      dataKeeper.push(snapshot.val());
+      
   }, function (error) {
       console.log("Error: " + error.code);
   });

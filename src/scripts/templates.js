@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { dropDown, formatVideoTime, annotationMaker } from './canvas';
 import { updateSideAnnotations } from './sidebar';
-import { firebaseConfig, checkDatabase } from './firebaseStuff';
+import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 
 
@@ -36,7 +36,7 @@ export function addTagFunctionality(inputDiv, tagArray){
         tagArray = tagArray.filter(f=> f != d);
     });
     
-     let tagText = inputWrap.append('input').attr('id', 'tag-input');
+    let tagText = inputWrap.append('input').attr('id', 'tag-input');
     tagText.classed('form-control', true);
     tagText.node().type = 'text';
     tagText.node()['aria-label'] = 'tag add';
@@ -46,25 +46,31 @@ export function addTagFunctionality(inputDiv, tagArray){
     node.addEventListener("keyup", function(event) {
     if (event.key === "Enter") {
         
-        if(node.value != ""){
-            tagArray.push(node.value);
-        
-            let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-            tags.text(d=> `${d}  `);
-            let x = tags.append('text').text('X');
-            x.style('padding', '5px')
-            x.style('cursor', 'pointer');
-            x.on('click', (d, i, n)=> {
-                d3.select(n[i].parentNode).remove();
-                tagArray = tagArray.filter(f=> f != d);
-            });
+            if(node.value != ""){
+                tagArray.push(node.value);
+            
+                let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+                tags.text(d=> `${d}  `);
+                let x = tags.append('text').text('X');
+                x.style('padding', '5px')
+                x.style('cursor', 'pointer');
+                x.on('click', (d, i, n)=> {
+                    d3.select(n[i].parentNode).remove();
+                    tagArray = tagArray.filter(f=> f != d);
+                });
 
-            node.value = "";
-        }else{
-            console.log('nothing to add');
+                node.value = "";
+            }else{
+                console.log('nothing to add');
+            }
         }
-    }
-});
+    });
+
+    let array = dataKeeper[dataKeeper.length - 1].comments;
+    let test = d3.entries(array).map(m=> m.value).flatMap(m=> m.tags.split(','));
+    console.log(Array.from(new Set(test)))
+
+    autocomplete(node, Array.from(new Set(test)));
 
     // let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
     // let tagText = tagInput.append('input');
@@ -144,10 +150,7 @@ export function suggestionTemplate(div, user, coords){
     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
-   // inputDiv.append('h6').text('Make a suggestion ');
-
-    //inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+    let inputDiv = div.select('.template-wrap').append('div');
 
     let suggestionhtml = 
     `
@@ -188,7 +191,7 @@ export function issueTemplate(div, user, coords){
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something');
 
-    let suggestionTags = ['critique', 'issue', 'animation', 'missing']
+    let suggestionTags = ['critique']
 
     addTagFunctionality(inputDiv, suggestionTags);
 
@@ -272,4 +275,101 @@ export function questionTemplate(div, user, coords){
 
 export function citationTemplate(div){
     console.log('this is citation template', div);
+}
+
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+              b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+      x[i].parentNode.removeChild(x[i]);
+    }
+  }
+}
+/*execute a function when someone clicks in the document:*/
+document.addEventListener("click", function (e) {
+    closeAllLists(e.target);
+});
 }
