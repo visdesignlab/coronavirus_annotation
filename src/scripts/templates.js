@@ -20,6 +20,23 @@ export const tagOptions = [
     {key: 'none', color: 'black'}
 ];
 
+function updateTags(node, tagWrap, tagArray){
+
+    tagArray.push(node.value);
+
+    let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+    tags.text(d=> `${d}  `);
+    let x = tags.append('text').text('X');
+    x.style('padding', '5px')
+    x.style('cursor', 'pointer');
+    x.on('click', (d, i, n)=> {
+        d3.select(n[i].parentNode).remove();
+        tagArray = tagArray.filter(f=> f != d);
+    });
+
+    node.value = "";
+}
+
 export function addTagFunctionality(inputDiv, tagArray){
 
     let inputWrap = inputDiv.append('div').classed('tag-input-wrap', true);
@@ -47,19 +64,21 @@ export function addTagFunctionality(inputDiv, tagArray){
     if (event.key === "Enter") {
         
             if(node.value != ""){
-                tagArray.push(node.value);
-            
-                let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-                tags.text(d=> `${d}  `);
-                let x = tags.append('text').text('X');
-                x.style('padding', '5px')
-                x.style('cursor', 'pointer');
-                x.on('click', (d, i, n)=> {
-                    d3.select(n[i].parentNode).remove();
-                    tagArray = tagArray.filter(f=> f != d);
-                });
 
-                node.value = "";
+              updateTags(node, tagWrap, tagArray)
+                // tagArray.push(node.value);
+            
+                // let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
+                // tags.text(d=> `${d}  `);
+                // let x = tags.append('text').text('X');
+                // x.style('padding', '5px')
+                // x.style('cursor', 'pointer');
+                // x.on('click', (d, i, n)=> {
+                //     d3.select(n[i].parentNode).remove();
+                //     tagArray = tagArray.filter(f=> f != d);
+                // });
+
+                // node.value = "";
             }else{
                 console.log('nothing to add');
             }
@@ -72,32 +91,6 @@ export function addTagFunctionality(inputDiv, tagArray){
 
     autocomplete(node, Array.from(new Set(test)));
 
-    // let tagInput = inputDiv.append('div').classed('input-group mb-3', true);
-    // let tagText = tagInput.append('input');
-    // tagText.classed('form-control', true);
-    // tagText.node().type = 'text';
-    // tagText.node()['aria-label'] = 'tag add';
-    // tagText.node()['aria-describedby'] = 'basic-addon2';
-
-    // let addTagButtonWrap = tagInput.append('div').classed('input-group-append', true);
-
-    // let addTagButton = addTagButtonWrap.append('button');
-    // addTagButton.text('Add Tag').classed('btn btn-outline-secondary', true);
-    
-    // addTagButton.on('click', ()=> {
-       
-    //     tagArray.push(tagText.node().value);
-        
-    //     let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-    //     tags.text(d=> `${d}  `);
-    //     let x = tags.append('text').text('X');
-    //     x.style('padding', '5px')
-    //     x.style('cursor', 'pointer');
-    //     x.on('click', (d, i, n)=> {
-    //         d3.select(n[i].parentNode).remove();
-    //         tagArray = tagArray.filter(f=> f != d);
-    //     });
-    // });
 }
 
 export function annotationInitiation(user, interactionDiv, coords){
@@ -300,6 +293,7 @@ function autocomplete(inp, arr) {
         if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
           /*create a DIV element for each matching element:*/
           b = document.createElement("DIV");
+         
           /*make the matching letters bold:*/
           b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
           b.innerHTML += arr[i].substr(val.length);
@@ -307,19 +301,26 @@ function autocomplete(inp, arr) {
           b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
           /*execute a function when someone clicks on the item value (DIV element):*/
               b.addEventListener("click", function(e) {
-              /*insert the value for the autocomplete text field:*/
-              inp.value = this.getElementsByTagName("input")[0].value;
-              /*close the list of autocompleted values,
-              (or any other open lists of autocompleted values:*/
-              closeAllLists();
-          });
+                /*insert the value for the autocomplete text field:*/
+                inp.value = this.getElementsByTagName("input")[0].value;
+                /*close the list of autocompleted values,
+                (or any other open lists of autocompleted values:*/
+                closeAllLists();
+              });
           a.appendChild(b);
+
+          d3.select(b).on('click', ()=> {
+            console.log('click!!');
+            updateTags(d3.select('#tag-input').node(), d3.select('.tag-wrap'), d3.select('.tag-wrap').selectAll('span').data())
+          });
+
         }
       }
   });
   /*execute a function presses a key on the keyboard:*/
   inp.addEventListener("keydown", function(e) {
       var x = document.getElementById(this.id + "autocomplete-list");
+
       if (x) x = x.getElementsByTagName("div");
       if (e.keyCode == 40) {
         /*If the arrow DOWN key is pressed,
@@ -338,11 +339,13 @@ function autocomplete(inp, arr) {
         e.preventDefault();
         if (currentFocus > -1) {
           /*and simulate a click on the "active" item:*/
-          if (x) x[currentFocus].click();
+          if (x){ 
+          
+            x[currentFocus].click();}
         }
       }
   });
-  function addActive(x) {
+  function addActive(x) {``
     /*a function to classify an item as "active":*/
     if (!x) return false;
     /*start by removing the "active" class on all items:*/
@@ -371,5 +374,6 @@ function autocomplete(inp, arr) {
 /*execute a function when someone clicks in the document:*/
 document.addEventListener("click", function (e) {
     closeAllLists(e.target);
+    console.log('e target', e.target, e.target, e.target.value)
 });
 }
