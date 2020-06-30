@@ -66,19 +66,7 @@ export function addTagFunctionality(inputDiv, tagArray){
             if(node.value != ""){
 
               updateTags(node, tagWrap, tagArray)
-                // tagArray.push(node.value);
-            
-                // let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-                // tags.text(d=> `${d}  `);
-                // let x = tags.append('text').text('X');
-                // x.style('padding', '5px')
-                // x.style('cursor', 'pointer');
-                // x.on('click', (d, i, n)=> {
-                //     d3.select(n[i].parentNode).remove();
-                //     tagArray = tagArray.filter(f=> f != d);
-                // });
 
-                // node.value = "";
             }else{
                 console.log('nothing to add');
             }
@@ -104,6 +92,8 @@ export function annotationInitiation(user, interactionDiv, coords){
     let circ = svg.append('circle').attr('r', 5).attr('cx', 5).attr('cy', d=> 5).attr('fill', 'purple');
         
     let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
+
+    console.log('user', user)
   
     let tagButton = dropDown(inputDiv, annotationType, 'Type of Comment', 'ann-type-drop', user, coords, true);
 
@@ -135,6 +125,30 @@ export function defaultTemplate(div, user, coords){
     let defaultTags = []
 
     addTagFunctionality(inputDiv, defaultTags);
+
+}
+
+export function annotationTemplate(div, user, coords){
+
+  d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
+  let currentTime = document.getElementById('video').currentTime;
+
+  let inputDiv = div.select('.template-wrap').append('div');
+
+  let suggestionhtml = 
+  `
+  <br>
+  <p>Add an annotation to the video </p>
+  `;
+
+  inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
+
+  inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
+
+  let suggestionTags = ['suggestion']
+
+  addTagFunctionality(inputDiv, suggestionTags);
+
 
 }
 
@@ -205,8 +219,6 @@ export function commentTemplate(div, user, color, templatehtml, placeholder, tem
 
     addTagFunctionality(inputDiv, tempTags);
 }
-
-
 
 export function bioInfoTemplate(div, user, coords){
 

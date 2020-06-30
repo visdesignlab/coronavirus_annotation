@@ -4,12 +4,13 @@ import * as vid from './video_player';
 import { renderNav, toggleMagic, updateSideAnnotations} from './sidebar';
 import * as firebase from 'firebase';
 import "firebase/auth";
-import { firebaseConfig, checkDatabase } from './firebaseStuff';
-import { annotationType } from './templates';
+import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
+import { annotationType, defaultTemplate, annotationTemplate } from './templates';
 import { dropDown } from './canvas';
 import { image } from 'd3';
 
 export const currentUserKeeper = [];
+export const specialUserKeeper = [];
 
 
 
@@ -31,55 +32,57 @@ if(mainWrap){
 
     d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
 
-   
+    let specialUserList = d3.entries(firebase.database().ref()['special-users']).map(m=> m.key);
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-
-        currentUserKeeper.push(user);
         
-        let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
-        d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+          let ref = firebase.database().ref();  
+          checkDatabase(ref, updateSideAnnotations);
+          checkDatabase(ref, specialUserCheck);
 
-        var storage = firebase.storage();
-        var storageRef = storage.ref();
-                      
-     
-        let interDIV = d3.select('#interaction');
-        interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+          console.log('dataaaa',dataKeeper[dataKeeper.length - 1])
+
+        
 
 
-
+          if(specialUserList.indexOf(user.uid) > -1){
+            console.log('special user!');
+            annotationType.push({key:'annotation', tag:'annotation', tempCall: defaultTemplate});
+          }
+      
+          
+          // let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
+          // d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+  
+          // var storage = firebase.storage();
+          // var storageRef = storage.ref();
+                        
+          // let interDIV = d3.select('#interaction');
+          // interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+  
         // User is signed in.
       } else {
-        console.log("NO USER", user);
+          console.log("NO USER", user);
         // No user is signed in.
       }
+
+        currentUserKeeper.push(user);
+
+  
     });
 
  
 
 }
 
-firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      
-     
-        let ref = firebase.database().ref();  
-        checkDatabase(ref, updateSideAnnotations);
-        checkDatabase(ref, specialUserCheck);
-
-      // User is signed in.
-    } else {
-        console.log("NO USER", user);
-      // No user is signed in.
-    }
-  });
-
   function specialUserCheck(dbRef){
 
     let specialUserList = d3.entries(dbRef['special-users']).map(m=> m.key);
+
     let currentUser = firebase.auth().currentUser;
+
+    let vidDim = d3.select('video').node().getBoundingClientRect();
 
     if(specialUserList.indexOf(currentUser.uid) > -1){
 
@@ -91,11 +94,42 @@ firebase.auth().onAuthStateChanged(function(user) {
       bugLink.attr('target', "_blank");
       bugLink.append('span').classed("fas fa-bug", true);
 
+      annotationType.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
+
+    
+
+      let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
+      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+
+      var storage = firebase.storage();
+      var storageRef = storage.ref();
+                    
+      let interDIV = d3.select('#interaction');
+      interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+
     }else{
+
       let userWrap = d3.select('.user-wrap');
       userWrap.selectAll('*').remove();
       userWrap.append('text').text(`Signed in as: ${currentUser.displayName}`);
+
+      let bugLink = userWrap.append('a');
+      bugLink.attr('href', 'https://github.com/visdesignlab/coronavirus_annotation/issues');
+      bugLink.attr('target', "_blank");
+      bugLink.append('span').classed("fas fa-bug", true);
+
+      let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
+      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+
+      var storage = firebase.storage();
+      var storageRef = storage.ref();
+                    
+      let interDIV = d3.select('#interaction');
+      interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
+
     }
+
+
 
   }
 
