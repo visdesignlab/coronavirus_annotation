@@ -135,7 +135,7 @@ function timePoint(){
 function timeRange(){
   console.log('timerange')
 
-  let slid = slider(0, 20)
+  let slid = slider(0, document.getElementById('video').duration)
 
 
   function slider(min, max) {
@@ -149,39 +149,33 @@ function timeRange(){
                   bottom: 30,
                   left: 20,
                   right: 20}
-  
-  
-  
-  
+
     // create svg and translated g
     var svg = d3.select('#time-wrap').append('svg')
     svg.style('width', '100%').style('height', `${h}px`)
     const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
 
-   
-
       // dimensions of slider bar
-      var width = svg.node().getBoundingClientRect().width - (margin.left + margin.right);
-      var height = h - margin.top - margin.bottom;
+    var width = svg.node().getBoundingClientRect().width - (margin.left + margin.right);
+    var height = h - margin.top - margin.bottom;
 
         // create x scale
-      var x = d3.scaleLinear()
+    var x = d3.scaleLinear()
       .domain(range)  // data space
       .range([0, width]);  // display space
-  
-
-      console.log('widthhhhhh',width)
-    
+ 
     // labels
     var labelL = g.append('text')
       .attr('id', 'labelleft')
       .attr('x', 0)
       .attr('y', height + 5)
+      .style('fill', 'gray')
   
     var labelR = g.append('text')
       .attr('id', 'labelright')
       .attr('x', 0)
       .attr('y', height + 5)
+      .style('fill', 'gray')
   
     // define brush
     var brush = d3.brushX()
@@ -200,7 +194,7 @@ function timeRange(){
         // move these two lines into the on('end') part below
         svg.node().value = s.map(function(d) {var temp = x.invert(d); return +temp.toFixed(2)});
         svg.node().dispatchEvent(new CustomEvent("input"));
-      })
+      });
   
     // append brush to g
     var gBrush = g.append("g")

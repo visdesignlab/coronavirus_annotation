@@ -110,7 +110,7 @@ export function clearSidebar(){
     canvas.width = 0;
 }
 
-export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag){
+export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
    
     return {
         videoTime: currentTime,
@@ -127,7 +127,8 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         uid: user.uid,
         displayName: user.displayName,
         resolved: false,
-        initTag: initTag
+        initTag: initTag,
+        specialAnno: annoBool,
 
     }
 }
@@ -178,7 +179,7 @@ export function radioBlob(div, t1Ob, t2Ob){
 
 }
 
-function doodleSubmit(user, tags, d){
+function doodleSubmit(commentType, user, tags, d){
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -192,15 +193,14 @@ function doodleSubmit(user, tags, d){
         let currentTime = document.getElementById('video').currentTime;
         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
     
-        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d.tag);
+        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d.tag, false);
         dataPush.doodle = true;
         dataPush.doodleName = snapshot.metadata.name;
-        let refCom = firebase.database().ref("comments");
+        let refCom = firebase.database().ref(commentType);
                     
         refCom.push(dataPush);
         checkDatabase(firebase.database().ref(), updateSideAnnotations);
         clearSidebar();
-
     });
 }
 
@@ -220,6 +220,10 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
    
     options.on('click', (d, i, n)=> {
        let testToo = button.text(d.key);
+
+       console.log('dddddd',d)
+
+       let commentType = d.key === 'annotation' ? "annotations" : "comments";
 
         button.node().value = d.key;
         dropContent.classed('show', false);
@@ -260,8 +264,8 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                       
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag);
-                        let refCom = firebase.database().ref("comments");                     
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, false);
+                        let refCom = firebase.database().ref(commentType);                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
                         clearSidebar();
@@ -281,24 +285,20 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag);
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
                         
-                        let refCom = firebase.database().ref("comments");                     
+                        let refCom = firebase.database().ref(commentType);                     
                         refCom.push(dataPush);
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
                         clearSidebar();
     
                     }else{
-                    
-                        doodleSubmit(user, tags, d);
-               
-
+                        doodleSubmit(commentType, user, tags, d);
                     }
                 }
             });
         }
         if(questionBool){
-           
             d3.select('.tag-wrap').remove();
             d3.select('.input-group.mb-3').remove();
             addTagFunctionality(div, [d.key, 'question']);

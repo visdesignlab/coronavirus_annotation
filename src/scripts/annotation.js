@@ -21,8 +21,6 @@ if(!firebase.apps.length){
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
-
-  
     let vidDim = d3.select('video').node().getBoundingClientRect();
 
     let width = (window.innerWidth - (vidDim.x + vidDim.width));
@@ -32,8 +30,6 @@ if(mainWrap){
 
     d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
 
- 
-
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         
@@ -41,17 +37,13 @@ if(mainWrap){
           checkDatabase(ref, updateSideAnnotations);
           checkDatabase(ref, specialUserCheck);
 
-
-  
         // User is signed in.
       } else {
           console.log("NO USER", user);
         // No user is signed in.
       }
-
         currentUserKeeper.push(user);
 
-  
     });
 }
 
