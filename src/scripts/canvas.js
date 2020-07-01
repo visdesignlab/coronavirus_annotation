@@ -132,11 +132,11 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
     }
 }
 
-export function radioBlob(div){
+export function radioBlob(div, t1Ob, t2Ob){
 
     let form = div.append('form').classed('tabber', true);
     let labelOne = form.append('label').classed('container', true);
-    labelOne.text('Push');
+    labelOne.text(t1Ob.label);
     labelOne.node().for = 't1';
 
     let inputOne = labelOne.append('input').attr('id', 't1')
@@ -147,7 +147,7 @@ export function radioBlob(div){
     let inputCheck1 = labelOne.append('span').classed('checkmark', true);
     form.node().value = 't1';
 
-    let labelTwo = form.append('label').classed('container', true).text('Draw');
+    let labelTwo = form.append('label').classed('container', true).text(t2Ob.label);
     labelTwo.node().for = 't2';
 
     let inputTwo = labelTwo.append('input').attr('id', 't2')
@@ -162,7 +162,7 @@ export function radioBlob(div){
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
             form.node().value = 't1';
-            formatPush();
+            t1Ob.callBack();
     });
 
     inputTwo.on('click', ()=> {
@@ -170,7 +170,7 @@ export function radioBlob(div){
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
             form.node().value = 't2';
-            formatCanvas();
+            t2Ob.callBack();
        // }
     });
 
@@ -229,7 +229,10 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             div.select('#comment-submit-button').remove();
             d.tempCall(div, user, coords);
 
-            let form = radioBlob(div, []);
+            let t1Ob = {label: "Push", callBack: formatPush}
+            let t2Ob = {label: "Draw", callBack: formatCanvas}
+
+            let form = radioBlob(div, t1Ob, t2Ob);
 
             let interactionVal = d3.select('.tabber').node().value;
             interactionVal === 't1' ? formatPush() : formatCanvas();
@@ -267,28 +270,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         }else{
                         
                             doodleKeeper(user, tags, d);
-                            // var storage = firebase.storage();
-                            // var storageRef = storage.ref();
-                        
-                            // var message = doodleKeeper[doodleKeeper.length - 1].data;
-                            // let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
-                            // var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
-                        
-                            // imagesRef.putString(message, 'data_url').then(function(snapshot) {
-                            
-                            //     let currentTime = document.getElementById('video').currentTime;
-                            //     let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                            
-                            //     let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
-                            //     dataPush.doodle = true;
-                            //     dataPush.doodleName = snapshot.metadata.name;
-                            //     let refCom = firebase.database().ref("comments");
-                                            
-                            //     refCom.push(dataPush);
-                            //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                            //     clearSidebar();
-
-                            // });
+                  
                         }
                     } 
 
@@ -309,30 +291,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                     }else{
                     
                         doodleSubmit(user, tags, d);
-                        // var storage = firebase.storage();
-                        // var storageRef = storage.ref();
-                      
-                        // var message = doodleKeeper[doodleKeeper.length - 1].data;
-                        // let listPromis = await Promise.resolve(storageRef.child('images/').listAll());
-                 
-                        // var imagesRef = storageRef.child(`images/im-${user.uid}-${doodleKeeper[doodleKeeper.length - 1].index}.png`);
-                 
-                        // imagesRef.putString(message, 'data_url').then(function(snapshot) {
-                           
-                        //     let currentTime = document.getElementById('video').currentTime;
-                        //     let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                          
-
-                        //     let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle');
-                        //     dataPush.doodle = true;
-                        //     dataPush.doodleName = snapshot.metadata.name;
-                        //     let refCom = firebase.database().ref("comments");
-                         
-            
-                        //     refCom.push(dataPush);
-                        //     checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        //     clearSidebar();
-                        // });
+               
 
                     }
                 }

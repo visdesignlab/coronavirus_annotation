@@ -32,7 +32,7 @@ if(mainWrap){
 
     d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
 
-    let specialUserList = d3.entries(firebase.database().ref()['special-users']).map(m=> m.key);
+ 
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -41,25 +41,7 @@ if(mainWrap){
           checkDatabase(ref, updateSideAnnotations);
           checkDatabase(ref, specialUserCheck);
 
-          console.log('dataaaa',dataKeeper[dataKeeper.length - 1])
 
-        
-
-
-          if(specialUserList.indexOf(user.uid) > -1){
-            console.log('special user!');
-            annotationType.push({key:'annotation', tag:'annotation', tempCall: defaultTemplate});
-          }
-      
-          
-          // let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', user, null, true);
-          // d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
-  
-          // var storage = firebase.storage();
-          // var storageRef = storage.ref();
-                        
-          // let interDIV = d3.select('#interaction');
-          // interDIV.attr('width', vidDim.width).attr('height', vidDim.height);
   
         // User is signed in.
       } else {
@@ -71,9 +53,6 @@ if(mainWrap){
 
   
     });
-
- 
-
 }
 
   function specialUserCheck(dbRef){
@@ -95,8 +74,6 @@ if(mainWrap){
       bugLink.append('span').classed("fas fa-bug", true);
 
       annotationType.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
-
-    
 
       let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
       d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);

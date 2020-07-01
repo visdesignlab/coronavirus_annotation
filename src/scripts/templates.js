@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { dropDown, formatVideoTime, annotationMaker } from './canvas';
+import { dropDown, formatVideoTime, annotationMaker, radioBlob } from './canvas';
 import { updateSideAnnotations } from './sidebar';
 import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
@@ -128,7 +128,136 @@ export function defaultTemplate(div, user, coords){
 
 }
 
+function timePoint(){
+  console.log('timepoint');
+}
+
+function timeRange(){
+  console.log('timerange')
+
+  let slid = slider(0, 20)
+
+
+  function slider(min, max) {
+
+    var range = [min, max]
+  
+    // set width and height of svg
+    var w = 300
+    var h = 100
+    var margin = {top: 30,
+                  bottom: 30,
+                  left: 20,
+                  right: 20}
+  
+  
+  
+  
+    // create svg and translated g
+    var svg = d3.select('#time-wrap').append('svg')
+    svg.style('width', '100%').style('height', `${h}px`)
+    const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+   
+
+      // dimensions of slider bar
+      var width = svg.node().getBoundingClientRect().width - (margin.left + margin.right);
+      var height = h - margin.top - margin.bottom;
+
+        // create x scale
+      var x = d3.scaleLinear()
+      .domain(range)  // data space
+      .range([0, width]);  // display space
+  
+
+      console.log('widthhhhhh',width)
+    
+    // labels
+    var labelL = g.append('text')
+      .attr('id', 'labelleft')
+      .attr('x', 0)
+      .attr('y', height + 5)
+  
+    var labelR = g.append('text')
+      .attr('id', 'labelright')
+      .attr('x', 0)
+      .attr('y', height + 5)
+  
+    // define brush
+    var brush = d3.brushX()
+      .extent([[0,0], [width, height]])
+      .on('brush', function() {
+        var s = d3.event.selection;
+        // update and move labels
+        labelL.attr('x', s[0])
+          .text((x.invert(s[0]).toFixed(2)))
+        labelR.attr('x', s[1])
+          .text((x.invert(s[1]).toFixed(2)))
+        // move brush handles      
+        handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i], - height / 4] + ")"; });
+        // update view
+        // if the view should only be updated after brushing is over, 
+        // move these two lines into the on('end') part below
+        svg.node().value = s.map(function(d) {var temp = x.invert(d); return +temp.toFixed(2)});
+        svg.node().dispatchEvent(new CustomEvent("input"));
+      })
+  
+    // append brush to g
+    var gBrush = g.append("g")
+        .attr("class", "brush")
+        .call(brush)
+  
+    // add brush handles (from https://bl.ocks.org/Fil/2d43867ba1f36a05459c7113c7f6f98a)
+    var brushResizePath = function(d) {
+        var e = +(d.type == "e"),
+            x = e ? 1 : -1,
+            y = height / 2;
+        return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) +
+          "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) +
+          "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+    }
+  
+    var handle = gBrush.selectAll(".handle--custom")
+      .data([{type: "w"}, {type: "e"}])
+      .enter().append("path")
+      .attr("class", "handle--custom")
+      .attr("stroke", "#000")
+      .attr("fill", '#eee')
+      .attr("cursor", "ew-resize")
+      .attr("d", brushResizePath);
+      
+    // override default behaviour - clicking outside of the selected area 
+    // will select a small piece there rather than deselecting everything
+    // https://bl.ocks.org/mbostock/6498000
+    gBrush.selectAll(".overlay")
+      .each(function(d) { d.type = "selection"; })
+      .on("mousedown touchstart", brushcentered)
+    
+    function brushcentered() {
+      var dx = x(1) - x(0), // Use a fixed width when recentering.
+      cx = d3.mouse(this)[0],
+      x0 = cx - dx / 2,
+      x1 = cx + dx / 2;
+      d3.select(this.parentNode).call(brush.move, x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]);
+    }
+    
+    // select entire range
+    gBrush.call(brush.move, range.map(x))
+    
+    return svg.node()
+  }
+}
+
 export function annotationTemplate(div, user, coords){
+
+  console.log(d3.select(div.node().parentNode).select('#time-wrap'))
+
+  let timeDiv = d3.select(div.node().parentNode).select('#time-wrap');
+
+  let t1Ob = {label:"time point", callBack: timePoint}
+  let t2Ob = {label:"time range", callBack: timeRange}
+
+  radioBlob(timeDiv, t1Ob, t2Ob)
 
   d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
   let currentTime = document.getElementById('video').currentTime;
@@ -144,11 +273,6 @@ export function annotationTemplate(div, user, coords){
   inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
 
   inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
-
-  let suggestionTags = ['suggestion']
-
-  addTagFunctionality(inputDiv, suggestionTags);
-
 
 }
 
@@ -276,10 +400,6 @@ export function questionTemplate(div, user, coords){
 
     
   
-}
-
-export function citationTemplate(div){
-    console.log('this is citation template', div);
 }
 
 function autocomplete(inp, arr) {
