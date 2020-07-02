@@ -64,8 +64,7 @@ export async function updateVideoAnn(){
         let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
         images.attr('src', d=> d);
 
-     
-        
+    
         let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
        // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
        
@@ -97,11 +96,14 @@ export async function updateVideoAnn(){
 }
 
 export function clearSidebar(){
+
+    console.log('when this fire??')
     d3.select('#push-div').remove(); 
-    d3.select('.template-wrap').selectAll('*').remove();
+    d3.select('.template-wrap').remove();//.selectAll('*').remove();
+    d3.select('.tabber').remove();
     d3.select('form').remove();
     d3.select('#comment-submit-button').remove();
-    d3.select('.dropdown.ann-type-drop').select('button').text('Type of Comment').style('color', 'gray');
+    d3.select('.dropdown.ann-type-drop').remove();//.select('button').text('Type of Comment').style('color', 'gray');
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
 

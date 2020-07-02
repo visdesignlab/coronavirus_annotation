@@ -93,8 +93,9 @@ export function annotationInitiation(user, interactionDiv, coords){
         
     let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
 
-    console.log('user', user)
-  
+    console.log('when does this fire', user)
+    //btn dropbtn dropdown-toggle
+    d3.select('.btn.dropbtn.dropdown-toggle').remove();//.text('Type of Comment').style('color', 'gray');
     let tagButton = dropDown(inputDiv, annotationType, 'Type of Comment', 'ann-type-drop', user, coords, true);
 
     inputDiv.append('div').classed('template-wrap', true);
