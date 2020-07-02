@@ -144,6 +144,8 @@ function timeRange(){
   function slider(min, max) {
 
     var range = [min, max]
+
+    let whichHandle = [];
   
     // set width and height of svg
     var w = 300
@@ -183,7 +185,7 @@ function timeRange(){
     // define brush
     var brush = d3.brushX()
       .extent([[0,0], [width, height]])
-      .on('brush', function() {
+      .on('brush', function(d, i, n) {
         var s = d3.event.selection;
         // update and move labels
         labelL.attr('x', s[0])
@@ -197,6 +199,22 @@ function timeRange(){
         // move these two lines into the on('end') part below
         svg.node().value = s.map(function(d) {var temp = x.invert(d); return +temp.toFixed(2)});
         svg.node().dispatchEvent(new CustomEvent("input"));
+
+        let index = whichHandle[whichHandle.length - 1]
+
+        console.log(s[index], index)
+
+        const progressBar = document.getElementById('progress-bar');
+        const seek = document.getElementById('seek');
+        let videoSelect = d3.select('video').node();
+
+        progressBar.value = s[index];
+        seek.value = s[index];
+        videoSelect.currentTime = s[index];
+
+
+
+
       });
   
     // append brush to g
@@ -222,6 +240,9 @@ function timeRange(){
       .attr("fill", '#eee')
       .attr("cursor", "ew-resize")
       .attr("d", brushResizePath);
+    
+      handle.each((d, i, n)=> d3.select(n[i]).classed(`h-${i}`, true));
+      handle.on('mousedown', (d, i, n)=> d3.select(n[i]).classed('h-0') ? whichHandle.push(0) : whichHandle.push(1));
       
     // override default behaviour - clicking outside of the selected area 
     // will select a small piece there rather than deselecting everything
