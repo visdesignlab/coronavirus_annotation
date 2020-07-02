@@ -4,7 +4,7 @@ import * as firebase from 'firebase';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
 import { annotationType, tagOptions, annotationInitiation, addTagFunctionality } from './templates';
-import { checkDatabase } from './firebaseStuff';
+import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 
 export const doodleKeeper = []
@@ -35,6 +35,12 @@ export async function updateVideoAnn(){
 
     video.ontimeupdate = async (event) => {
 
+        let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
+      //  console.log('annotations', JSON.parse(annotations[0].videoTime))
+        let annoTest = annotations.filter(f=> JSON.parse(annotations[0].videoTime)[0] <= video.currentTime && JSON.parse(annotations[0].videoTime)[1] >= video.currentTime);
+
+        console.log('annotest',annoTest)
+
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
         let memoDivs = d3.select('#sidebar').select('#annotation-wrap').selectAll('.memo');
 
@@ -44,7 +50,7 @@ export async function updateVideoAnn(){
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
         let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
-        console.log('filtered',filtered)
+       
         let filteredPushes = filtered.filter(f=> {
             return f.commentMark === 'push';
         });
@@ -63,16 +69,14 @@ export async function updateVideoAnn(){
         let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
         images.attr('src', d=> d);
 
-    
         let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
        // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
-       
+        
         let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
         circ.attr('r', 10);
         circ.attr('cx', d=> d.posLeft);
         circ.attr('cy', d=> d.posTop);
-       // circ.attr('fill', d=> tagOptions.filter(f=> f.key === d.tags)[0].color)
-        circ.attr('fill', 'red')
+        circ.attr('fill', 'red');
         circ.on('mouseover', (d)=>{
             let wrap = d3.select('#sidebar').select('#annotation-wrap');
             let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
@@ -84,19 +88,26 @@ export async function updateVideoAnn(){
             let memoDivs = wrap.selectAll('.memo').classed('selected', false);
         });
 
-    
         if(!selectedMemoDivs.empty()){
             selectedMemoDivs.nodes()[0].scrollIntoView();
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
-        
 
+        let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
+        let annotationMark = annotationGroup.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
+        let annotationText = annotationGroup.selectAll('text').data(d=> [d]).join('text')
+         .text(d=> d.comment)
+         .classed('annotation-label', true)
+         .attr('x', d=> {
+             let noPx = parseInt(d.posLeft.replace(/px/,""));
+             console.log("PAXXXX??", d.posTop, noPx)
+             return noPx+10+"px"})
+         .attr('y',d=>  d.posTop);
     };
 }
 
 export function clearSidebar(){
 
-    console.log('when this fire??')
     d3.select('#push-div').remove(); 
     d3.select('.template-wrap').remove();//.selectAll('*').remove();
     d3.select('.media-tabber').remove();
@@ -162,7 +173,7 @@ export function radioBlob(div, t1Ob, t2Ob, className){
     let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
     inputOne.on('click', ()=> {
-            console.log('input1')
+           
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
             form.node().value = 't1';
@@ -170,7 +181,7 @@ export function radioBlob(div, t1Ob, t2Ob, className){
     });
 
     inputTwo.on('click', ()=> {
-        console.log('input1')
+
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
             form.node().value = 't2';
@@ -224,8 +235,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     options.on('click', (d, i, n)=> {
        let testToo = button.text(d.key);
 
-       console.log('dddddd',d)
-
        let commentType = d.key === 'annotation' ? "annotations" : "comments";
 
         button.node().value = d.key;
@@ -245,9 +254,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             interactionVal === 't1' ? formatPush() : formatCanvas();
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
-
-            console.log('data', d)
-         
 
             submit.on('click', async ()=> {
         
@@ -290,7 +296,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         function getRange(){
                             let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
                             let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
-                            console.log([sliderRange1, sliderRange2]);
+                         
                             return `[${sliderRange2},${sliderRange1}]`
                         }
 

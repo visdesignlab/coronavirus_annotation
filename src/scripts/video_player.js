@@ -184,7 +184,7 @@ function updateVolumeIcon() {
     icon.classList.add('hidden');
   });
 
-  volumeButton.setAttribute('data-title', 'Mute (m)')
+  volumeButton.setAttribute('data-title', 'Mute (m)');
 
   if (video.muted || video.volume === 0) {
     volumeMute.classList.remove('hidden');
@@ -242,7 +242,6 @@ function toggleFullScreen() {
 // and tooltip to reflect the current full screen state of the video
 function updateFullscreenButton() {
   fullscreenIcons.forEach(icon => icon.classList.toggle('hidden'));
-
   if (document.fullscreenElement) {
     fullscreenButton.setAttribute('data-title', 'Exit full screen (f)')
   } else {
@@ -272,7 +271,6 @@ function hideControls() {
   if (video.paused) {
     return;
   }
-
   videoControls.classList.add('hide');
 }
 

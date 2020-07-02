@@ -65,12 +65,8 @@ if(mainWrap){
       bugLink.attr('target', "_blank");
       bugLink.append('span').classed("fas fa-bug", true);
 
-      
-      
       let newAnno = [...annotationType];
       newAnno.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
-
-      console.log(newAnno)
 
       let tagButton = dropDown(d3.select('#annotation-wrap-r'), newAnno, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
       d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
