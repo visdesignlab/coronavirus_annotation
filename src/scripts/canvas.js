@@ -37,7 +37,17 @@ export async function updateVideoAnn(){
 
         let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
       //  console.log('annotations', JSON.parse(annotations[0].videoTime))
-        let annoTest = annotations.filter(f=> JSON.parse(annotations[0].videoTime)[0] <= video.currentTime && JSON.parse(annotations[0].videoTime)[1] >= video.currentTime);
+        let annoTest = annotations.filter((f,i)=> {
+            let time = JSON.parse(f.videoTime)
+
+            console.log('time', time)
+            if(time.length > 1){
+                return time[0] <= video.currentTime && time[1] >= video.currentTime 
+            }else{
+                let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+                return time[0] < timeRange[1] && time[0] > timeRange[0]
+            }
+        });
 
         console.log('annotest',annoTest)
 
@@ -300,7 +310,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                             return `[${sliderRange2},${sliderRange1}]`
                         }
 
-                        let currentTime = timeBool === 't2' ? getRange() : document.getElementById('video').currentTime;
+                        let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");

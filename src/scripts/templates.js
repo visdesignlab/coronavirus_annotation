@@ -131,6 +131,7 @@ export function defaultTemplate(div, user, coords){
 
 function timePoint(){
   console.log('timepoint');
+  d3.select('#time-wrap').select('svg.range-svg').remove();
 }
 
 function timeRange(){
@@ -209,9 +210,6 @@ function timeRange(){
         progressBar.value = x.invert(s[index].toFixed(2));
         seek.value = x.invert(s[index].toFixed(2));
         videoSelect.currentTime = x.invert(s[index].toFixed(2));
-
-
-
 
       });
   
