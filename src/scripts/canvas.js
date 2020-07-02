@@ -49,8 +49,6 @@ export async function updateVideoAnn(){
             }
         });
 
-        console.log('annotest',annoTest)
-
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
         let memoDivs = d3.select('#sidebar').select('#annotation-wrap').selectAll('.memo');
 
@@ -76,8 +74,17 @@ export async function updateVideoAnn(){
             return urlDood;
         });
 
+        let annoDoodles = annoTest.filter(f=> f.commentMark === "doodle").map(async (dood)=> {
+            console.log('ddddood', dood)
+            let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
+            return urlDood;
+        });
+
         let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
         images.attr('src', d=> d);
+
+        let annoImages = interDIV.selectAll('.anno-doodles').data(await Promise.all(annoDoodles)).join('img').classed('anno-doodles', true);
+        annoImages.attr('src', d=> d);
 
         let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
        // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
@@ -103,7 +110,7 @@ export async function updateVideoAnn(){
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
 
-        let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
+        let annotationGroup = svg.selectAll('g.annotations').data(annoTest.filter(f=> f.commentMark === 'push')).join('g').classed('annotations', true);
         let annotationMark = annotationGroup.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
         let annotationText = annotationGroup.selectAll('text').data(d=> [d]).join('text')
          .text(d=> d.comment)
@@ -203,7 +210,7 @@ export function radioBlob(div, t1Ob, t2Ob, className){
 
 }
 
-function doodleSubmit(commentType, user, tags, d){
+function doodleSubmit(commentType, user, tags, d, currentTime){
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -214,7 +221,7 @@ function doodleSubmit(commentType, user, tags, d){
 
     imagesRef.putString(message, 'data_url').then(function(snapshot) {
     
-        let currentTime = document.getElementById('video').currentTime;
+      //  let currentTime = document.getElementById('video').currentTime;
         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
     
         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d.tag, false);
@@ -299,18 +306,20 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
                 }else if(d.key === 'annotation'){
 
+                    let timeBool = d3.select('.time-tabber').node().value;
+
+                    function getRange(){
+                        let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
+                        let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
+                     
+                        return `[${sliderRange2},${sliderRange1}]`
+                    }
+
+                    let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
+
                     if(form.node().value === 't1'){
 
-                        let timeBool = d3.select('.time-tabber').node().value;
-
-                        function getRange(){
-                            let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
-                            let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
-                         
-                            return `[${sliderRange2},${sliderRange1}]`
-                        }
-
-                        let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
+                      
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
@@ -321,14 +330,13 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         clearSidebar();
     
                     }else{
-                        doodleSubmit(commentType, user, tags, d);
+                        doodleSubmit(commentType, user, tags, d, currentTime);
                     }
 
                 }else{
-
+                    let currentTime = document.getElementById('video').currentTime;
                     if(form.node().value === 't1'){
                     
-                        let currentTime = document.getElementById('video').currentTime;
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
@@ -339,7 +347,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         clearSidebar();
     
                     }else{
-                        doodleSubmit(commentType, user, tags, d);
+                        doodleSubmit(commentType, user, tags, d, currentTime);
                     }
                 }
             });

@@ -6,7 +6,7 @@ import * as firebase from 'firebase';
 import "firebase/auth";
 import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import { annotationType, defaultTemplate, annotationTemplate } from './templates';
-import { dropDown } from './canvas';
+import { dropDown, clearSidebar } from './canvas';
 import { image } from 'd3';
 
 export const currentUserKeeper = [];
@@ -34,8 +34,10 @@ if(mainWrap){
       if (user) {
         
           let ref = firebase.database().ref();  
+        
           checkDatabase(ref, updateSideAnnotations);
           checkDatabase(ref, specialUserCheck);
+          clearSidebar();
 
         // User is signed in.
       } else {
