@@ -200,17 +200,15 @@ function timeRange(){
         svg.node().value = s.map(function(d) {var temp = x.invert(d); return +temp.toFixed(2)});
         svg.node().dispatchEvent(new CustomEvent("input"));
 
-        let index = whichHandle[whichHandle.length - 1]
-
-        console.log(s[index], index)
+        let index = whichHandle[whichHandle.length - 1];
 
         const progressBar = document.getElementById('progress-bar');
         const seek = document.getElementById('seek');
         let videoSelect = d3.select('video').node();
 
-        progressBar.value = s[index];
-        seek.value = s[index];
-        videoSelect.currentTime = s[index];
+        progressBar.value = x.invert(s[index].toFixed(2));
+        seek.value = x.invert(s[index].toFixed(2));
+        videoSelect.currentTime = x.invert(s[index].toFixed(2));
 
 
 
