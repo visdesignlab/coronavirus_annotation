@@ -110,16 +110,26 @@ export async function updateVideoAnn(){
             // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
         }
 
-        let annotationGroup = svg.selectAll('g.annotations').data(annoTest.filter(f=> f.commentMark === 'push')).join('g').classed('annotations', true);
-        let annotationMark = annotationGroup.selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
+        let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
+        let annotationMark = annotationGroup.filter(f=> f.commentMark === 'push').selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
         let annotationText = annotationGroup.selectAll('text').data(d=> [d]).join('text')
-         .text(d=> d.comment)
-         .classed('annotation-label', true)
-         .attr('x', d=> {
-             let noPx = parseInt(d.posLeft.replace(/px/,""));
-             console.log("PAXXXX??", d.posTop, noPx)
-             return noPx+10+"px"})
-         .attr('y',d=>  d.posTop);
+        .text(d=> d.comment)
+        .classed('annotation-label', true)
+        .attr('x', d=> {
+            if(d.commentMark === 'push'){
+                let noPx = parseInt(d.posLeft.replace(/px/,""));
+                return noPx+10+"px";
+            }else{
+                 return '50px'
+            }
+        })
+         .attr('y',d=>  {
+             if(d.commentMark === 'push'){
+                return d.posTop;
+             }else{
+                 return '50px'
+             }
+             });
     };
 }
 
