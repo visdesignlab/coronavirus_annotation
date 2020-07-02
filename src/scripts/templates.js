@@ -46,7 +46,7 @@ export function addTagFunctionality(inputDiv, tagArray){
     let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
     tags.text(d=> `${d}  `);
     let x = tags.append('text').text('X');
-    x.style('padding', '5px')
+    x.style('padding', '5px');
     x.style('cursor', 'pointer');
     x.on('click', (d, i, n)=> {
         d3.select(n[i].parentNode).remove();
@@ -152,7 +152,7 @@ function timeRange(){
                   right: 20}
 
     // create svg and translated g
-    var svg = d3.select('#time-wrap').append('svg')
+    var svg = d3.select('#time-wrap').append('svg').classed('range-svg', true);
     svg.style('width', '100%').style('height', `${h}px`)
     const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
 

@@ -103,6 +103,7 @@ export function clearSidebar(){
     d3.select('.tabber').remove();
     d3.select('form').remove();
     d3.select('#comment-submit-button').remove();
+    d3.select('#time-wrap').select('svg.range-svg').remove();
     d3.select('.dropdown.ann-type-drop').remove();//.select('button').text('Type of Comment').style('color', 'gray');
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
