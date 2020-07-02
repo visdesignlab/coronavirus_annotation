@@ -20,7 +20,6 @@ export function formatVideoTime(videoTime){
 
 export async function updateVideoAnn(){
 
-    
     var storage = firebase.storage();
     var storageRef = storage.ref();
     let doods = await storageRef.child('images/').listAll();
@@ -100,7 +99,8 @@ export function clearSidebar(){
     console.log('when this fire??')
     d3.select('#push-div').remove(); 
     d3.select('.template-wrap').remove();//.selectAll('*').remove();
-    d3.select('.tabber').remove();
+    d3.select('.media-tabber').remove();
+    d3.select('.time-tabber').remove();
     d3.select('form').remove();
     d3.select('#comment-submit-button').remove();
     d3.select('#time-wrap').select('svg.range-svg').remove();
@@ -136,9 +136,9 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
     }
 }
 
-export function radioBlob(div, t1Ob, t2Ob){
+export function radioBlob(div, t1Ob, t2Ob, className){
 
-    let form = div.append('form').classed('tabber', true);
+    let form = div.append('form').classed(className, true);
     let labelOne = form.append('label').classed('container', true);
     labelOne.text(t1Ob.label);
     labelOne.node().for = 't1';
@@ -162,7 +162,7 @@ export function radioBlob(div, t1Ob, t2Ob){
     let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
     inputOne.on('click', ()=> {
-    
+            console.log('input1')
             inputOne.node().checked = true;
             inputTwo.node().checked = false;
             form.node().value = 't1';
@@ -170,7 +170,7 @@ export function radioBlob(div, t1Ob, t2Ob){
     });
 
     inputTwo.on('click', ()=> {
-   
+        console.log('input1')
             inputOne.node().checked = false;
             inputTwo.node().checked = true;
             form.node().value = 't2';
@@ -239,9 +239,9 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             let t1Ob = {label: "Push", callBack: formatPush}
             let t2Ob = {label: "Draw", callBack: formatCanvas}
 
-            let form = radioBlob(div, t1Ob, t2Ob);
+            let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
 
-            let interactionVal = d3.select('.tabber').node().value;
+            let interactionVal = d3.select('.media-tabber').node().value;
             interactionVal === 't1' ? formatPush() : formatCanvas();
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
@@ -280,6 +280,33 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                   
                         }
                     } 
+
+                }else if(d.key === 'annotation'){
+
+                    if(form.node().value === 't1'){
+
+                        let timeBool = d3.select('.time-tabber').node().value;
+
+                        function getRange(){
+                            let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
+                            let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
+                            console.log([sliderRange1, sliderRange2]);
+                            return `[${sliderRange2},${sliderRange1}]`
+                        }
+
+                        let currentTime = timeBool === 't2' ? getRange() : document.getElementById('video').currentTime;
+                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                        
+                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
+                        
+                        let refCom = firebase.database().ref(commentType);                     
+                        refCom.push(dataPush);
+                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                        clearSidebar();
+    
+                    }else{
+                        doodleSubmit(commentType, user, tags, d);
+                    }
 
                 }else{
 
@@ -379,7 +406,7 @@ export function formatPush(){
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
   
-                if(d3.select('#push-div').empty() && d3.select('.tabber').node().value != 't2'){
+                if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value != 't2'){
 
                     let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                     pushDiv.style('position', 'absolute')

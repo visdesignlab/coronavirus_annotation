@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { dropDown, formatVideoTime, annotationMaker, radioBlob } from './canvas';
+import { dropDown, formatVideoTime, annotationMaker, radioBlob, formatPush } from './canvas';
 import { updateSideAnnotations } from './sidebar';
 import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
@@ -136,6 +136,8 @@ function timePoint(){
 function timeRange(){
   console.log('timerange')
 
+  d3.select('#time-wrap').select('svg.range-svg').remove();
+
   let slid = slider(0, document.getElementById('video').duration)
 
 
@@ -251,8 +253,8 @@ export function annotationTemplate(div, user, coords){
 
   let t1Ob = {label:"time point", callBack: timePoint}
   let t2Ob = {label:"time range", callBack: timeRange}
-
-  radioBlob(timeDiv, t1Ob, t2Ob)
+  formatPush();
+  radioBlob(timeDiv, t1Ob, t2Ob, 'time-tabber')
 
   d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
   let currentTime = document.getElementById('video').currentTime;
