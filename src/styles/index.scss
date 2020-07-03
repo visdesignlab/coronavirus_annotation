@@ -77,17 +77,33 @@ html {
   margin-top:60px;
 }
 
-.user-wrap{
+#top-bar{
   width:100%;
   height:50px;
   position: absolute;
   top:0;
-  text-align: center;
-  padding-top:10px;
-  //background-color: var(--ui-gray);
   border-bottom: 1px solid #E8E8E8;
   color: var(--ui-gray);
   z-index: 100;
+  padding-top:10px;
+}
+
+.add-comment{
+  float:left;
+  padding-top:5px;
+  text-align: center;
+  width:20%;
+}
+
+.user-wrap{
+  // width:100%;
+  // height:50px;
+  // position: absolute;
+  // top:0;
+  text-align: center;
+  padding-top:10px;
+  //background-color: var(--ui-gray);
+  
 }
 
 .togg-wrap{

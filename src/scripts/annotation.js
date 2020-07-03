@@ -32,6 +32,8 @@ if(mainWrap){
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
+
+        console.log('this is firing', user)
         
           let ref = firebase.database().ref();  
         
@@ -61,6 +63,7 @@ if(mainWrap){
 
       let userWrap = d3.select('.user-wrap');
       userWrap.selectAll('*').remove();
+     
       userWrap.append('text').text(`Signed in as Admin: ${currentUser.displayName}`);
       let bugLink = userWrap.append('a');
       bugLink.attr('href', 'https://github.com/visdesignlab/coronavirus_annotation/issues');
