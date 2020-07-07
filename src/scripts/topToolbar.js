@@ -19,6 +19,9 @@ export function addCommentButton(d, i, n){
         
         formatTimeControl(sideWrap);
         formatCommentBox(sideWrap);
+
+
+        
     }else{
 
         n[i].value = 'off';

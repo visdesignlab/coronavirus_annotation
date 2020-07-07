@@ -44,14 +44,19 @@ export function addTagFunctionality(inputDiv, tagArray){
     let tagWrap = inputWrap.append('div').classed('tag-wrap', true);
 
     let tags = tagWrap.selectAll('span.badge').data(tagArray).join('span').classed('badge badge-secondary', true);
-    tags.text(d=> `${d}  `);
-    let x = tags.append('text').text('X');
-    x.style('padding', '5px');
-    x.style('cursor', 'pointer');
-    x.on('click', (d, i, n)=> {
-        d3.select(n[i].parentNode).remove();
-        tagArray = tagArray.filter(f=> f != d);
-    });
+    if(tagArray.length > 0){
+
+      tags.text(d=> `${d}  `);
+      let x = tags.append('text').text('X');
+      x.style('padding', '5px');
+      x.style('cursor', 'pointer');
+      x.on('click', (d, i, n)=> {
+          d3.select(n[i].parentNode).remove();
+          tagArray = tagArray.filter(f=> f != d);
+      });
+
+    }
+    
     
     let tagText = inputWrap.append('input').attr('id', 'tag-input');
     tagText.classed('form-control', true);
@@ -102,9 +107,11 @@ export function annotationInitiation(user, interactionDiv, coords){
 
 }
 
-export function defaultTemplate(div, user, coords){
+export function defaultTemplate(div){
 
-    d3.select('.dropdown.ann-type-drop').select('button').style('color', 'black')
+    //d3.select('.dropdown.ann-type-drop').select('button').style('color', 'black')
+
+    console.log('div',div)
 
     let currentTime = document.getElementById('video').currentTime;
 
@@ -114,14 +121,14 @@ export function defaultTemplate(div, user, coords){
     let templatehtml = 
     `
     <br>
-    <p>Couldn't find a type of comment that fits?</p>
-    <p>Add your comment and please include as many tags that describe the comment</p> 
+    <p>Add a comment here - comments can be suggestions for the tool, critiques of the animation, questions on biology, etc.</p>
+    <p>Please include as any tags that describe the comment you are making</p> 
     `;
 
     inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-    let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+    //let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
 
     let defaultTags = []
 

@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import { updatePlayButton, togglePlay } from "./video_player";
-import { annotationType } from './templates';
+import { annotationType, defaultTemplate } from './templates';
 import { currentUserKeeper } from './annotation';
-import { dropDown } from './canvas';
+import { dropDown, radioBlob, formatPush, formatCanvas } from './canvas';
 
 
 {/* <div id="time-wrap">
@@ -20,10 +20,19 @@ import { dropDown } from './canvas';
 </div> */}
 
 export function formatCommentBox(div){
-    
-    let tagButton = dropDown(div, annotationType, 'Type of Comment', 'ann-type-drop', currentUserKeeper[currentUserKeeper.length - 1], null, true);
-      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+    div.append('div').classed('template-wrap', true);
+    defaultTemplate(div);
 
+    let t1Ob = {label: "Push", callBack: formatPush};
+    let t2Ob = {label: "Draw", callBack: formatCanvas};
+
+
+    let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
+
+    let interactionVal = d3.select('.media-tabber').node().value;
+    interactionVal === 't1' ? formatPush() : formatCanvas();
+
+    let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 }
 
 export function formatTimeControl(div){
