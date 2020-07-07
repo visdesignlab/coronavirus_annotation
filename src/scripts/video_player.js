@@ -22,6 +22,19 @@ export function formatVidPlayer(div, videoPath){
      
 }
 
+
+// togglePlay toggles the playback state of the video.
+// If the video playback is paused or ended, the video is played
+// otherwise, the video is paused
+export function togglePlay() {
+  let video = document.getElementById('video');
+  if (video.paused || video.ended) {
+    video.play();
+  } else {
+    video.pause();
+  }
+}
+
 export function skipAheadCircle(data){
 
   let skipTo = data.videoTime;
@@ -39,6 +52,26 @@ export function skipAheadCircle(data){
   video.currentTime = skipTo;
   progressBar.value = skipTo;
   seek.value = skipTo;
+}
+
+// updatePlayButton updates the playback icon and tooltip
+// depending on the playback state
+export function updatePlayButton() {
+  const playButton = document.getElementById('play');
+  const playbackIcons = document.querySelectorAll('.playback-icons use');
+  let video = document.getElementById('video');
+
+  playbackIcons.forEach(icon => icon.classList.toggle('hidden'));
+
+  if (video.paused) {
+    playButton.setAttribute('data-title', 'Play (k)');
+    d3.select("#play-r").classed('hidden', false);
+    d3.select("#pause-r").classed('hidden', true);
+  } else {
+    playButton.setAttribute('data-title', 'Pause (k)');
+    d3.select("#play-r").classed('hidden', true);
+    d3.select("#pause-r").classed('hidden', false);
+  }
 }
 
 function customControls(video){
@@ -76,34 +109,6 @@ if (videoWorks) {
 
 d3.select(videoControls).style('width', `${videoDim.width}px`)
 // Add functions here
-
-
-// togglePlay toggles the playback state of the video.
-// If the video playback is paused or ended, the video is played
-// otherwise, the video is paused
-function togglePlay() {
-  if (video.paused || video.ended) {
-    video.play();
-  } else {
-    video.pause();
-  }
-}
-
-// updatePlayButton updates the playback icon and tooltip
-// depending on the playback state
-function updatePlayButton() {
-  playbackIcons.forEach(icon => icon.classList.toggle('hidden'));
-
-  if (video.paused) {
-    playButton.setAttribute('data-title', 'Play (k)');
-    d3.select("#play-r").classed('hidden', false);
-    d3.select("#pause-r").classed('hidden', true);
-  } else {
-    playButton.setAttribute('data-title', 'Pause (k)');
-    d3.select("#play-r").classed('hidden', true);
-    d3.select("#pause-r").classed('hidden', false);
-  }
-}
 
 // formatTime takes a time length in seconds and returns the time in
 // minutes and seconds
@@ -167,6 +172,8 @@ function skipAhead(event) {
   progressBar.value = skipTo;
   seek.value = skipTo;
 }
+
+
 
 // updateVolume updates the video's volume
 // and disables the muted state if active

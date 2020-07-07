@@ -75,6 +75,7 @@ html {
   overflow-y: auto;  /*adds scroll to this container*/
   display:flex;
   margin-top:60px;
+  height:calc(100% - 60px)
 }
 
 #top-bar{
@@ -418,7 +419,7 @@ video, canvas, #interaction{
 }
 
 #annotation-wrap{
-  max-height: 90%px;
+  height: calc(100% - 60px);
   overflow-y: auto;
   
 }
@@ -830,6 +831,18 @@ svg {
   fill: red;
   // stroke: #fff;
   cursor: pointer;
+}
+
+#time-wrap{
+  display: flex;
+  flex-direction: column;
+
+}
+
+#time-wrap #control{
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
 
 ////radio button starts here

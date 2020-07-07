@@ -8,17 +8,19 @@ import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import { annotationType, defaultTemplate, annotationTemplate } from './templates';
 import { dropDown, clearSidebar } from './canvas';
 import { image } from 'd3';
-import { formatTimeControl } from './commentFormat';
+import { formatTimeControl, formatCommentBox } from './commentFormat';
 
 export function addCommentButton(d, i, n){
     console.log(d, i, n)
     if(n[i].value === 'off'){
         n[i].value = 'on';
-        d3.select('#sidebar').select('#annotation-wrap').selectAll('*').remove();
-
-        formatTimeControl(d3.select('#sidebar').select('#annotation-wrap'));
-    }else{
+        let sideWrap = d3.select('#sidebar').select('#annotation-wrap');
+        sideWrap.selectAll('*').remove();
         
+        formatTimeControl(sideWrap);
+        formatCommentBox(sideWrap);
+    }else{
+
         n[i].value = 'off';
         d3.select('#sidebar').select('#annotation-wrap').selectAll('*').remove();
 

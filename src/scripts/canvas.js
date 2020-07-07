@@ -453,7 +453,7 @@ export function formatPush(){
                     let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
 
-                    // annotationInitiation(user, interactionDiv, coords);
+                
                 }else{
                     d3.select('#push-div').remove();
                 }

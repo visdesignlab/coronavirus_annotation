@@ -1,3 +1,10 @@
+import * as d3 from 'd3';
+import { updatePlayButton, togglePlay } from "./video_player";
+import { annotationType } from './templates';
+import { currentUserKeeper } from './annotation';
+import { dropDown } from './canvas';
+
+
 {/* <div id="time-wrap">
 <div id="control">
   <svg>
@@ -12,7 +19,10 @@
 <div id="time-update"><text>00:00</text></div>
 </div> */}
 
-export function formatCommentBox(){
+export function formatCommentBox(div){
+    
+    let tagButton = dropDown(div, annotationType, 'Type of Comment', 'ann-type-drop', currentUserKeeper[currentUserKeeper.length - 1], null, true);
+      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
 
 }
 
@@ -24,16 +34,18 @@ export function formatTimeControl(div){
 
     let playR = svg.append('g').attr('id', 'play-r');
     playR.node().viewBox = "0 0 24 24";
-    playR.append('path').node().d = "M8.016 5.016l10.969 6.984-10.969 6.984v-13.969z";
+    playR.append('path').attr("d", "M8.016 5.016l10.969 6.984-10.969 6.984v-13.969z");
 
     let pauseR = svg.append('g').attr('id', 'pause-r').classed('hidden', true);
     pauseR.node().viewBox = "0 0 24 24";
-    pauseR.append('path').node().d = "M14.016 5.016h3.984v13.969h-3.984v-13.969zM6 18.984v-13.969h3.984v13.969h-3.984z";
+    pauseR.append('path').attr("d", "M14.016 5.016h3.984v13.969h-3.984v-13.969zM6 18.984v-13.969h3.984v13.969h-3.984z");
 
     let timeUpdate = timeWrap.append('div').attr('id', 'time-update');
     timeUpdate.append('text').text('00:00');
 
+    updatePlayButton();
 
-
-
+    d3.select("#play-r").on('click', togglePlay);
+    d3.select("#pause-r").on('click', togglePlay);
+    
 }
