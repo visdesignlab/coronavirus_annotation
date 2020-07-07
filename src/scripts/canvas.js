@@ -220,7 +220,7 @@ export function radioBlob(div, t1Ob, t2Ob, className){
 
 }
 
-function doodleSubmit(commentType, user, tags, d, currentTime){
+export function doodleSubmit(commentType, user, tags, d, currentTime){
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -234,7 +234,7 @@ function doodleSubmit(commentType, user, tags, d, currentTime){
       //  let currentTime = document.getElementById('video').currentTime;
         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
     
-        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d.tag, false);
+        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d === null ? 'other' : d.tag, false);
         dataPush.doodle = true;
         dataPush.doodleName = snapshot.metadata.name;
         let refCom = firebase.database().ref(commentType);
@@ -399,7 +399,8 @@ export function annotationBar(dbRef){
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
 
     let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
-    rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
+   // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
+    rect.style('fill', d=> `#fff`);
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
   

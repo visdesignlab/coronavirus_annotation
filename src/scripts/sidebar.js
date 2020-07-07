@@ -93,7 +93,8 @@ export function updateSideAnnotations(dbRef){
         return `on ${test.toUTCString()}`});
 
     memoDivs.style('border', d=> {
-        return `1px solid ${tagOptions.filter(f=> f.key === d.initTag)[0].color}`});
+       // return `1px solid ${tagOptions.filter(f=> f.key === d.initTag)[0].color}`});
+        return `1px solid gray`});
 
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
     upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-lg', true);
