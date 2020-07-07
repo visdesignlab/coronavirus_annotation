@@ -35,11 +35,13 @@ html {
   // background-color: red;
 }
 
-#annotation-wrap-r{
+#annotation-wrap{
   margin:auto;
   display: flex;
   justify-content: center;
   flex-flow: column wrap;
+  height: calc(100% - 60px);
+  overflow-y: auto;
 }
 
 .dropdown.ann-type-drop{
@@ -379,7 +381,10 @@ video, canvas, #interaction{
   flex-basis: 100%;
   flex:1;
   justify-content: center;
+  flex-direction: column;
+  padding:10px;
 }
+
 
 .comment-initiated{
   min-width:210px;
@@ -418,11 +423,7 @@ video, canvas, #interaction{
   height:25px;
 }
 
-#annotation-wrap{
-  height: calc(100% - 60px);
-  overflow-y: auto;
-  
-}
+
 
 .memo{
  width:100%;
@@ -436,9 +437,7 @@ video, canvas, #interaction{
  border-radius: 7px;
 }
 
-#text-area-id{
-  width:290px;
-}
+
 
 .memo .tag-span{
   display:block;
@@ -847,9 +846,13 @@ svg {
 
 ////radio button starts here
 .time-tabber, .media-tabber{
-  margin-bottom: 15px;
-  margin-top:15px;
- align-self: center;
+  align-self: center;
+  justify-content: center;
+  padding:20px;
+}
+
+#comment-submit-button{
+  margin:20px;
 }
 /* The container */
 .container {
@@ -951,7 +954,6 @@ svg {
     border-radius: 3px;
     display:flex;
     padding:2px;
-    flex-basis: 100%;
     min-width:300px;
     height:auto;
 }

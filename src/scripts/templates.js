@@ -115,7 +115,7 @@ export function defaultTemplate(div){
 
     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
+    let inputDiv = div.select('.template-wrap')//.append('div');//.classed('text-input', true);
    // inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
     let templatehtml = 
