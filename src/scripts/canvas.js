@@ -24,7 +24,8 @@ export async function updateVideoAnn(){
     var storageRef = storage.ref();
     let doods = await storageRef.child('images/').listAll();
    
-    let svg = d3.select('#interaction').select('svg')
+    let svgTest = d3.select('#interaction').select('svg')
+    let svg = svgTest.empty() ? d3.select('#interaction').append('svg') : svgTest;
     
     const video = document.querySelector('video');
 
@@ -40,7 +41,6 @@ export async function updateVideoAnn(){
         let annoTest = annotations.filter((f,i)=> {
             let time = JSON.parse(f.videoTime)
 
-            console.log('time', time)
             if(time.length > 1){
                 return time[0] <= video.currentTime && time[1] >= video.currentTime 
             }else{
@@ -437,30 +437,42 @@ export function formatPush(){
 
     let clickedBool = false;
 
-    interactionDiv.on('mouseenter', function(){
-        console.log('mouse enter');
-        let coords = d3.mouse(this);
-        interactionDiv.classed('crosshair', true);
-        if(d3.select('#push-div').empty()){
-            let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
-            pushDiv.style('position', 'absolute')
-            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
-            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
-            let push = pushDiv.append('div').classed('push', true);
-            push.append('i').classed('fas fa-map-pin', true);
-        }
-    })
+    if(d3.select('.add-comment').select('button').node().value === 'on'){
+        
+        interactionDiv.on('mouseenter', function(){
+            let coords = d3.mouse(this);
+    
+            interactionDiv.classed('crosshair', true);
+            if(d3.select('#push-div').empty()){
+                let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+                pushDiv.style('position', 'absolute')
+                pushDiv.style('top', (d)=> (coords[1]-10)+'px')
+                pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+                let push = pushDiv.append('div').classed('push', true);
+                push.append('i').classed('fas fa-map-pin', true);
+            }
+        });
+    
+        interactionDiv.on('mousemove', function() {
+            console.log('mouse move');
+    
+            let coords = d3.mouse(this);
+            let pushDiv = d3.select('#push-div');
+            if(!pushDiv.empty() && !clickedBool){
+                pushDiv.style('top', (d)=> (coords[1]-10)+'px');
+                pushDiv.style('left', (d)=> (coords[0]-10)+'px');
+            }
+        });
+    
+        interactionDiv.on('mouseleave', function(){
+            if(!clickedBool){
+                d3.select('#push-div').remove();
+            }
+        });
+        
+    }
 
-    interactionDiv.on('mousemove', function() {
-        console.log('mouse move');
-
-        let coords = d3.mouse(this);
-        let pushDiv = d3.select('#push-div');
-        if(!pushDiv.empty() && !clickedBool){
-            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
-            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
-        }
-    })
+   
 
     interactionDiv.on("click", function() {
 
@@ -507,7 +519,6 @@ export function formatCanvas(){
     const context = canvas.getContext("2d");
     let videoDim = document.getElementById(frame).getBoundingClientRect();
     
-  
     canvas.width = videoDim.width;
     canvas.height = videoDim.height;
   

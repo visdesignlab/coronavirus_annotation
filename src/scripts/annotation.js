@@ -42,6 +42,7 @@ if(mainWrap){
           checkDatabase(ref, specialUserCheck);
 
           d3.select('.add-comment').select('button').on('click', (d, i, n)=> addCommentButton(d, i, n));
+         
           clearSidebar();
 
         // User is signed in.

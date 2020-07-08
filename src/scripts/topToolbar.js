@@ -16,7 +16,7 @@ export function addCommentButton(d, i, n){
         n[i].value = 'on';
         let sideWrap = d3.select('#sidebar').select('#annotation-wrap');
         sideWrap.selectAll('*').remove();
-        
+        d3.select('#interaction').style('pointer-events', 'all');
         formatTimeControl(sideWrap);
         formatCommentBox(sideWrap);
 
@@ -24,7 +24,7 @@ export function addCommentButton(d, i, n){
 
         n[i].value = 'off';
         d3.select('#sidebar').select('#annotation-wrap').selectAll('*').remove();
-
+        d3.select('#interaction').style('pointer-events', 'none');
         let ref = firebase.database().ref();  
         checkDatabase(ref, updateSideAnnotations);
     }

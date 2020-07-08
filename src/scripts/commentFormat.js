@@ -9,6 +9,7 @@ import { updateSideAnnotations } from './sidebar';
 
 
 export function formatCommentBox(div){
+
     div.append('div').classed('template-wrap', true);
     defaultTemplate(div);
 
@@ -20,7 +21,6 @@ export function formatCommentBox(div){
     formatPush();
 
     let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
-
     let commentType = "comments";
 
     submit.on('click', async ()=> {
@@ -31,23 +31,20 @@ export function formatCommentBox(div){
         let tags = d3.select('.tag-wrap').selectAll('.badge');
       
             let currentTime = document.getElementById('video').currentTime;
+
             if(form.node().value === 't1'){
             
                 let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                
                 let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', null, commentType === "annotations");
-                
                 let refCom = firebase.database().ref(commentType);                     
                 refCom.push(dataPush);
                 checkDatabase(firebase.database().ref(), updateSideAnnotations);
                 clearSidebar();
-                
                 d3.select('#interaction').selectAll("*").remove();
-
                 
             }else{
-                doodleSubmit(commentType, user, tags, null, currentTime);
 
+                doodleSubmit(commentType, user, tags, null, currentTime);
                 d3.select('#interaction').selectAll("*").remove();
             }
     });
