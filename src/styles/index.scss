@@ -356,6 +356,10 @@ video, canvas, #interaction{
   border-radius: 4px;
 }
 
+#interaction.crosshair{
+  cursor: crosshair !important;
+}
+
 #interaction img{
   position:absolute;
   left:0;
@@ -560,9 +564,13 @@ video{
 
 }
 
-#interaction svg.push{
-  height:20px;
-  width:20px;
+
+
+#interaction svg.push, 
+#interaction #push-div div.push, 
+#push-div div.push svg{
+  height:30px;
+  width:30px;
 }
 
 #interaction circle{

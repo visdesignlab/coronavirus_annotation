@@ -36,7 +36,7 @@ export async function updateVideoAnn(){
     video.ontimeupdate = async (event) => {
 
         let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
-      //  console.log('annotations', JSON.parse(annotations[0].videoTime))
+    
         let annoTest = annotations.filter((f,i)=> {
             let time = JSON.parse(f.videoTime)
 
@@ -75,7 +75,7 @@ export async function updateVideoAnn(){
         });
 
         let annoDoodles = annoTest.filter(f=> f.commentMark === "doodle").map(async (dood)=> {
-            console.log('ddddood', dood)
+          
             let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
             return urlDood;
         });
@@ -272,7 +272,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             div.select('#comment-submit-button').remove();
             d.tempCall(div, user, coords);
 
-            let t1Ob = {label: "Push", callBack: formatPush}
+            let t1Ob = {label: "Drop a Pin", callBack: formatPush}
             let t2Ob = {label: "Draw", callBack: formatCanvas}
 
             let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
@@ -421,6 +421,8 @@ export function annotationBar(dbRef){
 }
 export function formatPush(){
 
+    console.log('format push firing');
+
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
 
@@ -429,35 +431,59 @@ export function formatPush(){
     canvas.width = 0;
    
     let interactionDiv = d3.select('#interaction');
+    
     interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
     interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
+
+    let clickedBool = false;
+
+    interactionDiv.on('mouseenter', function(){
+        console.log('mouse enter');
+        let coords = d3.mouse(this);
+        interactionDiv.classed('crosshair', true);
+        if(d3.select('#push-div').empty()){
+            let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+            pushDiv.style('position', 'absolute')
+            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
+            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+            let push = pushDiv.append('div').classed('push', true);
+            push.append('i').classed('fas fa-map-pin', true);
+        }
+    })
+
+    interactionDiv.on('mousemove', function() {
+        console.log('mouse move');
+
+        let coords = d3.mouse(this);
+        let pushDiv = d3.select('#push-div');
+        if(!pushDiv.empty() && !clickedBool){
+            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
+            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+        }
+    })
 
     interactionDiv.on("click", function() {
 
         let event = d3.event.target;
         d3.event.stopPropagation();
         let coords = d3.mouse(this);
+
+        
       
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
   
-                if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value != 't2'){
+                if(clickedBool === false){
 
-                    let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
-                    pushDiv.style('position', 'absolute')
-                    pushDiv.style('top', (d)=> coords[1]+'px')
-                    pushDiv.style('left', (d)=> coords[0]+'px')
-                    let svg = pushDiv.append('svg').classed('push', true);
-                    let circ = svg.append('circle').attr('r', 7).attr('cx', 6).attr('cy', d=> 7).attr('fill', 'cornflowerblue');
-
-                        
-                    let inputDiv = pushDiv.append('div').classed('comment-initiated', true);
+                    let inputDiv = d3.select('#push-div').append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
+                    inputDiv.style('margin-left', '15px');
+                    inputDiv.style('margin-top', '5px');
 
-                
                 }else{
-                    d3.select('#push-div').remove();
+                    d3.select('#push-div').select('.comment-initiated').remove();
                 }
+                clickedBool === true ? clickedBool = false : clickedBool = true;
 
                 // User is signed in.
                 } else {

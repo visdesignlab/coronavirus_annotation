@@ -5,19 +5,19 @@ import { radioBlob, formatPush, formatCanvas, clearSidebar, annotationMaker, doo
 import { checkDatabase, firebaseConfig } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { currentUserKeeper } from './annotation';
+import { updateSideAnnotations } from './sidebar';
 
 
 export function formatCommentBox(div){
     div.append('div').classed('template-wrap', true);
     defaultTemplate(div);
 
-    let t1Ob = {label: "Push", callBack: formatPush};
+    let t1Ob = {label: "Drop a Pin", callBack: formatPush};
     let t2Ob = {label: "Draw", callBack: formatCanvas};
 
     let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
 
-    let interactionVal = d3.select('.media-tabber').node().value;
-    interactionVal === 't1' ? formatPush() : formatCanvas();
+    formatPush();
 
     let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
@@ -41,10 +41,14 @@ export function formatCommentBox(div){
                 refCom.push(dataPush);
                 checkDatabase(firebase.database().ref(), updateSideAnnotations);
                 clearSidebar();
+                
+                d3.select('#interaction').selectAll("*").remove();
 
                 
             }else{
                 doodleSubmit(commentType, user, tags, null, currentTime);
+
+                d3.select('#interaction').selectAll("*").remove();
             }
     });
 }
