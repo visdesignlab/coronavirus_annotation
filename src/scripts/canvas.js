@@ -437,13 +437,15 @@ export function formatPush(){
 
     let clickedBool = false;
 
-    if(d3.select('.add-comment').select('button').node().value === 'on'){
-        
+    if(d3.select('.add-comment').select('button').node().value === 'on' && d3.select('.media-tabber').node().value === 't1'){
+
         interactionDiv.on('mouseenter', function(){
             let coords = d3.mouse(this);
+
+            console.log(d3.select('.media-tabber').node(), d3.select('.media-tabber').node().value === 't1');
     
-            interactionDiv.classed('crosshair', true);
-            if(d3.select('#push-div').empty()){
+            //interactionDiv.classed('crosshair', true);
+            if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't1'){
                 let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                 pushDiv.style('position', 'absolute')
                 pushDiv.style('top', (d)=> (coords[1]-10)+'px')
@@ -468,11 +470,8 @@ export function formatPush(){
             if(!clickedBool){
                 d3.select('#push-div').remove();
             }
-        });
-        
+        }); 
     }
-
-   
 
     interactionDiv.on("click", function() {
 
@@ -480,12 +479,10 @@ export function formatPush(){
         d3.event.stopPropagation();
         let coords = d3.mouse(this);
 
-        
-      
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
   
-                if(clickedBool === false){
+                if(clickedBool === false && d3.select('.media-tabber').node().value === 't1'){
 
                     let inputDiv = d3.select('#push-div').append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
@@ -511,7 +508,39 @@ export function formatCanvas(){
   
     let div = document.getElementById('main-wrap');
 
-    d3.select('#interaction').selectAll('*').remove();
+    let interactionDiv = d3.select('#interaction');
+    interactionDiv.selectAll('*').remove();
+
+    interactionDiv.on('mouseenter', function(){
+        let coords = d3.mouse(this);
+
+        //interactionDiv.classed('crosshair', true);
+        if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't2'){
+            let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
+            pushDiv.style('position', 'absolute')
+            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
+            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+            let push = pushDiv.append('div').classed('push', true);
+            push.append('i').classed('fas fa-paint-brush', true);
+        }
+    });
+
+    interactionDiv.on('mousemove', function() {
+        console.log('mouse move');
+
+        let coords = d3.mouse(this);
+        let pushDiv = d3.select('#push-div');
+        if(!pushDiv.empty()){
+            pushDiv.style('top', (d)=> (coords[1]-10)+'px');
+            pushDiv.style('left', (d)=> (coords[0]-10)+'px');
+        }
+    });
+
+    interactionDiv.on('mouseleave', function(){
+        
+        d3.select('#push-div').remove();
+        
+    }); 
   
     let canvas = d3.select(div).select('canvas').node();
     canvas.setAttribute('id', 'vid-canvas');
