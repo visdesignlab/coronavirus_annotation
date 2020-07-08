@@ -53,8 +53,8 @@ export function specialUserCheck(dbRef){
       let newAnno = [...annotationType];
       newAnno.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
 
-      let tagButton = dropDown(d3.select('#annotation-wrap-r'), newAnno, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
-      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+    //   let tagButton = dropDown(d3.select('#annotation-wrap-r'), newAnno, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
+    //   d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
 
       var storage = firebase.storage();
       var storageRef = storage.ref();
@@ -73,8 +73,8 @@ export function specialUserCheck(dbRef){
       bugLink.attr('target', "_blank");
       bugLink.append('span').classed("fas fa-bug", true);
 
-      let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
-      d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
+    //   let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
+    //   d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
 
       var storage = firebase.storage();
       var storageRef = storage.ref();
