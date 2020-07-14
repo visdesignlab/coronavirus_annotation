@@ -14,15 +14,29 @@ export function formatAnnotationBox(){
     
 }
 
+export function noMarkFormat(){
+    console.log("this is a test");
+
+    let canvas = d3.select('canvas').node()
+    const context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.height = 0;
+    canvas.width = 0;
+   
+    let interactionDiv = d3.select('#interaction');
+    interactionDiv.selectAll('*').remove();
+}
+
 export function formatCommentBox(div){
 
     div.append('div').classed('template-wrap', true);
     defaultTemplate(div);
+    let t1Ob = {label: "No spatial reference", callBack: noMarkFormat};
+    let t2Ob = {label: "Drop a Pin", callBack: formatPush};
+    let t3Ob = {label: "Draw", callBack: formatCanvas};
 
-    let t1Ob = {label: "Drop a Pin", callBack: formatPush};
-    let t2Ob = {label: "Draw", callBack: formatCanvas};
-
-    let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
+    let form = radioBlob(div, t1Ob, t2Ob, t3Ob, 'media-tabber');
 
     formatPush();
 

@@ -6,6 +6,7 @@ import { skipAheadCircle } from './video_player';
 import { annotationType, tagOptions, annotationInitiation, addTagFunctionality } from './templates';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
+import { noMarkFormat } from './commentFormat';
 
 export const doodleKeeper = []
 
@@ -174,7 +175,7 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
     }
 }
 
-export function radioBlob(div, t1Ob, t2Ob, className){
+export function radioBlob(div, t1Ob, t2Ob, t3Ob, className){
 
     let form = div.append('form').classed(className, true);
     let labelOne = form.append('label').classed('container', true);
@@ -199,6 +200,16 @@ export function radioBlob(div, t1Ob, t2Ob, className){
 
     let inputCheck2 = labelTwo.append('span').classed('checkmark', true);
 
+    let labelThree = form.append('label').classed('container', true).text(t3Ob.label);
+    labelThree.node().for = 't3';
+
+    let inputThree = labelThree.append('input').attr('id', 't3')
+    inputThree.node().name = 'radio';//.attr('name', 'comment')
+    inputThree.node().type = 'radio';//.attr('type', 'radio');
+    inputThree.node().checked = false;
+
+    let inputCheck3 = labelThree.append('span').classed('checkmark', true);
+
     inputOne.on('click', ()=> {
            
             inputOne.node().checked = true;
@@ -215,6 +226,16 @@ export function radioBlob(div, t1Ob, t2Ob, className){
             t2Ob.callBack();
        // }
     });
+
+    inputThree.on('click', ()=> {
+
+        inputOne.node().checked = false;
+        inputTwo.node().checked = false;
+        inputThree.node().checked = true;
+        form.node().value = 't3';
+        t3Ob.callBack();
+   // }
+});
 
    return form;
 
@@ -277,8 +298,14 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
             let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
 
-            let interactionVal = d3.select('.media-tabber').node().value;
-            interactionVal === 't1' ? formatPush() : formatCanvas();
+            let interDictionary = {
+                t1: noMarkFormat,
+                t2: formatPush,
+                t3: formatCanvas
+            }
+
+            let interactionVal = interDictionary[d3.select('.media-tabber').node().value]();//if(d3.select('.media-tabber').node().value === 't2');
+            // interactionVal === 't2' ? formatPush() : formatCanvas();
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
@@ -327,7 +354,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
                     let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
 
-                    if(form.node().value === 't1'){
+                    if(form.node().value === 't2'){
 
                       
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
@@ -339,13 +366,13 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
                         clearSidebar();
     
-                    }else{
+                    }else if(form.node().value === 't3'){
                         doodleSubmit(commentType, user, tags, d, currentTime);
                     }
 
                 }else{
                     let currentTime = document.getElementById('video').currentTime;
-                    if(form.node().value === 't1'){
+                    if(form.node().value === 't2'){
                     
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
@@ -356,7 +383,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
                         clearSidebar();
     
-                    }else{
+                    }else if(form.node().value === 't3'){
                         doodleSubmit(commentType, user, tags, d, currentTime);
                     }
                 }
@@ -437,15 +464,15 @@ export function formatPush(){
 
     let clickedBool = false;
 
-    if(d3.select('.add-comment').select('button').node().value === 'on' && d3.select('.media-tabber').node().value === 't1'){
+    if(d3.select('.add-comment').select('button').node().value === 'on' && d3.select('.media-tabber').node().value === 't2'){
 
         interactionDiv.on('mouseenter', function(){
             let coords = d3.mouse(this);
 
-            console.log(d3.select('.media-tabber').node(), d3.select('.media-tabber').node().value === 't1');
+            console.log(d3.select('.media-tabber').node(), d3.select('.media-tabber').node().value === 't2');
     
             //interactionDiv.classed('crosshair', true);
-            if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't1'){
+            if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't2'){
                 let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                 pushDiv.style('position', 'absolute')
                 pushDiv.style('top', (d)=> (coords[1]-10)+'px')
@@ -482,7 +509,7 @@ export function formatPush(){
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
   
-                if(clickedBool === false && d3.select('.media-tabber').node().value === 't1'){
+                if(clickedBool === false && d3.select('.media-tabber').node().value === 't2'){
 
                     let inputDiv = d3.select('#push-div').append('div').classed('comment-initiated', true);
                     inputDiv.append('h6').text('Comment for this spot');
@@ -515,7 +542,7 @@ export function formatCanvas(){
         let coords = d3.mouse(this);
 
         //interactionDiv.classed('crosshair', true);
-        if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't2'){
+        if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't3'){
             let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
             pushDiv.style('position', 'absolute')
             pushDiv.style('top', (d)=> (coords[1]-10)+'px')
