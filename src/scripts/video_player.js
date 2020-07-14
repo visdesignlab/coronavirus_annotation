@@ -107,12 +107,15 @@ if (videoWorks) {
   videoControls.classList.remove('hidden');
 }
 
-d3.select(videoControls).style('width', `${videoDim.width}px`)
+//d3.select(videoControls).style('width', `${videoDim.width}px`)
+d3.select(videoControls).style('width', `890px`);
 // Add functions here
 
 // formatTime takes a time length in seconds and returns the time in
 // minutes and seconds
 function formatTime(timeInSeconds) {
+
+  console.log('time', timeInSeconds);
   
   const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
 

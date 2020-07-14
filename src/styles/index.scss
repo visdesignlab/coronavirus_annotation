@@ -94,11 +94,22 @@ html {
   padding-top:10px;
 }
 
+#annotation-ui{
+  position:absolute;
+  top:65px;
+  right:20px;
+  height: 400px;
+  width:300px;
+  background-color: aqua;
+  border-radius: 3px;
+}
+
 .add-comment{
   float:left;
-  padding-top:5px;
+  padding-top:3px;
   text-align: center;
   width:20%;
+  display: inline;
 }
 
 .user-wrap{
@@ -107,9 +118,19 @@ html {
   // position: absolute;
   // top:0;
   text-align: center;
-  padding-top:10px;
+  padding-top:8px;
+  width:60%;
+  display:inline-block;
   //background-color: var(--ui-gray);
   
+}
+
+.add-annotation{
+  float: right;
+  padding-top: 3px;
+  text-align: center;
+  width: 20%;
+  display:inline;
 }
 
 .togg-wrap{
@@ -564,14 +585,14 @@ video{
 
 }
 
-
-
 #interaction svg.push, 
 #interaction #push-div div.push, 
 #push-div div.push svg{
   height:30px;
   width:30px;
 }
+
+
 
 #interaction circle{
  // fill:red;

@@ -7,6 +7,12 @@ import * as firebase from 'firebase';
 import { currentUserKeeper } from './annotation';
 import { updateSideAnnotations } from './sidebar';
 
+export function formatAnnotationBox(){
+    console.log('this is where  the annotation goes');
+
+    let annotationDiv = d3.select('#main-wrap').append('div').attr('id','annotation-ui');
+    
+}
 
 export function formatCommentBox(div){
 

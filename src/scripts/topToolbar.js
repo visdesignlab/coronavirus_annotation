@@ -8,7 +8,7 @@ import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import { annotationType, defaultTemplate, annotationTemplate } from './templates';
 import { dropDown, clearSidebar } from './canvas';
 import { image } from 'd3';
-import { formatTimeControl, formatCommentBox } from './commentFormat';
+import { formatTimeControl, formatCommentBox, formatAnnotationBox } from './commentFormat';
 
 export function addCommentButton(d, i, n){
     console.log(d, i, n)
@@ -52,6 +52,11 @@ export function specialUserCheck(dbRef){
 
       let newAnno = [...annotationType];
       newAnno.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
+
+    //   let addAnnoButton = d3.select('.add-annotation').append('button').classed('btn btn-outline-secondary btn-sm', true);
+    //   addAnnoButton.text("Add Annotation");
+
+    //   addAnnoButton.on('click', ()=> formatAnnotationBox())
 
     //   let tagButton = dropDown(d3.select('#annotation-wrap-r'), newAnno, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
     //   d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);

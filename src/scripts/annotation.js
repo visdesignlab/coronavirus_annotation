@@ -21,7 +21,7 @@ if(!firebase.apps.length){
 
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
-    vid.formatVidPlayer(mainWrap, './public/spike_protein_fusion_movie.mp4');
+    vid.formatVidPlayer(mainWrap, './public/entryComp_071220.mp4');
     let vidDim = d3.select('video').node().getBoundingClientRect();
 
     let width = (window.innerWidth - (vidDim.x + vidDim.width));
@@ -33,8 +33,6 @@ if(mainWrap){
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-
-        console.log('this is firing', user)
         
           let ref = firebase.database().ref();  
         
