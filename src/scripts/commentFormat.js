@@ -33,17 +33,20 @@ export function formatCommentBox(div){
     div.append('div').classed('template-wrap', true);
     defaultTemplate(div);
     let t1Ob = {label: "No spatial reference", callBack: noMarkFormat};
-    let t2Ob = {label: "Drop a Pin", callBack: formatPush};
+    let t2Ob = {label: "Mark a Point", callBack: formatPush};
     let t3Ob = {label: "Draw", callBack: formatCanvas};
 
     let form = radioBlob(div, t1Ob, t2Ob, t3Ob, 'media-tabber');
 
-    formatPush();
+    // formatPush();
+    noMarkFormat();
 
     let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
     let commentType = "comments";
 
     submit.on('click', async ()=> {
+
+        console.log('button submit')
 
         let user = currentUserKeeper[currentUserKeeper.length -1];
         
@@ -52,7 +55,7 @@ export function formatCommentBox(div){
       
             let currentTime = document.getElementById('video').currentTime;
 
-            if(form.node().value === 't1'){
+            if(form.node().value === 't2'){
             
                 let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                 let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', null, commentType === "annotations");
@@ -62,9 +65,17 @@ export function formatCommentBox(div){
                 clearSidebar();
                 d3.select('#interaction').selectAll("*").remove();
                 
-            }else{
+            }else if(form.node().value === 't3'){
 
                 doodleSubmit(commentType, user, tags, null, currentTime);
+                d3.select('#interaction').selectAll("*").remove();
+            }else{
+                let coords = null;
+                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', null, commentType === "annotations");
+                let refCom = firebase.database().ref(commentType);                     
+                refCom.push(dataPush);
+                checkDatabase(firebase.database().ref(), updateSideAnnotations);
+                clearSidebar();
                 d3.select('#interaction').selectAll("*").remove();
             }
     });

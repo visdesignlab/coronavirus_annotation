@@ -117,6 +117,7 @@ export async function updateVideoAnn(){
         .text(d=> d.comment)
         .classed('annotation-label', true)
         .attr('x', d=> {
+            console.log('test Mark',d)
             if(d.commentMark === 'push'){
                 let noPx = parseInt(d.posLeft.replace(/px/,""));
                 return noPx+10+"px";
@@ -242,6 +243,7 @@ export function radioBlob(div, t1Ob, t2Ob, t3Ob, className){
 }
 
 export function doodleSubmit(commentType, user, tags, d, currentTime){
+    console.log(commentType, user, tags, d, currentTime);
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -305,7 +307,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
             }
 
             let interactionVal = interDictionary[d3.select('.media-tabber').node().value]();//if(d3.select('.media-tabber').node().value === 't2');
-            // interactionVal === 't2' ? formatPush() : formatCanvas();
 
             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
@@ -356,7 +357,6 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
 
                     if(form.node().value === 't2'){
 
-                      
                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
@@ -448,7 +448,7 @@ export function annotationBar(dbRef){
 }
 export function formatPush(){
 
-    console.log('format push firing');
+   
 
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
@@ -468,11 +468,9 @@ export function formatPush(){
 
         interactionDiv.on('mouseenter', function(){
             let coords = d3.mouse(this);
-
-            console.log(d3.select('.media-tabber').node(), d3.select('.media-tabber').node().value === 't2');
     
             //interactionDiv.classed('crosshair', true);
-            if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't2'){
+            if(d3.select('#push-div').empty() && !d3.select('.media-tabber').empty() && d3.select('.media-tabber').node().value === 't2'){
                 let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
                 pushDiv.style('position', 'absolute')
                 pushDiv.style('top', (d)=> (coords[1]-10)+'px')
@@ -483,7 +481,6 @@ export function formatPush(){
         });
     
         interactionDiv.on('mousemove', function() {
-            console.log('mouse move');
     
             let coords = d3.mouse(this);
             let pushDiv = d3.select('#push-div');

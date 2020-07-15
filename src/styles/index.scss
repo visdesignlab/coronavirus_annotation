@@ -593,6 +593,10 @@ video{
 }
 
 
+div.push svg path{
+  fill:red;
+}
+
 
 #interaction circle{
  // fill:red;
@@ -1016,7 +1020,7 @@ svg {
   z-index: 99;
   /*position the autocomplete items to be the same width as the container:*/
   top: 30px;
-  left:-200px;
+  left:-220px;
   right: 0;
 }
 

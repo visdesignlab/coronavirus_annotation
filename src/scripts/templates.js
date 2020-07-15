@@ -6,11 +6,11 @@ import * as firebase from 'firebase';
 
 
 export const annotationType = [
-    {key:'question', tag:'question', tempCall: questionTemplate}, 
-    // {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
-    {key:'critique or issue', tag:'issue', tempCall: issueTemplate}, 
-    {key:'suggestion for animation/tool', tag:'suggestion', tempCall: suggestionTemplate},
-    {key:'other', tag:'none', tempCall: defaultTemplate},  
+    // {key:'question', tag:'question', tempCall: questionTemplate}, 
+    // // {key:'add context for biology', tag:'context', tempCall: bioInfoTemplate}, 
+    // {key:'critique or issue', tag:'issue', tempCall: issueTemplate}, 
+    // {key:'suggestion for animation/tool', tag:'suggestion', tempCall: suggestionTemplate},
+    // {key:'other', tag:'none', tempCall: defaultTemplate},  
 ]
 export const tagOptions = [
     {key:'question', color:'#2E86C1'}, 
@@ -48,12 +48,12 @@ export function addTagFunctionality(inputDiv, tagArray){
 
       tags.text(d=> `${d}  `);
       let x = tags.append('text').text('X');
-      x.style('padding', '5px');
-      x.style('cursor', 'pointer');
-      x.on('click', (d, i, n)=> {
-          d3.select(n[i].parentNode).remove();
-          tagArray = tagArray.filter(f=> f != d);
-      });
+        x.style('padding', '5px');
+        x.style('cursor', 'pointer');
+        x.on('click', (d, i, n)=> {
+            d3.select(n[i].parentNode).remove();
+            tagArray = tagArray.filter(f=> f != d);
+        });
 
     }
     
@@ -80,7 +80,7 @@ export function addTagFunctionality(inputDiv, tagArray){
 
     let array = dataKeeper[dataKeeper.length - 1].comments;
     let test = d3.entries(array).map(m=> m.value).flatMap(m=> m.tags.split(','));
-    console.log(Array.from(new Set(test)))
+
 
     autocomplete(node, Array.from(new Set(test)));
 
@@ -269,86 +269,86 @@ function timeRange(){
   }
 }
 
-export function annotationTemplate(div, user, coords){
+// export function annotationTemplate(div, user, coords){
 
-  console.log(d3.select(div.node().parentNode).select('#time-wrap'))
+//   console.log(d3.select(div.node().parentNode).select('#time-wrap'))
 
-  let timeDiv = d3.select(div.node().parentNode).select('#time-wrap');
+//   let timeDiv = d3.select(div.node().parentNode).select('#time-wrap');
 
-  let t1Ob = {label:"time point", callBack: timePoint}
-  let t2Ob = {label:"time range", callBack: timeRange}
-  formatPush();
-  radioBlob(timeDiv, t1Ob, t2Ob, 'time-tabber')
+//   let t1Ob = {label:"time point", callBack: timePoint}
+//   let t2Ob = {label:"time range", callBack: timeRange}
+//   formatPush();
+//   radioBlob(timeDiv, t1Ob, t2Ob, 'time-tabber')
 
-  d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
-  let currentTime = document.getElementById('video').currentTime;
+//   d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
+//   let currentTime = document.getElementById('video').currentTime;
 
-  let inputDiv = div.select('.template-wrap').append('div');
+//   let inputDiv = div.select('.template-wrap').append('div');
 
-  let suggestionhtml = 
-  `
-  <br>
-  <p>Add an annotation to the video </p>
-  `;
+//   let suggestionhtml = 
+//   `
+//   <br>
+//   <p>Add an annotation to the video </p>
+//   `;
 
-  inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
+//   inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
 
-  inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
+//   inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
 
-}
+// }
 
-export function suggestionTemplate(div, user, coords){
+// export function suggestionTemplate(div, user, coords){
 
-    d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
-    let currentTime = document.getElementById('video').currentTime;
+//     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'suggestion')[0].color);
+//     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');
+//     let inputDiv = div.select('.template-wrap').append('div');
 
-    let suggestionhtml = 
-    `
-    <br>
-    <p>Have a critique of the animation or tool? <br> Make a suggestion to improve it.</p>
-     <p>Is it missing something in the animation that should be there?</p> 
-     <p>Is there something wrong in the structure or function?</p>
-    `;
+//     let suggestionhtml = 
+//     `
+//     <br>
+//     <p>Have a critique of the animation or tool? <br> Make a suggestion to improve it.</p>
+//      <p>Is it missing something in the animation that should be there?</p> 
+//      <p>Is there something wrong in the structure or function?</p>
+//     `;
 
-    inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
+//     inputDiv.append('div').classed('temp-text', true).html(suggestionhtml)
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
+//     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something...');
 
-    let suggestionTags = ['suggestion']
+//     let suggestionTags = ['suggestion']
 
-    addTagFunctionality(inputDiv, suggestionTags);
-
-
-}
-
-export function issueTemplate(div, user, coords){
-
-    d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'issue')[0].color);
-    let currentTime = document.getElementById('video').currentTime;
-
-    let inputDiv = div.select('.template-wrap').append('div');
-
-    //inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
-
-    let suggestionhtml = 
-    ` <br>
-    <p>Have a critique or issue? 
-     Is it missing something in the animation that should be there?
-     Is there something wrong in the structure or function?<p>
-    `;
-
-    inputDiv.append('div').classed('temp-text', true).html(suggestionhtml);
-
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something');
-
-    let suggestionTags = ['critique']
-
-    addTagFunctionality(inputDiv, suggestionTags);
+//     addTagFunctionality(inputDiv, suggestionTags);
 
 
-}
+// }
+
+// export function issueTemplate(div, user, coords){
+
+//     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'issue')[0].color);
+//     let currentTime = document.getElementById('video').currentTime;
+
+//     let inputDiv = div.select('.template-wrap').append('div');
+
+//     //inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+
+//     let suggestionhtml = 
+//     ` <br>
+//     <p>Have a critique or issue? 
+//      Is it missing something in the animation that should be there?
+//      Is there something wrong in the structure or function?<p>
+//     `;
+
+//     inputDiv.append('div').classed('temp-text', true).html(suggestionhtml);
+
+//     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Suggest something');
+
+//     let suggestionTags = ['critique']
+
+//     addTagFunctionality(inputDiv, suggestionTags);
+
+
+// }
 
 export function commentTemplate(div, user, color, templatehtml, placeholder, tempTags){
     d3.select('.dropdown.ann-type-drop').select('button').style('color', color);
@@ -365,63 +365,63 @@ export function commentTemplate(div, user, color, templatehtml, placeholder, tem
     addTagFunctionality(inputDiv, tempTags);
 }
 
-export function bioInfoTemplate(div, user, coords){
+// export function bioInfoTemplate(div, user, coords){
 
-    d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'bio-context')[0].color);
+//     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'bio-context')[0].color);
 
-    let currentTime = document.getElementById('video').currentTime;
-    let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
+//     let currentTime = document.getElementById('video').currentTime;
+//     let inputDiv = div.select('.template-wrap').append('div');//.classed('text-input', true);
 
-  //  inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+//   //  inputDiv.append('p').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    let templatehtml = 
-    `
-    <p>Add some context for biology.This could be additional information and references that support an aspect of the biology or animation.</p>
-    <p>If you add a rederence, please add the DOI for the paper.</p> 
-    `;
+//     let templatehtml = 
+//     `
+//     <p>Add some context for biology.This could be additional information and references that support an aspect of the biology or animation.</p>
+//     <p>If you add a rederence, please add the DOI for the paper.</p> 
+//     `;
 
-    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
+//     inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
+//     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Add a comment, clarifying information, or the DOI of a reference');
 
-    let tempTags = ['biology', 'context'];
+//     let tempTags = ['biology', 'context'];
 
-    addTagFunctionality(inputDiv, tempTags);
+//     addTagFunctionality(inputDiv, tempTags);
 
-}
+// }
 
-export function questionTemplate(div, user, coords){
+// export function questionTemplate(div, user, coords){
 
-    d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'none')[0].color);
+//     d3.select('.dropdown.ann-type-drop').select('button').style('color', tagOptions.filter(f=> f.key === 'none')[0].color);
 
-    let questionOps = [
-        {key:'biology', color:'#0FF176'},
-        {key: 'animation', color:'#FFC300'}
-    ];
+//     let questionOps = [
+//         {key:'biology', color:'#0FF176'},
+//         {key: 'animation', color:'#FFC300'}
+//     ];
         
-    let currentTime = document.getElementById('video').currentTime;
+//     let currentTime = document.getElementById('video').currentTime;
 
-    let inputDiv = div.select('.template-wrap').append('div');
+//     let inputDiv = div.select('.template-wrap').append('div');
 
-   // inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
+//    // inputDiv.append('text').text(`${user.displayName}@ ${formatVideoTime(currentTime)} :`);
 
-    let templatehtml = 
-    `
-    <br>
-    <p>Choose the type of question in the drop down. </p>
-    <p>This can be biology or animation related. </p>
-    <p>Please be descriptive as possible.</p> 
-    `;
+//     let templatehtml = 
+//     `
+//     <br>
+//     <p>Choose the type of question in the drop down. </p>
+//     <p>This can be biology or animation related. </p>
+//     <p>Please be descriptive as possible.</p> 
+//     `;
 
-    inputDiv.append('div').classed('temp-text', true).html(templatehtml);
+//     inputDiv.append('div').classed('temp-text', true).html(templatehtml);
 
-    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related question here.');
-    let tagButton = dropDown(inputDiv, questionOps, 'Type', 'q-tag-drop', null, null, false, true);
-    //div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool
+//     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Ask a biology or tool related question here.');
+//     let tagButton = dropDown(inputDiv, questionOps, 'Type', 'q-tag-drop', null, null, false, true);
+//     //div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool
 
     
   
-}
+// }
 
 function autocomplete(inp, arr) {
   /*the autocomplete function takes two arguments,
