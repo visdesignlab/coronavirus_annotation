@@ -1,0 +1,7 @@
+video_time,annotation_type,text_description,ref,url,additional_notes
+0:03,liturature reference/citation,reference for spike glycoprotein,"Kawase, M., Kataoka, M., Shirato, K. & Matsuyama, S. Biochemical Analysis of Coronavirus Spike Glycoprotein Conformational Intermediates during Membrane Fusion. Journal of Virology 93, (2019).",https://jvi.asm.org/content/93/19/e00785-19,na
+0:05,note,"I don't think the stoichiometry is really known, and based on what I know about viral infection, its probably true that many spike proteins are involved in cell entry, many of those are only partially opened, and some probably bind more than one ACE2.",na,na,na
+00:00-00:10,phase,Entry (Im reaching here - I wasn't sure of a good example),Descripition of what happens in this phase,na,na
+0:12,event,binding to ACE2,Descripition of what happens in this event,na,na
+0:13,pdb id,SARS-CoV-2 spike ectodomain structure (open state),6VYB,http://www.rcsb.org/structure/6vyb,na
+0:30,link,coronavirus life cycle image,na,https://viralzone.expasy.org/9096,na

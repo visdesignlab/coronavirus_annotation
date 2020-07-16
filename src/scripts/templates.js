@@ -17,7 +17,7 @@ export const tagOptions = [
     {key:'suggestion', color:'#2ECC71'}, 
     {key:'issue', color:'#F1C40F'}, 
     {key:'context', color:'#F10F42'}, 
-    {key: 'none', color: 'black'}
+    {key: 'other', color: 'black'}
 ];
 
 function updateTags(node, tagWrap, tagArray){

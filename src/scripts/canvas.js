@@ -154,7 +154,7 @@ export function clearSidebar(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
-   
+   console.log('inittag',initTag);
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -426,8 +426,8 @@ export function annotationBar(dbRef){
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
 
     let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
-   // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
-    rect.style('fill', d=> `#fff`);
+    rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
+   // rect.style('fill', d=> `#fff`);
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
   

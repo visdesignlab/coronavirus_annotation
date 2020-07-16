@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { updatePlayButton, togglePlay } from "./video_player";
-import { defaultTemplate } from './templates';
+import { defaultTemplate, tagOptions } from './templates';
 import { radioBlob, formatPush, formatCanvas, clearSidebar, annotationMaker, doodleSubmit } from './canvas';
 import { checkDatabase, firebaseConfig } from './firebaseStuff';
 import * as firebase from 'firebase';
@@ -30,7 +30,45 @@ export function noMarkFormat(){
 
 export function formatCommentBox(div){
 
-    div.append('div').classed('template-wrap', true);
+    let dropId = 'comment-type';
+    let optionArray = ['None', 'Question', 'Suggestion', 'Critique']
+
+    let templateWrap = div.append('div').classed('template-wrap', true);
+
+    let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
+    // dropdiv.style('display', 'inline-block');
+    let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
+    let texting = button.text('Color Code by Comment');
+    button.node().value = 'other';
+    let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
+    dropContent.append('a').text('text').attr('font-size', 11);
+    let options = dropContent.selectAll('a').data(tagOptions).join('a').text(d=> d.key);
+
+  
+    options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
+   
+   
+    options.on('click', (d, i, n)=> {
+       let testToo = button.text(d.key);
+
+       //let commentType = d.key === 'annotation' ? "annotations" : "comments";
+
+        button.node().value = d.key;
+        dropContent.classed('show', false);
+
+    });
+   
+
+    button.on('click', (d, i, n)=> {
+        if(dropContent.classed('show')){
+            dropContent.classed('show', false);
+        }else{
+            dropContent.classed('show', true);
+        }
+    });
+
+
+
     defaultTemplate(div);
     let t1Ob = {label: "No spatial reference", callBack: noMarkFormat};
     let t2Ob = {label: "Mark a Point", callBack: formatPush};
@@ -57,8 +95,9 @@ export function formatCommentBox(div){
 
             if(form.node().value === 't2'){
             
+            
                 let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', null, commentType === "annotations");
+                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
                 let refCom = firebase.database().ref(commentType);                     
                 refCom.push(dataPush);
                 checkDatabase(firebase.database().ref(), updateSideAnnotations);
@@ -67,11 +106,12 @@ export function formatCommentBox(div){
                 
             }else if(form.node().value === 't3'){
 
-                doodleSubmit(commentType, user, tags, null, currentTime);
+                doodleSubmit(commentType, user, tags, button.node().value, currentTime);
                 d3.select('#interaction').selectAll("*").remove();
+
             }else{
                 let coords = null;
-                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', null, commentType === "annotations");
+                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
                 let refCom = firebase.database().ref(commentType);                     
                 refCom.push(dataPush);
                 checkDatabase(firebase.database().ref(), updateSideAnnotations);
