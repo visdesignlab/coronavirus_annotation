@@ -40,6 +40,31 @@ if(mainWrap){
           checkDatabase(ref, specialUserCheck);
 
           d3.select('.add-comment').select('button').on('click', (d, i, n)=> addCommentButton(d, i, n));
+
+         
+          d3.csv('./public/sample-anno-sheet.csv').then((data)=> {
+            console.log(data);
+
+            formatTime(data);
+
+
+            /////parsing data//////
+            function formatTime(d){
+
+              return d.map(m=> {
+                if(m.video_time.includes("-")){
+                  let range = m.video_time.split("-");
+                  console.log('range', range);
+                  let start = range[0].split(":");
+                  console.log(start[0], +start[0])
+                }else{
+                  console.log('no split')
+                }
+              })
+
+            }
+
+          });
          
           clearSidebar();
 
