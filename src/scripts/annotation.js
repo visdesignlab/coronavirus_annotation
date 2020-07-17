@@ -54,13 +54,28 @@ if(mainWrap){
               return d.map(m=> {
                 if(m.video_time.includes("-")){
                   let range = m.video_time.split("-");
-                  console.log('range', range);
+             
                   let start = range[0].split(":");
-                  console.log(start[0], +start[0])
+                  let startSec = (+start[0] * 60) + +start[1];
+                
+                  let end = range[1].split(":");
+                  let endSec = (+end[0] * 60) + +end[1];
+                  m.seconds = [startSec, endSec];
                 }else{
-                  console.log('no split')
+                  console.log('no split');
+
+                  let time= m.video_time.split(":");
+                  console.log(time[0], +time[0], +time[1]);
+                  let seconds = (+time[0] * 60) + +time[1];
+
+                  m.seconds = [seconds];
+
+                
+
                 }
-              })
+                console.log('m', m)
+                return m;
+              });
 
             }
 
