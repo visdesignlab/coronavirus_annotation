@@ -83,6 +83,8 @@ export async function updateVideoAnn(){
     //  });
 
     video.ontimeupdate = async (event) => {
+        console.log('checked',d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked)
+
 
         let newData = formatTime(data);
 
@@ -142,56 +144,66 @@ export async function updateVideoAnn(){
             return urlDood;
         });
 
-        let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
-        images.attr('src', d=> d);
+        if(d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked){
+           
 
-        let annoImages = interDIV.selectAll('.anno-doodles').data(await Promise.all(annoDoodles)).join('img').classed('anno-doodles', true);
-        annoImages.attr('src', d=> d);
 
-        let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
-       // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
-        
-        let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
-        circ.attr('r', 10);
-        circ.attr('cx', d=> d.posLeft);
-        circ.attr('cy', d=> d.posTop);
-        circ.attr('fill', 'red');
-        circ.on('mouseover', (d)=>{
-            let wrap = d3.select('#sidebar').select('#annotation-wrap');
-            let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
-            memoDivs.classed('selected', true);
-            memoDivs.nodes()[0].scrollIntoView();
+            let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
+            images.attr('src', d=> d);
+    
+            let annoImages = interDIV.selectAll('.anno-doodles').data(await Promise.all(annoDoodles)).join('img').classed('anno-doodles', true);
+            annoImages.attr('src', d=> d);
+    
+            let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
+           // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
+            
+            let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
+            circ.attr('r', 10);
+            circ.attr('cx', d=> d.posLeft);
+            circ.attr('cy', d=> d.posTop);
+            circ.attr('fill', 'red');
+            circ.on('mouseover', (d)=>{
+                let wrap = d3.select('#sidebar').select('#annotation-wrap');
+                let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
+                memoDivs.classed('selected', true);
+                memoDivs.nodes()[0].scrollIntoView();
+    
+            }).on('mouseout', (d)=> {
+                let wrap = d3.select('#sidebar').select('#annotation-wrap');
+                let memoDivs = wrap.selectAll('.memo').classed('selected', false);
+            });
+    
+            if(!selectedMemoDivs.empty()){
+                selectedMemoDivs.nodes()[0].scrollIntoView();
+                // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
+            }
+    
+            let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
+            let annotationMark = annotationGroup.filter(f=> f.commentMark === 'push').selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
+            let annotationText = annotationGroup.selectAll('text').data(d=> [d]).join('text')
+            .text(d=> d.comment)
+            .classed('annotation-label', true)
+            .attr('x', d=> {
+                if(d.commentMark === 'push'){
+                    let noPx = parseInt(d.posLeft.replace(/px/,""));
+                    return noPx+10+"px";
+                }else{
+                     return '50px'
+                }
+            })
+             .attr('y',d=>  {
+                 if(d.commentMark === 'push'){
+                    return d.posTop;
+                 }else{
+                     return '50px'
+                 }
+            });
 
-        }).on('mouseout', (d)=> {
-            let wrap = d3.select('#sidebar').select('#annotation-wrap');
-            let memoDivs = wrap.selectAll('.memo').classed('selected', false);
-        });
 
-        if(!selectedMemoDivs.empty()){
-            selectedMemoDivs.nodes()[0].scrollIntoView();
-            // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
+            
         }
 
-        let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
-        let annotationMark = annotationGroup.filter(f=> f.commentMark === 'push').selectAll('circle').data(d=> [d]).join('circle').attr('r', 5).attr('cx', d=> d.posLeft).attr('cy',d=>  d.posTop);
-        let annotationText = annotationGroup.selectAll('text').data(d=> [d]).join('text')
-        .text(d=> d.comment)
-        .classed('annotation-label', true)
-        .attr('x', d=> {
-            if(d.commentMark === 'push'){
-                let noPx = parseInt(d.posLeft.replace(/px/,""));
-                return noPx+10+"px";
-            }else{
-                 return '50px'
-            }
-        })
-         .attr('y',d=>  {
-             if(d.commentMark === 'push'){
-                return d.posTop;
-             }else{
-                 return '50px'
-             }
-             });
+
     };
 }
 
@@ -601,7 +613,6 @@ export function formatPush(){
 export function formatCanvas(){
 
     let frame = 'video';
-  
     let div = document.getElementById('main-wrap');
 
     clearBoard();
@@ -697,4 +708,4 @@ export function formatCanvas(){
   
       return div;
   
-  }
+}
