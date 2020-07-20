@@ -6,7 +6,7 @@ import * as firebase from 'firebase';
 import "firebase/auth";
 import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
 import { annotationType, defaultTemplate, annotationTemplate } from './templates';
-import { dropDown, clearSidebar } from './canvas';
+import { dropDown, clearSidebar, clearBoard } from './canvas';
 import { image } from 'd3';
 import { formatTimeControl, formatCommentBox, formatAnnotationBox } from './commentFormat';
 
@@ -21,7 +21,7 @@ export function addCommentButton(d, i, n){
         formatCommentBox(sideWrap);
 
     }else{
-
+        clearBoard();
         n[i].value = 'off';
         d3.select('#sidebar').select('#annotation-wrap').selectAll('*').remove();
         d3.select('#interaction').style('pointer-events', 'none');

@@ -84,10 +84,7 @@ export async function updateVideoAnn(){
 
     video.ontimeupdate = async (event) => {
 
-
         let newData = formatTime(data);
-
-        
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filteredAnno = newData.filter(f=> f.seconds < timeRange[1] && f.seconds > timeRange[0])//.classed('selected', true);
@@ -512,14 +509,23 @@ export function annotationBar(dbRef){
 
     updateVideoAnn();
 }
-export function formatPush(){
-
-   
+export function clearBoard(){
 
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
 
     context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    
+    let interactionDiv = d3.select('#interaction');
+    interactionDiv.selectAll('*').remove();
+
+}
+export function formatPush(){
+
+    clearBoard();
+
+    let canvas = d3.select('canvas').node()
     canvas.height = 0;
     canvas.width = 0;
    
@@ -598,9 +604,9 @@ export function formatCanvas(){
   
     let div = document.getElementById('main-wrap');
 
-    let interactionDiv = d3.select('#interaction');
-    interactionDiv.selectAll('*').remove();
+    clearBoard();
 
+    let interactionDiv = d3.select('#interaction');
     interactionDiv.on('mouseenter', function(){
         let coords = d3.mouse(this);
 
