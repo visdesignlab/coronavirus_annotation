@@ -24,11 +24,12 @@ if(mainWrap){
     vid.formatVidPlayer(mainWrap, './public/entryComp_071420.mp4');
     let vidDim = d3.select('video').node().getBoundingClientRect();
 
-    let width = (window.innerWidth - (vidDim.x + vidDim.width));
-    d3.select('#annotation-right').style('left', (vidDim.x + vidDim.width)+"px");
+    let width = (window.innerWidth - (+vidDim.x + +vidDim.width));
+   //d3.select('#annotation-right').style('left', (vidDim.x + vidDim.width)+"px");
+    d3.select('#annotation-right').style('left', (+vidDim.x + +vidDim.width)+"px");
     d3.select('#annotation-right').style('height', (vidDim.height)+"px");
     d3.select('#annotation-right').style('min-width', width+"px");
-    d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
+    //d3.select('#annotation-right').select('#control').style('margin-left', ((width/2)-10)+"px");
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {

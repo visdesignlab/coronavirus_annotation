@@ -51,8 +51,6 @@ export function formatCommentBox(div){
     options.on('click', (d, i, n)=> {
        let testToo = button.text(d.key);
 
-       //let commentType = d.key === 'annotation' ? "annotations" : "comments";
-
         button.node().value = d.key;
         dropContent.classed('show', false);
 

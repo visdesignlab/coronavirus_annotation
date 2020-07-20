@@ -26,14 +26,7 @@ html {
   }
 }
 
-#annotation-right{
-  position:absolute;
-  top:60px;
-  padding:10px;
-  border: 1px solid gray;
 
-  // background-color: red;
-}
 
 #annotation-wrap{
   margin:auto;
@@ -867,6 +860,18 @@ svg {
 #annotation-right{
   margin:auto;
   z-index: 5000;
+  position:absolute;
+  top:60px;
+  // padding:10px;
+  // border: 1px solid gray;
+
+}
+
+#annotation-right .anno{
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding:15px;
+  margin:15px;
 }
 
 #pause-r path, #play-r path{

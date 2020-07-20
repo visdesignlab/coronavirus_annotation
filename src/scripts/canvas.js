@@ -63,7 +63,7 @@ export async function updateVideoAnn(){
     let interDIV = d3.select('#interaction');
     interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
-    let data = await d3.csv('./public/sample-anno-sheet.csv')
+    let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
 
 
     /////ANNOTATION STUFF///
@@ -83,19 +83,27 @@ export async function updateVideoAnn(){
     //  });
 
     video.ontimeupdate = async (event) => {
-        console.log('checked',d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked)
-
-
+     
         let newData = formatTime(data);
 
-        let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-        let filteredAnno = newData.filter(f=> f.seconds < timeRange[1] && f.seconds > timeRange[0])//.classed('selected', true);
+    
 
-        console.log('filtered', filteredAnno)
-         // let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
+        let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+        let filteredAnno = newData.filter(f=> {
+           // console.log(f.seconds)
+            if(f.seconds.length > 1){
+                return video.currentTime >= f.seconds[0] && video.currentTime <= f.seconds[1];
+            }else{
+                return f.seconds < timeRange[1] && f.seconds > timeRange[0];
+            }
+        })//.classed('selected', true);
+
+        console.log(filteredAnno)
 
         let annoDiv = rightDiv.selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
-        let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4').text(d=> d.annotation_type);
+        let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4');
+        let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
+        annoHeadSpan.classed('badge badge-secondary', true);
         let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true)
 
         ///END ANNOTATION
@@ -106,10 +114,10 @@ export async function updateVideoAnn(){
             let time = JSON.parse(f.videoTime)
 
             if(time.length > 1){
-                return time[0] <= video.currentTime && time[1] >= video.currentTime 
+                return time[0] <= video.currentTime && time[1] >= video.currentTime;
             }else{
                 // let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-                return time[0] < timeRange[1] && time[0] > timeRange[0]
+                return time[0] < timeRange[1] && time[0] > timeRange[0];
             }
         });
 
