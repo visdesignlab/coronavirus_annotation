@@ -67,9 +67,8 @@ export function formatCommentBox(div){
         }
     });
 
-
-
     defaultTemplate(div);
+    
     let t1Ob = {label: "No spatial reference", callBack: noMarkFormat};
     let t2Ob = {label: "Mark a Point", callBack: formatPush};
     let t3Ob = {label: "Draw", callBack: formatCanvas};

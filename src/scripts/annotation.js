@@ -43,10 +43,38 @@ if(mainWrap){
 
          
           d3.csv('./public/sample-anno-sheet.csv').then((data)=> {
-            console.log(data);
+           
 
-            formatTime(data);
+            let newData = formatTime(data);
 
+            console.log('newData', newData)
+
+            let rightDiv = d3.select('#annotation-right');
+
+            let  video = d3.select('video').node()//.currentTime;
+
+            video.ontimeupdate = async (event) => { 
+             // console.log('update',video.currentTime, Math.round(video.currentTime), event);
+
+              let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+              let filtered = newData.filter(f=> f.seconds < timeRange[1] && f.seconds > timeRange[0]).classed('selected', true);
+
+              console.log(event, 'is this working')
+
+              console.log('filtered',filtered)
+             // let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
+    
+
+            };
+
+            function formatSeconds(timeInSeconds) {
+              console.log('time', timeInSeconds);
+              const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
+              return {
+                minutes: result.substr(3, 2),
+                seconds: result.substr(6, 2)
+              };
+            }
 
             /////parsing data//////
             function formatTime(d){
@@ -69,11 +97,8 @@ if(mainWrap){
                   let seconds = (+time[0] * 60) + +time[1];
 
                   m.seconds = [seconds];
-
-                
-
                 }
-                console.log('m', m)
+              
                 return m;
               });
 

@@ -10,6 +10,34 @@ import { noMarkFormat } from './commentFormat';
 
 export const doodleKeeper = []
 
+        /////parsing data//////
+ function formatTime(d){
+
+    return d.map(m=> {
+        if(m.video_time.includes("-")){
+
+            let range = m.video_time.split("-");
+           
+            let start = range[0].split(":");
+            let startSec = (+start[0] * 60) + +start[1];
+              
+            let end = range[1].split(":");
+            let endSec = (+end[0] * 60) + +end[1];
+            m.seconds = [startSec, endSec];
+
+        }else{
+          
+            let time= m.video_time.split(":");
+         
+            let seconds = (+time[0] * 60) + +time[1];
+    
+            m.seconds = [seconds];
+        }
+            
+        return m;
+    });
+}
+
 
 export function formatVideoTime(videoTime){
     let time = parseInt(videoTime);
@@ -35,7 +63,43 @@ export async function updateVideoAnn(){
     let interDIV = d3.select('#interaction');
     interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
+    let data = await d3.csv('./public/sample-anno-sheet.csv')
+
+
+    /////ANNOTATION STUFF///
+   
+        function formatSeconds(timeInSeconds) {
+          console.log('time', timeInSeconds);
+          const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
+          return {
+            minutes: result.substr(3, 2),
+            seconds: result.substr(6, 2)
+          };
+        }
+
+
+    let rightDiv = d3.select('#annotation-right');
+
+    //  });
+
     video.ontimeupdate = async (event) => {
+
+
+        let newData = formatTime(data);
+
+        
+
+        let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+        let filteredAnno = newData.filter(f=> f.seconds < timeRange[1] && f.seconds > timeRange[0])//.classed('selected', true);
+
+        console.log('filtered', filteredAnno)
+         // let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
+
+        let annoDiv = rightDiv.selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
+        let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4').text(d=> d.annotation_type);
+        let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true)
+
+        ///END ANNOTATION
 
         let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
     
@@ -45,7 +109,7 @@ export async function updateVideoAnn(){
             if(time.length > 1){
                 return time[0] <= video.currentTime && time[1] >= video.currentTime 
             }else{
-                let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+                // let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
                 return time[0] < timeRange[1] && time[0] > timeRange[0]
             }
         });
@@ -56,7 +120,7 @@ export async function updateVideoAnn(){
         memoCirc.classed('selected', false);
         memoDivs.classed('selected', false);
 
-        let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
+       // let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
         let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
        
@@ -117,7 +181,6 @@ export async function updateVideoAnn(){
         .text(d=> d.comment)
         .classed('annotation-label', true)
         .attr('x', d=> {
-            console.log('test Mark',d)
             if(d.commentMark === 'push'){
                 let noPx = parseInt(d.posLeft.replace(/px/,""));
                 return noPx+10+"px";
@@ -154,7 +217,7 @@ export function clearSidebar(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
-   console.log('inittag',initTag);
+  
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -243,7 +306,6 @@ export function radioBlob(div, t1Ob, t2Ob, t3Ob, className){
 }
 
 export function doodleSubmit(commentType, user, tags, d, currentTime){
-    console.log(commentType, user, tags, d, currentTime);
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -432,14 +494,18 @@ export function annotationBar(dbRef){
     rect.attr('y', 10);
   
     rect.on('mouseover', (d)=>{
+
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
         memoDivs.classed('selected', true);
         memoDivs.nodes()[0].scrollIntoView();
+
     }).on('mouseout', (d)=> {
+
         let wrap = d3.select('#sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').classed('selected', false);
        // memoDivs.nodes()[0].scrollIntoView();
+
     }).on('click', (d)=> {
         skipAheadCircle(d);
     });
@@ -550,8 +616,6 @@ export function formatCanvas(){
     });
 
     interactionDiv.on('mousemove', function() {
-        console.log('mouse move');
-
         let coords = d3.mouse(this);
         let pushDiv = d3.select('#push-div');
         if(!pushDiv.empty()){

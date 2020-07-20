@@ -44,7 +44,7 @@ export function skipAheadCircle(data){
   wrap.selectAll('.memo').classed('selected', false);
 
   let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === data.key);
-  console.log('memooooo',memoDivs.node(), memoDivs.nodes(), memoDivs.nodes()[0])
+ 
   memoDivs.classed('selected', true);
   memoDivs.nodes()[0].scrollIntoView();
 
@@ -115,8 +115,6 @@ d3.select(videoControls).style('width', `890px`);
 // minutes and seconds
 function formatTime(timeInSeconds) {
 
-  console.log('time', timeInSeconds);
-  
   const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
 
   return {
@@ -167,7 +165,7 @@ function updateSeekTooltip(event) {
 // skipAhead jumps to a different point in the video when the progress bar
 // is clicked
 function skipAhead(event) {
-  console.log('seek skip ahead', event)
+
   const skipTo = event.target.dataset.seek
     ? event.target.dataset.seek
     : event.target.value;
