@@ -14,6 +14,7 @@ export function addCommentButton(d, i, n){
     console.log(d, i, n)
     if(n[i].value === 'off'){
         n[i].value = 'on';
+        d3.select(n[i]).text('Go back');
         let sideWrap = d3.select('#sidebar').select('#annotation-wrap');
         sideWrap.selectAll('*').remove();
         d3.select('#interaction').style('pointer-events', 'all');
@@ -23,6 +24,7 @@ export function addCommentButton(d, i, n){
     }else{
         clearBoard();
         n[i].value = 'off';
+        d3.select(n[i]).text('Add Comment');
         d3.select('#sidebar').select('#annotation-wrap').selectAll('*').remove();
         d3.select('#interaction').style('pointer-events', 'none');
         let ref = firebase.database().ref();  
