@@ -862,6 +862,8 @@ svg {
   z-index: 5000;
   position:absolute;
   top:60px;
+  height: calc(100% - 60px);
+  overflow-y: auto;
   // padding:10px;
   // border: 1px solid gray;
 
@@ -872,6 +874,24 @@ svg {
   border-radius: 5px;
   padding:15px;
   margin:15px;
+  font-size: 12px;
+}
+
+#annotation-right .anno .ref{
+  display: block;
+  color: gray;
+  font-size: 12px;
+  margin-top:10px;
+  font-style: italic;
+}
+
+
+#annotation-right .anno .link{
+  display: block;
+  
+  font-size: 12px;
+  margin-top:10px;
+
 }
 
 #pause-r path, #play-r path{

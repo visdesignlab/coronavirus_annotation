@@ -86,8 +86,6 @@ export async function updateVideoAnn(){
      
         let newData = formatTime(data);
 
-    
-
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filteredAnno = newData.filter(f=> {
            // console.log(f.seconds)
@@ -100,11 +98,22 @@ export async function updateVideoAnn(){
 
         console.log(filteredAnno)
 
+        ///start drawing annotation 
+
         let annoDiv = rightDiv.selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
+        let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
         let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4');
         let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
         annoHeadSpan.classed('badge badge-secondary', true);
-        let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true)
+        let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true);
+
+        let annoRef = annoDiv.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+
+        let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
+        annoLink.attr('href', d=> d.url);
+
+
+
 
         ///END ANNOTATION
 
@@ -127,7 +136,6 @@ export async function updateVideoAnn(){
         memoCirc.classed('selected', false);
         memoDivs.classed('selected', false);
 
-       // let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filtered = memoCirc.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
         let selectedMemoDivs = memoDivs.filter(f=> f.videoTime < timeRange[1] && f.videoTime > timeRange[0]).classed('selected', true);
        
@@ -147,15 +155,12 @@ export async function updateVideoAnn(){
         });
 
         let annoDoodles = annoTest.filter(f=> f.commentMark === "doodle").map(async (dood)=> {
-          
             let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
             return urlDood;
         });
 
         if(d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked){
            
-
-
             let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
             images.attr('src', d=> d);
     
@@ -163,7 +168,6 @@ export async function updateVideoAnn(){
             annoImages.attr('src', d=> d);
     
             let pushedG = svg.selectAll('g.pushed').data(filteredPushes.data()).join('g').classed('pushed', true);
-           // d3.selectAll('.pushed').attr('transform', (d, i)=> `translate( ${d.posLeft}, ${d.posTop} )`);
             
             let circ = pushedG.selectAll('circle').data(d=> [d]).join('circle')
             circ.attr('r', 10);
@@ -183,7 +187,6 @@ export async function updateVideoAnn(){
     
             if(!selectedMemoDivs.empty()){
                 selectedMemoDivs.nodes()[0].scrollIntoView();
-                // d3.select('#sidebar').select('#annotation-wrap').node().scrollTop = selectedMemoDivs[0].node().getBoundingClientRect().y;
             }
     
             let annotationGroup = svg.selectAll('g.annotations').data(annoTest).join('g').classed('annotations', true);
