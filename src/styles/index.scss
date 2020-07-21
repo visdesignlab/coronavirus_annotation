@@ -572,8 +572,12 @@ video{
   width:890px;
 }
 
+#annotation-layer svg{
+  height:100px;
+}
+
 #annotation-layer rect{
-  width:2px;
+  // width:2px;
   height:10px;
   fill-opacity: .4;
 }

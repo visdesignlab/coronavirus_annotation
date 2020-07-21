@@ -47,7 +47,7 @@ export function formatVideoTime(videoTime){
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
 
-export async function updateVideoAnn(){
+export async function updateVideoAnn(data){
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -63,7 +63,7 @@ export async function updateVideoAnn(){
     let interDIV = d3.select('#interaction');
     interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
-    let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
+    // let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
 
 
     /////ANNOTATION STUFF///
@@ -84,10 +84,10 @@ export async function updateVideoAnn(){
 
     video.ontimeupdate = async (event) => {
      
-        let newData = formatTime(data);
+        // let newData = formatTime(data);
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-        let filteredAnno = newData.filter(f=> {
+        let filteredAnno = data.filter(f=> {
            // console.log(f.seconds)
             if(f.seconds.length > 1){
                 return video.currentTime >= f.seconds[0] && video.currentTime <= f.seconds[1];
@@ -487,7 +487,7 @@ export function dropDown(div, optionArray, dropText, dropId, user, coords, callb
     return button;
 }
 
-export function annotationBar(dbRef){
+export async function annotationBar(dbRef){
 
     let dataAnno = d3.entries(dbRef.comments)
     .map(m=> {
@@ -502,10 +502,12 @@ export function annotationBar(dbRef){
 
     let svg = d3.select('#annotation-layer').select('svg');
 
-    let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, svg.node().getBoundingClientRect().width]);
-    let yScale = d3.scaleLinear().domain([0, 1]).range([10,15])
+    let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, 870]);
+    let yScale = d3.scaleLinear().domain([0, 1]).range([10,15]);
 
-    let rect = svg.selectAll('.memo').data(data).join('rect').attr('width', 3).attr('height', 10).classed('memo', true);
+    let commentGroup = svg.selectAll('g.comment-wrap').data([data]).join('g').classed('comment-wrap', true);
+
+    let rect = commentGroup.selectAll('.memo').data(d=>d).join('rect').style('width', '3px').attr('height', 10).classed('memo', true);
     rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
    // rect.style('fill', d=> `#fff`);
     rect.attr('x', (d)=> scale(d.videoTime));
@@ -528,7 +530,40 @@ export function annotationBar(dbRef){
         skipAheadCircle(d);
     });
 
-    updateVideoAnn();
+    
+
+    let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv'));
+    //let formattedAnnoData = formatTime(annotationData);
+
+    let annotationGroup = svg.selectAll('g.annotation-wrap').data([annotationData]).join('g').classed('annotation-wrap', true);
+
+    annotationGroup.attr('transform', 'translate(0, 35)')
+
+    let annotationRects = annotationGroup.selectAll('rect').data(d=> d).join('rect');
+    annotationRects.attr('width', (d)=>{
+        if(d.seconds.length > 1){
+            let calcWidth = scale(d.seconds[1]) - scale(d.seconds[0]);
+            return calcWidth;
+        }else{
+            return 3;
+        }
+    });
+    annotationRects.style('height', '6px')
+    annotationRects.attr('y', (d, i, n)=> {
+
+        if(i > 0){
+            let chosen = d3.selectAll(n).data().filter((f, j)=> {
+                return j < i && f.seconds[1] > d.seconds[0]
+            });
+            console.log('ccccche',chosen)
+            return 7 * chosen.length
+        }else{
+            return 0;
+        }
+    })
+    annotationRects.attr('x', d=> scale(d.seconds[0]));
+
+    updateVideoAnn(annotationData);
 }
 export function clearBoard(){
 
