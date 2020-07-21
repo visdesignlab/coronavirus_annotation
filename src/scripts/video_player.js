@@ -51,9 +51,6 @@ export function skipAheadCircle(data){
 
   let video = document.getElementById('video');
 
-  console.log('currenttime',video.currentTime)
-
-
   video.currentTime = skipTo;
   progressBar.value = skipTo;
   seek.value = skipTo;

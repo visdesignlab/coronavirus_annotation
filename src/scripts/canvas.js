@@ -7,6 +7,7 @@ import { annotationType, tagOptions, annotationInitiation, addTagFunctionality }
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 import { noMarkFormat } from './commentFormat';
+import { currentUserKeeper } from './annotation';
 
 export const doodleKeeper = []
 
@@ -69,12 +70,12 @@ export async function updateVideoAnn(data){
     /////ANNOTATION STUFF///
    
         function formatSeconds(timeInSeconds) {
-          console.log('time', timeInSeconds);
-          const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
-          return {
+            console.log('time', timeInSeconds);
+            const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
+            return {
             minutes: result.substr(3, 2),
             seconds: result.substr(6, 2)
-          };
+            };
         }
 
 
@@ -112,6 +113,18 @@ export async function updateVideoAnn(data){
         let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
         annoLink.attr('href', d=> d.url);
         annoLink.attr('target', '_blank');
+
+        d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+            let currentData = filteredAnno.map(m=> m.text_description);
+            return currentData.indexOf(f.text_description) > -1;
+        }).style('fill-opacity', '1');
+
+        d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+            let currentData = filteredAnno.map(m=> m.text_description);
+            return currentData.indexOf(f.text_description) === -1;
+        }).style('fill-opacity', '.4');
+
+        console.log('test',testS)
 
         ///END ANNOTATION
 
@@ -531,7 +544,10 @@ export async function annotationBar(dbRef){
         skipAheadCircle(d.videoTime);
     });
 
-    let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv'));
+    let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv')).map((m, i)=> {
+        m.index = i;
+        return m;
+    });
     //let formattedAnnoData = formatTime(annotationData);
 
     let annotationGroup = svg.selectAll('g.annotation-wrap').data([annotationData]).join('g').classed('annotation-wrap', true);
@@ -570,7 +586,6 @@ export async function annotationBar(dbRef){
         // let annoDivs = wrap.selectAll('.anno').filter(f=> f.text_description === d.text_description);
         // memoDivs.classed('selected', true);
         // memoDivs.nodes()[0].scrollIntoView();
-        console.log(n[i])
         d3.select(n[i]).style('fill-opacity', '1')
     })
     .on('mouseout', (d, i, n)=> {
