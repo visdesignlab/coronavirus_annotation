@@ -97,8 +97,6 @@ export async function updateVideoAnn(data){
             }
         })//.classed('selected', true);
 
-        console.log(filteredAnno)
-
         ///start drawing annotation 
 
         let annoDiv = rightDiv.selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
@@ -124,7 +122,7 @@ export async function updateVideoAnn(data){
             return currentData.indexOf(f.text_description) === -1;
         }).style('fill-opacity', '.4');
 
-        console.log('test',testS)
+    
 
         ///END ANNOTATION
 
@@ -248,7 +246,7 @@ export function clearSidebar(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
-  
+    console.log('tag',tag, initTag, d3.select('#text-area-id').node().value)
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -258,13 +256,13 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         posLeft: coords != null ? coords[0] : null,
         upvote: 0,
         downvote: 0,
-        tags: tag === 'Tag' ? 'none' : tag,
+        tags: tag === '' ? 'none' : tag,
         replies: replyTo,
         reply: replyBool,
         uid: user.uid,
         displayName: user.displayName,
         resolved: false,
-        initTag: initTag,
+        initTag: initTag? initTag : 'other',
         specialAnno: annoBool,
 
     }
@@ -353,6 +351,7 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d === null ? 'other' : d.tag, false);
         dataPush.doodle = true;
         dataPush.doodleName = snapshot.metadata.name;
+        console.log('dataP',dataPush)
         let refCom = firebase.database().ref(commentType);
                     
         refCom.push(dataPush);
@@ -361,144 +360,144 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
     });
 }
 
-export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
+// export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
    
-    let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
-   // dropdiv.style('display', 'inline-block');
-    let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
-    let texting = button.text(dropText);
-    button.node().value = dropText;
-    let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
-    dropContent.append('a').text('text').attr('font-size', 11);
-    let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
-    if(!callbackBool){
-        options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
-    }
+//     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
+//    // dropdiv.style('display', 'inline-block');
+//     let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
+//     let texting = button.text(dropText);
+//     button.node().value = dropText;
+//     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
+//     dropContent.append('a').text('text').attr('font-size', 11);
+//     let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
+//     if(!callbackBool){
+//         options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
+//     }
    
-    options.on('click', (d, i, n)=> {
-       let testToo = button.text(d.key);
+//     options.on('click', (d, i, n)=> {
+//        let testToo = button.text(d.key);
 
-       let commentType = d.key === 'annotation' ? "annotations" : "comments";
+//        let commentType = d.key === 'annotation' ? "annotations" : "comments";
 
-        button.node().value = d.key;
-        dropContent.classed('show', false);
-        if(callbackBool){
-            d3.select('.template-wrap').selectAll('*').remove();
-            div.select('.tabber').remove();
-            div.select('#comment-submit-button').remove();
-            d.tempCall(div, user, coords);
+//         button.node().value = d.key;
+//         dropContent.classed('show', false);
+//         if(callbackBool){
+//             d3.select('.template-wrap').selectAll('*').remove();
+//             div.select('.tabber').remove();
+//             div.select('#comment-submit-button').remove();
+//             d.tempCall(div, user, coords);
 
-            let t1Ob = {label: "Drop a Pin", callBack: formatPush}
-            let t2Ob = {label: "Draw", callBack: formatCanvas}
+//             let t1Ob = {label: "Drop a Pin", callBack: formatPush}
+//             let t2Ob = {label: "Draw", callBack: formatCanvas}
 
-            let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
+//             let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
 
-            let interDictionary = {
-                t1: noMarkFormat,
-                t2: formatPush,
-                t3: formatCanvas
-            }
+//             let interDictionary = {
+//                 t1: noMarkFormat,
+//                 t2: formatPush,
+//                 t3: formatCanvas
+//             }
 
-            let interactionVal = interDictionary[d3.select('.media-tabber').node().value]();//if(d3.select('.media-tabber').node().value === 't2');
+//             let interactionVal = interDictionary[d3.select('.media-tabber').node().value]();//if(d3.select('.media-tabber').node().value === 't2');
 
-            let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
+//             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
 
-            submit.on('click', async ()=> {
+//             submit.on('click', async ()=> {
         
-                d3.event.stopPropagation();
-                let tags = d3.select('.tag-wrap').selectAll('.badge');
+//                 d3.event.stopPropagation();
+//                 let tags = d3.select('.tag-wrap').selectAll('.badge');
               
 
-                if(d.key === 'question'){
+//                 if(d.key === 'question'){
                  
-                   if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
-                    window.alert("select a type of question");
+//                    if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
+//                     window.alert("select a type of question");
 
-                   }else{
+//                    }else{
 
-                    if(form.node().value === 't1'){
+//                     if(form.node().value === 't1'){
                     
-                        let currentTime = document.getElementById('video').currentTime;
-                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+//                         let currentTime = document.getElementById('video').currentTime;
+//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                       
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, false);
-                        let refCom = firebase.database().ref(commentType);                     
-                        refCom.push(dataPush);
-                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        clearSidebar();
+//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, false);
+//                         let refCom = firebase.database().ref(commentType);                     
+//                         refCom.push(dataPush);
+//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
+//                         clearSidebar();
                         
     
-                        }else{
+//                         }else{
                         
-                            doodleKeeper(user, tags, d);
+//                             doodleKeeper(user, tags, d);
                   
-                        }
-                    } 
+//                         }
+//                     } 
 
-                }else if(d.key === 'annotation'){
+//                 }else if(d.key === 'annotation'){
 
-                    let timeBool = d3.select('.time-tabber').node().value;
+//                     let timeBool = d3.select('.time-tabber').node().value;
 
-                    function getRange(){
-                        let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
-                        let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
+//                     function getRange(){
+//                         let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
+//                         let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
                      
-                        return `[${sliderRange2},${sliderRange1}]`
-                    }
+//                         return `[${sliderRange2},${sliderRange1}]`
+//                     }
 
-                    let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
+//                     let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
 
-                    if(form.node().value === 't2'){
+//                     if(form.node().value === 't2'){
 
-                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
+//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
                         
-                        let refCom = firebase.database().ref(commentType);                     
-                        refCom.push(dataPush);
-                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        clearSidebar();
+//                         let refCom = firebase.database().ref(commentType);                     
+//                         refCom.push(dataPush);
+//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
+//                         clearSidebar();
     
-                    }else if(form.node().value === 't3'){
-                        doodleSubmit(commentType, user, tags, d, currentTime);
-                    }
+//                     }else if(form.node().value === 't3'){
+//                         doodleSubmit(commentType, user, tags, d, currentTime);
+//                     }
 
-                }else{
-                    let currentTime = document.getElementById('video').currentTime;
-                    if(form.node().value === 't2'){
+//                 }else{
+//                     let currentTime = document.getElementById('video').currentTime;
+//                     if(form.node().value === 't2'){
                     
-                        let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                         
-                        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
+//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
                         
-                        let refCom = firebase.database().ref(commentType);                     
-                        refCom.push(dataPush);
-                        checkDatabase(firebase.database().ref(), updateSideAnnotations);
-                        clearSidebar();
+//                         let refCom = firebase.database().ref(commentType);                     
+//                         refCom.push(dataPush);
+//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
+//                         clearSidebar();
     
-                    }else if(form.node().value === 't3'){
-                        doodleSubmit(commentType, user, tags, d, currentTime);
-                    }
-                }
-            });
-        }
-        if(questionBool){
-            d3.select('.tag-wrap').remove();
-            d3.select('.input-group.mb-3').remove();
-            addTagFunctionality(div, [d.key, 'question']);
-        }
-    });
+//                     }else if(form.node().value === 't3'){
+//                         doodleSubmit(commentType, user, tags, d, currentTime);
+//                     }
+//                 }
+//             });
+//         }
+//         if(questionBool){
+//             d3.select('.tag-wrap').remove();
+//             d3.select('.input-group.mb-3').remove();
+//             addTagFunctionality(div, [d.key, 'question']);
+//         }
+//     });
 
-    button.on('click', (d, i, n)=> {
-        if(dropContent.classed('show')){
-            dropContent.classed('show', false);
-        }else{
-            dropContent.classed('show', true);
-        }
-    });
-    options.raise()
-    return button;
-}
+//     button.on('click', (d, i, n)=> {
+//         if(dropContent.classed('show')){
+//             dropContent.classed('show', false);
+//         }else{
+//             dropContent.classed('show', true);
+//         }
+//     });
+//     options.raise()
+//     return button;
+// }
 
 export async function annotationBar(dbRef){
 

@@ -44,12 +44,10 @@ export function formatCommentBox(div){
     dropContent.append('a').text('text').attr('font-size', 11);
     let options = dropContent.selectAll('a').data(tagOptions).join('a').text(d=> d.key);
 
-  
     options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
    
-   
     options.on('click', (d, i, n)=> {
-       let testToo = button.text(d.key);
+        let testToo = button.text(d.key);
 
         button.node().value = d.key;
         dropContent.classed('show', false);
@@ -81,17 +79,17 @@ export function formatCommentBox(div){
 
     submit.on('click', async ()=> {
 
-        console.log('button submit')
-
         let user = currentUserKeeper[currentUserKeeper.length -1];
         
         d3.event.stopPropagation();
-        let tags = d3.select('.tag-wrap').selectAll('.badge');
+
+        if(d3.select('#text-area-id').node().value != ''){
+
+            let tags = d3.select('.tag-wrap').selectAll('.badge');
       
             let currentTime = document.getElementById('video').currentTime;
 
             if(form.node().value === 't2'){
-            
             
                 let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                 let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
@@ -115,6 +113,11 @@ export function formatCommentBox(div){
                 clearSidebar();
                 d3.select('#interaction').selectAll("*").remove();
             }
+
+        }else{
+            window.alert('Please add a comment first');
+        }
+       
     });
 }
 

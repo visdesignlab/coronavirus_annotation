@@ -11,7 +11,7 @@ import { image } from 'd3';
 import { formatTimeControl, formatCommentBox, formatAnnotationBox } from './commentFormat';
 
 export function addCommentButton(d, i, n){
-    console.log(d, i, n)
+   
     if(n[i].value === 'off'){
         n[i].value = 'on';
         d3.select(n[i]).text('Go back');
