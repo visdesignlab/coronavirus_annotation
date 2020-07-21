@@ -111,9 +111,7 @@ export async function updateVideoAnn(){
 
         let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
         annoLink.attr('href', d=> d.url);
-
-
-
+        annoLink.attr('target', '_blank');
 
         ///END ANNOTATION
 
