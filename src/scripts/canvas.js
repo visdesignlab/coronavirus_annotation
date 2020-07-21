@@ -527,10 +527,9 @@ export async function annotationBar(dbRef){
        // memoDivs.nodes()[0].scrollIntoView();
 
     }).on('click', (d)=> {
-        skipAheadCircle(d);
+        console.log('seconds',d.videoTime)
+        skipAheadCircle(d.videoTime);
     });
-
-    
 
     let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv'));
     //let formattedAnnoData = formatTime(annotationData);
@@ -548,9 +547,11 @@ export async function annotationBar(dbRef){
             return 3;
         }
     });
-    annotationRects.style('height', '6px')
-    annotationRects.attr('y', (d, i, n)=> {
+    annotationRects.style('height', '6px');
+    annotationRects.style('stroke', '#fff');
+    annotationRects.style('stroke-width', '1px');
 
+    annotationRects.attr('y', (d, i, n)=> {
         if(i > 0){
             let chosen = d3.selectAll(n).data().filter((f, j)=> {
                 return j < i && f.seconds[1] > d.seconds[0]
@@ -560,8 +561,25 @@ export async function annotationBar(dbRef){
         }else{
             return 0;
         }
-    })
+    });
+
     annotationRects.attr('x', d=> scale(d.seconds[0]));
+
+    annotationRects.on('mouseover', (d, i, n)=> {
+        // let wrap = d3.select('#annotation-right');
+        // let annoDivs = wrap.selectAll('.anno').filter(f=> f.text_description === d.text_description);
+        // memoDivs.classed('selected', true);
+        // memoDivs.nodes()[0].scrollIntoView();
+        console.log(n[i])
+        d3.select(n[i]).style('fill-opacity', '1')
+    })
+    .on('mouseout', (d, i, n)=> {
+        d3.select(n[i]).style('fill-opacity', '.4')
+    })
+    .on('click', (d)=> {
+        console.log('seconds',d.seconds[0])
+        skipAheadCircle(parseFloat(d.seconds[0]));
+    })
 
     updateVideoAnn(annotationData);
 }

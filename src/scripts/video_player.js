@@ -37,18 +37,23 @@ export function togglePlay() {
 
 export function skipAheadCircle(data){
 
-  let skipTo = data.videoTime;
+  let skipTo = data;//.videoTime;
   const progressBar = document.getElementById('progress-bar');
   
-  let wrap = d3.select('#sidebar').select('#annotation-wrap');
-  wrap.selectAll('.memo').classed('selected', false);
+  // let wrap = d3.select('#sidebar').select('#annotation-wrap');
+  // wrap.selectAll('.memo').classed('selected', false);
 
-  let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === data.key);
+  // let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === data.key);
  
-  memoDivs.classed('selected', true);
-  memoDivs.nodes()[0].scrollIntoView();
+  // memoDivs.classed('selected', true);
+  // memoDivs.nodes()[0].scrollIntoView();
+
 
   let video = document.getElementById('video');
+
+  console.log('currenttime',video.currentTime)
+
+
   video.currentTime = skipTo;
   progressBar.value = skipTo;
   seek.value = skipTo;
