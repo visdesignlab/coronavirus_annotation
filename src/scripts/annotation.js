@@ -41,8 +41,6 @@ if(mainWrap){
 
           d3.select('.add-comment').select('button').on('click', (d, i, n)=> addCommentButton(d, i, n));
 
-          annoTypes().then(d=> console.log(d))
-
           clearSidebar();
 
         // User is signed in.

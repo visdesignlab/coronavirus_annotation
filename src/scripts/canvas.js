@@ -70,7 +70,6 @@ export async function updateVideoAnn(data, annoType){
     /////ANNOTATION STUFF///
    
         function formatSeconds(timeInSeconds) {
-            console.log('time', timeInSeconds);
             const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
             return {
             minutes: result.substr(3, 2),
@@ -89,7 +88,7 @@ export async function updateVideoAnn(data, annoType){
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
         let filteredAnno = data.filter(f=> {
-           // console.log(f.seconds)
+        
             if(f.seconds.length > 1){
                 return video.currentTime >= f.seconds[0] && video.currentTime <= f.seconds[1];
             }else{
@@ -247,7 +246,7 @@ export function clearSidebar(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
-    console.log('tag',tag, initTag, d3.select('#text-area-id').node().value)
+   
     return {
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
@@ -265,7 +264,6 @@ export function annotationMaker(user, currentTime, tag, coords, replyBool, reply
         resolved: false,
         initTag: initTag? initTag : 'other',
         specialAnno: annoBool,
-
     }
 }
 
@@ -352,7 +350,7 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d === null ? 'other' : d.tag, false);
         dataPush.doodle = true;
         dataPush.doodleName = snapshot.metadata.name;
-        console.log('dataP',dataPush)
+       
         let refCom = firebase.database().ref(commentType);
                     
         refCom.push(dataPush);
@@ -541,7 +539,6 @@ export async function annotationBar(dbRef){
        // memoDivs.nodes()[0].scrollIntoView();
 
     }).on('click', (d)=> {
-        console.log('seconds',d.videoTime)
         skipAheadCircle(d.videoTime);
     });
 
@@ -572,7 +569,6 @@ export async function annotationBar(dbRef){
     annotationRects.style('stroke-width', '1px');
     annotationRects.attr('fill', (d)=> {
         let test = annoType.filter(f=> f.type === d.annotation_type)[0].color;
-        console.log('test', test);
         return test;
     });
 
@@ -581,7 +577,7 @@ export async function annotationBar(dbRef){
             let chosen = d3.selectAll(n).data().filter((f, j)=> {
                 return j < i && f.seconds[1] > d.seconds[0]
             });
-            console.log('ccccche',chosen)
+     
             return 7 * chosen.length
         }else{
             return 0;
@@ -601,7 +597,7 @@ export async function annotationBar(dbRef){
         d3.select(n[i]).style('fill-opacity', '.4')
     })
     .on('click', (d)=> {
-        console.log('seconds',d.seconds[0])
+  
         skipAheadCircle(parseFloat(d.seconds[0]));
     })
 

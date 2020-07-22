@@ -95,7 +95,6 @@ export function updateSideAnnotations(dbRef){
         }
     });
     
-
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
 
     memoDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
@@ -165,14 +164,14 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.on('click', d=>{
-       
+       console.log('click', d.videoTime)
         if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
         d3.event.target.tagName.toLowerCase() === 'button' || 
         d3.event.target.tagName.toLowerCase() === 'a' || 
         d3.event.target.tagName.toLowerCase() === 'svg'){
         
         }else{ 
-            skipAheadCircle(d);
+            skipAheadCircle(d.videoTime);
         }     
     });
 
