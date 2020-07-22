@@ -32,7 +32,6 @@ export function addCommentButton(d, i, n){
     }
 }
     
-
 export function specialUserCheck(dbRef){
 
     let specialUserList = d3.entries(dbRef['special-users']).map(m=> m.key);

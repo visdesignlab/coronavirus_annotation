@@ -85,6 +85,17 @@ export function updateSideAnnotations(dbRef){
         return d.tags.split(',');
     }).join('span').classed('badge badge-secondary', true).text(d=> d);
 
+    let typeOf = memoDivs.selectAll('i.fas').data(d=> [d]).join('i').attr('class', (d)=> {
+        if(d.commentMark === 'push'){
+            return 'fas fa-map-pin'
+        }else if(d.commentMark === 'doodle'){
+            return 'fas fa-paint-brush'
+        }else{
+            return 'hidden';
+        }
+    });
+    
+
     memoDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
 
     memoDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
