@@ -20,6 +20,15 @@ export const tagOptions = [
     {key: 'other', color: 'black'}
 ];
 
+
+
+export const colorArray = ['#2E86C1','#2ECC71','#F1C40F','#F10F42','black'];
+
+export async function annoTypes(){
+  let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
+  return Array.from(new Set(data.map(m=> m.annotation_type))).map((m, i)=> { return {type: m, color: colorArray[i]}});
+}
+
 function updateTags(node, tagWrap, tagArray){
 
     tagArray.push(node.value);

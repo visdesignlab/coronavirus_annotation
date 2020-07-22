@@ -5,7 +5,7 @@ import { renderNav, toggleMagic, updateSideAnnotations} from './sidebar';
 import * as firebase from 'firebase';
 import "firebase/auth";
 import { firebaseConfig, checkDatabase, dataKeeper } from './firebaseStuff';
-import { annotationType, defaultTemplate, annotationTemplate } from './templates';
+import { annotationType, defaultTemplate, annotationTemplate, annoTypes } from './templates';
 import { dropDown, clearSidebar } from './canvas';
 import { image } from 'd3';
 import { specialUserCheck, addCommentButton } from './topToolbar';
@@ -41,11 +41,13 @@ if(mainWrap){
 
           d3.select('.add-comment').select('button').on('click', (d, i, n)=> addCommentButton(d, i, n));
 
+          annoTypes().then(d=> console.log(d))
+
           clearSidebar();
 
         // User is signed in.
       } else {
-          console.log("NO USER", user);
+        console.log("NO USER", user);
         // No user is signed in.
       }
         currentUserKeeper.push(user);

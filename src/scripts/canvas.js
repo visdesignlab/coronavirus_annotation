@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import * as firebase from 'firebase';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
-import { annotationType, tagOptions, annotationInitiation, addTagFunctionality } from './templates';
+import { annotationType, tagOptions, annotationInitiation, addTagFunctionality, annoTypes } from './templates';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 import { noMarkFormat } from './commentFormat';
@@ -520,7 +520,8 @@ export async function annotationBar(dbRef){
     let commentGroup = svg.selectAll('g.comment-wrap').data([data]).join('g').classed('comment-wrap', true);
 
     let rect = commentGroup.selectAll('.memo').data(d=>d).join('rect').style('width', '3px').attr('height', 10).classed('memo', true);
-    rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
+    // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
+    // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
    // rect.style('fill', d=> `#fff`);
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
@@ -547,6 +548,9 @@ export async function annotationBar(dbRef){
         m.index = i;
         return m;
     });
+
+    let annoType = await annoTypes();
+
     //let formattedAnnoData = formatTime(annotationData);
 
     let annotationGroup = svg.selectAll('g.annotation-wrap').data([annotationData]).join('g').classed('annotation-wrap', true);
@@ -565,6 +569,11 @@ export async function annotationBar(dbRef){
     annotationRects.style('height', '6px');
     annotationRects.style('stroke', '#fff');
     annotationRects.style('stroke-width', '1px');
+    annotationRects.attr('fill', (d)=> {
+        let test = annoType.filter(f=> f.type === d.annotation_type)[0].color;
+        console.log('test', test);
+        return test;
+    });
 
     annotationRects.attr('y', (d, i, n)=> {
         if(i > 0){
