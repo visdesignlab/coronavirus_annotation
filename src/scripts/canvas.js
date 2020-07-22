@@ -48,7 +48,7 @@ export function formatVideoTime(videoTime){
     return `${minutes}:${('0' + seconds).slice(-2)}`;
 }
 
-export async function updateVideoAnn(data){
+export async function updateVideoAnn(data, annoType){
 
     var storage = firebase.storage();
     var storageRef = storage.ref();
@@ -104,6 +104,7 @@ export async function updateVideoAnn(data){
         let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4');
         let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
         annoHeadSpan.classed('badge badge-secondary', true);
+        annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color)
         let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true);
 
         let annoRef = annoDiv.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
@@ -604,7 +605,7 @@ export async function annotationBar(dbRef){
         skipAheadCircle(parseFloat(d.seconds[0]));
     })
 
-    updateVideoAnn(annotationData);
+    updateVideoAnn(annotationData, annoType);
 }
 export function clearBoard(){
 
