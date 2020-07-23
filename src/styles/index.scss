@@ -36,6 +36,7 @@ html {
   left:0;
   right:0;
   bottom:0;
+  overflow-y: auto;
 }
 
 #annotation-sidebar{
@@ -69,12 +70,54 @@ html {
   height:100%;
 }
 
+
+#main-wrap{
+  // width:calc(100% - var(--sidbar-width));
+   width:50%;
+  // flex: 3;  /*ensures that the container will take up the full height of the parent container*/
+   overflow-y: auto;  /*adds scroll to this container*/
+   margin-top:60px;
+   height:calc(100%-60px)
+ }
+
 @media only screen and (max-width: 1530px) {
   #comment-sidebar {
     background-color: lightblue;
     display:none;
     width:0;
     height:0;
+  }
+}
+
+@media only screen and (max-width: 1120px) {
+
+  #comment-sidebar {
+    background-color: lightblue;
+    display:none;
+    width:0;
+    height:0;
+    position:static;
+  }
+
+  #annotation-sidebar{
+    width:100%;
+    display:block;
+    position:static;
+
+  }
+
+  #annotation-sidebar .anno-wrap{
+    flex-direction: row;
+  }
+
+  #main-wrap{
+    width:100%;
+    display:block;
+    position:static;
+  }
+  #container{
+    display:inline-block;
+    width:100%;
   }
 }
 
@@ -109,14 +152,6 @@ html {
   width:100%;
 }
 
-#main-wrap{
- // width:calc(100% - var(--sidbar-width));
-  width:50%;
- // flex: 3;  /*ensures that the container will take up the full height of the parent container*/
-  overflow-y: auto;  /*adds scroll to this container*/
-  margin-top:60px;
-  height:calc(100%-60px)
-}
 
 //#main-wrap video, 
 #main-wrap iframe, 

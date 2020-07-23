@@ -100,7 +100,7 @@ export async function updateVideoAnn(data, annoType){
 
         let annoDiv = rightDiv.select('.anno-wrap').selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
         let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
-        let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4');
+        let annoTypeHeader = annoDiv.selectAll('h6').data(d=> [d]).join('h6');
         let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
         annoHeadSpan.classed('badge badge-secondary', true);
         annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color)
@@ -122,10 +122,7 @@ export async function updateVideoAnn(data, annoType){
             return currentData.indexOf(f.text_description) === -1;
         }).style('fill-opacity', '.4');
 
-    
-
         ///END ANNOTATION
-
         let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
     
         let annoTest = annotations.filter((f,i)=> {
@@ -134,7 +131,6 @@ export async function updateVideoAnn(data, annoType){
             if(time.length > 1){
                 return time[0] <= video.currentTime && time[1] >= video.currentTime;
             }else{
-                // let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
                 return time[0] < timeRange[1] && time[0] > timeRange[0];
             }
         });
