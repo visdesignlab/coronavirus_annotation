@@ -68,7 +68,7 @@ export function updateSideAnnotations(dbRef){
         return recurse(d, replyData, 0);
     });
 
-    let wrap = d3.select('#sidebar').select('#annotation-wrap');
+    let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
 
     wrap.selectAll('*').remove();
 

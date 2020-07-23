@@ -78,7 +78,7 @@ export async function updateVideoAnn(data, annoType){
         }
 
 
-    let rightDiv = d3.select('#annotation-right');
+    let rightDiv = d3.select('#annotation-sidebar');
 
     //  });
 
@@ -98,7 +98,7 @@ export async function updateVideoAnn(data, annoType){
 
         ///start drawing annotation 
 
-        let annoDiv = rightDiv.selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
+        let annoDiv = rightDiv.select('.anno-wrap').selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
         let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
         let annoTypeHeader = annoDiv.selectAll('h4').data(d=> [d]).join('h4');
         let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
@@ -140,7 +140,7 @@ export async function updateVideoAnn(data, annoType){
         });
 
         let memoCirc = d3.select('#annotation-layer').selectAll('.memo');
-        let memoDivs = d3.select('#sidebar').select('#annotation-wrap').selectAll('.memo');
+        let memoDivs = d3.select('#comment-sidebar').select('#annotation-wrap').selectAll('.memo');
 
         memoCirc.classed('selected', false);
         memoDivs.classed('selected', false);
@@ -184,13 +184,13 @@ export async function updateVideoAnn(data, annoType){
             circ.attr('cy', d=> d.posTop);
             circ.attr('fill', 'red');
             circ.on('mouseover', (d)=>{
-                let wrap = d3.select('#sidebar').select('#annotation-wrap');
+                let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
                 memoDivs.classed('selected', true);
                 memoDivs.nodes()[0].scrollIntoView();
     
             }).on('mouseout', (d)=> {
-                let wrap = d3.select('#sidebar').select('#annotation-wrap');
+                let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').classed('selected', false);
             });
     
@@ -359,145 +359,6 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
     });
 }
 
-// export function dropDown(div, optionArray, dropText, dropId, user, coords, callbackBool, questionBool){
-   
-//     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
-//    // dropdiv.style('display', 'inline-block');
-//     let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
-//     let texting = button.text(dropText);
-//     button.node().value = dropText;
-//     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
-//     dropContent.append('a').text('text').attr('font-size', 11);
-//     let options = dropContent.selectAll('a').data(optionArray).join('a').text(d=> d.key);
-//     if(!callbackBool){
-//         options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
-//     }
-   
-//     options.on('click', (d, i, n)=> {
-//        let testToo = button.text(d.key);
-
-//        let commentType = d.key === 'annotation' ? "annotations" : "comments";
-
-//         button.node().value = d.key;
-//         dropContent.classed('show', false);
-//         if(callbackBool){
-//             d3.select('.template-wrap').selectAll('*').remove();
-//             div.select('.tabber').remove();
-//             div.select('#comment-submit-button').remove();
-//             d.tempCall(div, user, coords);
-
-//             let t1Ob = {label: "Drop a Pin", callBack: formatPush}
-//             let t2Ob = {label: "Draw", callBack: formatCanvas}
-
-//             let form = radioBlob(div, t1Ob, t2Ob, 'media-tabber');
-
-//             let interDictionary = {
-//                 t1: noMarkFormat,
-//                 t2: formatPush,
-//                 t3: formatCanvas
-//             }
-
-//             let interactionVal = interDictionary[d3.select('.media-tabber').node().value]();//if(d3.select('.media-tabber').node().value === 't2');
-
-//             let submit = div.append('button').attr('id', 'comment-submit-button').text('Add').classed('btn btn-secondary', true);
-
-//             submit.on('click', async ()=> {
-        
-//                 d3.event.stopPropagation();
-//                 let tags = d3.select('.tag-wrap').selectAll('.badge');
-              
-
-//                 if(d.key === 'question'){
-                 
-//                    if(d3.select('.q-tag-drop').select('button').node().value != 'biology' && d3.select('.q-tag-drop').select('button').node().value != 'animation'){
-//                     window.alert("select a type of question");
-
-//                    }else{
-
-//                     if(form.node().value === 't1'){
-                    
-//                         let currentTime = document.getElementById('video').currentTime;
-//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                      
-//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, false);
-//                         let refCom = firebase.database().ref(commentType);                     
-//                         refCom.push(dataPush);
-//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-//                         clearSidebar();
-                        
-    
-//                         }else{
-                        
-//                             doodleKeeper(user, tags, d);
-                  
-//                         }
-//                     } 
-
-//                 }else if(d.key === 'annotation'){
-
-//                     let timeBool = d3.select('.time-tabber').node().value;
-
-//                     function getRange(){
-//                         let sliderRange1 = d3.select('.range-svg').select('#labelright').text();
-//                         let sliderRange2 = d3.select('.range-svg').select('#labelleft').text();
-                     
-//                         return `[${sliderRange2},${sliderRange1}]`
-//                     }
-
-//                     let currentTime = timeBool === 't2' ? getRange() : `[${document.getElementById('video').currentTime}]`;
-
-//                     if(form.node().value === 't2'){
-
-//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                        
-//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
-                        
-//                         let refCom = firebase.database().ref(commentType);                     
-//                         refCom.push(dataPush);
-//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-//                         clearSidebar();
-    
-//                     }else if(form.node().value === 't3'){
-//                         doodleSubmit(commentType, user, tags, d, currentTime);
-//                     }
-
-//                 }else{
-//                     let currentTime = document.getElementById('video').currentTime;
-//                     if(form.node().value === 't2'){
-                    
-//                         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
-                        
-//                         let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', d.tag, commentType === "annotations");
-                        
-//                         let refCom = firebase.database().ref(commentType);                     
-//                         refCom.push(dataPush);
-//                         checkDatabase(firebase.database().ref(), updateSideAnnotations);
-//                         clearSidebar();
-    
-//                     }else if(form.node().value === 't3'){
-//                         doodleSubmit(commentType, user, tags, d, currentTime);
-//                     }
-//                 }
-//             });
-//         }
-//         if(questionBool){
-//             d3.select('.tag-wrap').remove();
-//             d3.select('.input-group.mb-3').remove();
-//             addTagFunctionality(div, [d.key, 'question']);
-//         }
-//     });
-
-//     button.on('click', (d, i, n)=> {
-//         if(dropContent.classed('show')){
-//             dropContent.classed('show', false);
-//         }else{
-//             dropContent.classed('show', true);
-//         }
-//     });
-//     options.raise()
-//     return button;
-// }
-
 export async function annotationBar(dbRef){
 
     let dataAnno = d3.entries(dbRef.comments)
@@ -527,14 +388,14 @@ export async function annotationBar(dbRef){
   
     rect.on('mouseover', (d)=>{
 
-        let wrap = d3.select('#sidebar').select('#annotation-wrap');
+        let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
         memoDivs.classed('selected', true);
         memoDivs.nodes()[0].scrollIntoView();
 
     }).on('mouseout', (d)=> {
 
-        let wrap = d3.select('#sidebar').select('#annotation-wrap');
+        let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
         let memoDivs = wrap.selectAll('.memo').classed('selected', false);
        // memoDivs.nodes()[0].scrollIntoView();
 
@@ -587,7 +448,7 @@ export async function annotationBar(dbRef){
     annotationRects.attr('x', d=> scale(d.seconds[0]));
 
     annotationRects.on('mouseover', (d, i, n)=> {
-        // let wrap = d3.select('#annotation-right');
+        // let wrap = d3.select('#annotation-sidebar');
         // let annoDivs = wrap.selectAll('.anno').filter(f=> f.text_description === d.text_description);
         // memoDivs.classed('selected', true);
         // memoDivs.nodes()[0].scrollIntoView();
@@ -746,7 +607,7 @@ export function formatCanvas(){
   
     div.onmousedown=function(e) {
   
-          let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+          let sideWidth = document.getElementById('comment-sidebar').getBoundingClientRect();
   
           oldX = (e.pageX - (sideWidth.width + 11));
           oldY = (e.pageY - 40);
@@ -755,7 +616,7 @@ export function formatCanvas(){
     }
     div.onmousemove=function(e) {
   
-      let sideWidth = document.getElementById('sidebar').getBoundingClientRect();
+      let sideWidth = document.getElementById('comment-sidebar').getBoundingClientRect();
   
      // var mouseX = (e.pageX - sideWidth.width);
       var mouseX = (e.pageX - (sideWidth.width + 11));

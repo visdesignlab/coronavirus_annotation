@@ -90,7 +90,7 @@ export function formatCommentBox(div){
             let currentTime = document.getElementById('video').currentTime;
 
             if(form.node().value === 't2'){
-            
+                console.log('this is a push', d3.select('#push-div'), !d3.select('#push-div').empty());
                 let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
                 let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
                 let refCom = firebase.database().ref(commentType);                     
@@ -113,6 +113,8 @@ export function formatCommentBox(div){
                 clearSidebar();
                 d3.select('#interaction').selectAll("*").remove();
             }
+
+            d3.select('.add-comment').select('button').text('Add Comment');
 
         }else{
             window.alert('Please add a comment first');
