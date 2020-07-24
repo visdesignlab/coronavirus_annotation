@@ -105,11 +105,9 @@ html {
     position:static;
 
   }
-
   #annotation-sidebar .anno-wrap{
     flex-direction: row;
   }
-
   #main-wrap{
     width:100%;
     display:block;
@@ -122,15 +120,24 @@ html {
 }
 
 #top-bar{
-  width:100%;
-  height:50px;
-  position: absolute;
-  top:0;
+  // width:100%;
+  // height:50px;
+  // position: absolute;
+  // top:0;
   border-bottom: 1px solid #E8E8E8;
   color: var(--ui-gray);
-  z-index: 100;
-  padding-top:10px;
+  // z-index: 100;
+  // padding-top:10px;
+  // background: #0596d8;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 1px 2px 3px #ccc;
+  // color: white;
+  display: flex;
+  flex-flow: row nowrap;
 }
+
+
 
 #annotation-wrap{
   margin:auto;
@@ -175,29 +182,41 @@ html {
 }
 
 .add-comment{
-  float:right;
+  //float:right;
   padding-top:3px;
   text-align: center;
-  width:20%;
+  //width:20%;
   display: inline;
-}
+  flex: 1 0 auto;
+ // align-self: flex-end;
+  align-items: flex-end;
 
-.user-wrap{
-  text-align: center;
-  padding:8px 30px;
-  //width:40%;
-  display:inline-block;
-  //background-color: var(--ui-gray);
   
 }
 
-.add-annotation{
-  float: right;
-  padding-top: 3px;
-  text-align: center;
-  width: 20%;
-  display:inline;
+.user-wrap{
+  //text-align: center;
+  padding:8px 30px;
+  //width:40%;
+  display:inline-block;
+  flex: 1 0 auto;
+  align-self: start;
+  //background-color: var(--ui-gray);
 }
+
+.show-comments{
+  display:inline-block;
+  flex: 1 0 auto;
+  align-self: center;
+}
+
+// .add-annotation{
+//   float: right;
+//   padding-top: 3px;
+//   text-align: center;
+//   width: 20%;
+//   display:inline;
+// }
 
 .togg-wrap{
  margin: auto;
@@ -636,9 +655,7 @@ video{
   display:inline-block;
   width:200px;
 }
-.show-comments{
-  display:inline-block;
-}
+
 
 #annotation-layer{
   position: relative;
