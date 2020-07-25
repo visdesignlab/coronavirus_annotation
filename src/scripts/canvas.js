@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import * as firebase from 'firebase';
 import { Math } from 'core-js';
 import { skipAheadCircle } from './video_player';
-import { annotationType, tagOptions, annotationInitiation, addTagFunctionality, annoTypes } from './templates';
+import { annotationType, tagOptions, annotationInitiation, addTagFunctionality, annoTypes, defaultTemplate } from './templates';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 import { noMarkFormat } from './commentFormat';
@@ -164,6 +164,9 @@ export async function updateVideoAnn(data, annoType){
             return urlDood;
         });
 
+       // d3.select('#comment-sidebar').select('#annotation-wrap').node().scrollTop -= 60;
+        //d3.select('#container').node().scrollTop -= 60;
+
         if(d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked){
            
             let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
@@ -183,12 +186,14 @@ export async function updateVideoAnn(data, annoType){
                 let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
                 memoDivs.classed('selected', true);
-                memoDivs.nodes()[0].scrollIntoView();
+                memoDivs.nodes()[0].scrollIntoView({behavior: "smooth"});
     
             }).on('mouseout', (d)=> {
                 let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').classed('selected', false);
             });
+
+           // d3.select('#comment-sidebar').select('#annotation-wrap').node().scrollTop -= 60;
     
             if(!selectedMemoDivs.empty()){
                 selectedMemoDivs.nodes()[0].scrollIntoView();
