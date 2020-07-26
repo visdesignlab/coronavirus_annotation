@@ -55,12 +55,13 @@ html {
 #annotation-sidebar{
    text-align: center;
    z-index: 30;
-   background: #061e2a;
-   background: linear-gradient(to right,#fefefe, 99%, #8c8c8d);
+  // background: #061e2a;
+  // background: linear-gradient(to right,#fefefe, 99%, #8c8c8d);
    padding: 1rem 0 0 0;
   //  justify-content: flex-start;
   grid-area: side1;
   height:calc(100%-60px);
+  overflow-y: auto;
  
  }
 

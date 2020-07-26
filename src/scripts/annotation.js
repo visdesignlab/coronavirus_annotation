@@ -25,9 +25,7 @@ if(mainWrap){
     let vidDim = d3.select('video').node().getBoundingClientRect();
 
     let width = (window.innerWidth - (+vidDim.x + +vidDim.width));
-    //d3.select('#annotation-sidebar').style('left', (vidDim.x + vidDim.width)+"px");
-    //d3.select('#annotation-sidebar').style('left', (+vidDim.x + +vidDim.width)+"px");
-    //  d3.select('#annotation-sidebar').style('height', (vidDim.height)+"px");
+ 
     d3.select('#annotation-sidebar').style('min-width', width+"px");
     //d3.select('#annotation-sidebar').select('#control').style('margin-left', ((width/2)-10)+"px");
 

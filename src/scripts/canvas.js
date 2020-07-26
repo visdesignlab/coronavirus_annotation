@@ -39,6 +39,43 @@ export const doodleKeeper = []
     });
 }
 
+async function updateAnnotationSidebar(data, annoType, videoTime){
+
+    let filteredAnno = data.filter(f=> {
+        if(f.seconds.length > 1){
+            return videoTime >= f.seconds[0] && videoTime <= f.seconds[1];
+        }else{
+            return f.seconds < timeRange[1] && f.seconds > timeRange[0];
+        }
+    })//.classed('selected', true);
+
+    ///start drawing annotation 
+
+    let annoDiv = d3.select('#annotation-sidebar').select('.anno-wrap').selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
+    let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
+    let annoTypeHeader = annoDiv.selectAll('h6').data(d=> [d]).join('h6');
+    let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
+    annoHeadSpan.classed('badge badge-secondary', true);
+    annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color)
+    let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true);
+
+    let annoRef = annoDiv.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+
+    let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
+    annoLink.attr('href', d=> d.url);
+    annoLink.attr('target', '_blank');
+
+    d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+        let currentData = filteredAnno.map(m=> m.text_description);
+        return currentData.indexOf(f.text_description) > -1;
+    }).style('fill-opacity', '1');
+
+    d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+        let currentData = filteredAnno.map(m=> m.text_description);
+        return currentData.indexOf(f.text_description) === -1;
+    }).style('fill-opacity', '.4');
+
+}
 
 export function formatVideoTime(videoTime){
     let time = parseInt(videoTime);
@@ -77,8 +114,9 @@ export async function updateVideoAnn(data, annoType){
             };
         }
 
+    updateAnnotationSidebar(data, annoType, 0)
 
-    let rightDiv = d3.select('#annotation-sidebar');
+
 
     //  });
 
@@ -87,40 +125,41 @@ export async function updateVideoAnn(data, annoType){
         // let newData = formatTime(data);
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
-        let filteredAnno = data.filter(f=> {
-        
-            if(f.seconds.length > 1){
-                return video.currentTime >= f.seconds[0] && video.currentTime <= f.seconds[1];
-            }else{
-                return f.seconds < timeRange[1] && f.seconds > timeRange[0];
-            }
-        })//.classed('selected', true);
+        // let filteredAnno = data.filter(f=> {
+        //     if(f.seconds.length > 1){
+        //         return video.currentTime >= f.seconds[0] && video.currentTime <= f.seconds[1];
+        //     }else{
+        //         return f.seconds < timeRange[1] && f.seconds > timeRange[0];
+        //     }
+        // })//.classed('selected', true);
 
-        ///start drawing annotation 
+        // ///start drawing annotation 
 
-        let annoDiv = rightDiv.select('.anno-wrap').selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
-        let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
-        let annoTypeHeader = annoDiv.selectAll('h6').data(d=> [d]).join('h6');
-        let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
-        annoHeadSpan.classed('badge badge-secondary', true);
-        annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color)
-        let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true);
+        // let annoDiv = rightDiv.select('.anno-wrap').selectAll('div.anno').data(filteredAnno).join('div').classed('anno', true);
+        // let annoTime = annoDiv.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time);
+        // let annoTypeHeader = annoDiv.selectAll('h6').data(d=> [d]).join('h6');
+        // let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
+        // annoHeadSpan.classed('badge badge-secondary', true);
+        // annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color)
+        // let annoText = annoDiv.selectAll('text.anno-text').data(d=> [d]).join('text').text(d=> d.text_description).classed('anno-text', true);
 
-        let annoRef = annoDiv.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+        // let annoRef = annoDiv.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
 
-        let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
-        annoLink.attr('href', d=> d.url);
-        annoLink.attr('target', '_blank');
+        // let annoLink = annoDiv.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
+        // annoLink.attr('href', d=> d.url);
+        // annoLink.attr('target', '_blank');
 
-        d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
-            let currentData = filteredAnno.map(m=> m.text_description);
-            return currentData.indexOf(f.text_description) > -1;
-        }).style('fill-opacity', '1');
+        updateAnnotationSidebar(data, annoType, video.currentTime);
 
-        d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
-            let currentData = filteredAnno.map(m=> m.text_description);
-            return currentData.indexOf(f.text_description) === -1;
-        }).style('fill-opacity', '.4');
+        // d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+        //     let currentData = filteredAnno.map(m=> m.text_description);
+        //     return currentData.indexOf(f.text_description) > -1;
+        // }).style('fill-opacity', '1');
+
+        // d3.select('.annotation-wrap').selectAll('rect').filter(f=> {
+        //     let currentData = filteredAnno.map(m=> m.text_description);
+        //     return currentData.indexOf(f.text_description) === -1;
+        // }).style('fill-opacity', '.4');
 
         ///END ANNOTATION
         let annotations = d3.entries(dataKeeper[dataKeeper.length - 1].annotations).map(m=> m.value);
@@ -163,9 +202,6 @@ export async function updateVideoAnn(data, annoType){
             let urlDood = await doods.items.filter(f=>f.location['path'] === `images/${dood.doodleName}`)[0].getDownloadURL();
             return urlDood;
         });
-
-       // d3.select('#comment-sidebar').select('#annotation-wrap').node().scrollTop -= 60;
-        //d3.select('#container').node().scrollTop -= 60;
 
         if(d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked){
            
@@ -223,8 +259,6 @@ export async function updateVideoAnn(data, annoType){
 
             
         }
-
-
     };
 }
 
