@@ -52,6 +52,11 @@ html {
   grid-template-columns: 1fr 1fr 1fr;
   display: grid;
   height:50px;
+  justify-items: center;
+}
+
+.user-wrap a:hover svg path{
+  fill: blue;
 }
 
 #annotation-sidebar{
@@ -80,56 +85,8 @@ html {
   display:grid;
  }
 
-// @media only screen and (max-width: 1530px) {
-//   #comment-sidebar {
-//     background-color: lightblue;
-//     display:none;
-//     width:0;
-//     height:0;
-//   }
-// }
-
-// @media only screen and (max-width: 1120px) {
-
-//   #comment-sidebar {
-//     background-color: lightblue;
-//     display:none;
-//     width:0;
-//     height:0;
-//     position:static;
-//   }
-
-//   #annotation-sidebar{
-//     width:100%;
-//     display:block;
-//     position:static;
-
-//   }
-//   #annotation-sidebar .anno-wrap{
-//     flex-direction: row;
-//   }
-//   #main-wrap{
-//     width:100%;
-//     display:block;
-//     position:static;
-//   }
-//   #container{
-//     display:inline-block;
-//     width:100%;
-//   }
-// }
-
-
-
 #annotation-wrap{
-//   margin:auto;
-//  // flex: 1;
-//   justify-content: center;
-//   flex-flow: column wrap;
-//  // height: calc(100% - 60px);
-//   overflow-y: auto;
   grid-area: vid;
-  
 }
 
 .dropdown.ann-type-drop{
@@ -419,7 +376,8 @@ VIDEO CONTROLS
 
 video, canvas, #interaction{
   border-radius: 4px;
-  min-width: 750px;
+  min-width: 700px;
+  max-width: 1000px;
   position: absolute;
   width:100%;
   top:0;
@@ -518,7 +476,7 @@ video, canvas, #interaction{
 
 
 .memo .tag-span{
-  display:block;
+  display:inline-block;
 }
 
 .memo .tag-span .badge{

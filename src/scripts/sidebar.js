@@ -82,7 +82,7 @@ export function updateSideAnnotations(dbRef){
 
     let tags = memoDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
     tags.selectAll('.badge').data(d=> {
-        return d.tags.split(',');
+        return d.tags.split(',').filter(f => f != 'none');
     }).join('span').classed('badge badge-secondary', true).text(d=> d);
 
     let typeOf = memoDivs.selectAll('i.fas').data(d=> [d]).join('i').attr('class', (d)=> {
@@ -107,11 +107,11 @@ export function updateSideAnnotations(dbRef){
         return `1px solid gray`});
 
     let upvote = memoDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
-    upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-lg', true);
+    upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
     upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
 
     let downvote = memoDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
-    downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down fa-lg', true);
+    downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down fa-sm', true);
     downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
 
     let reply = memoDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text('Reply ');
