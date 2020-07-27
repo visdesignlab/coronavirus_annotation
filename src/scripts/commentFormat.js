@@ -91,7 +91,12 @@ export function formatCommentBox(div){
 
             if(form.node().value === 't2'){
                 console.log('this is a push', d3.select('#push-div'), !d3.select('#push-div').empty());
-                let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
+                
+                let vidWidth =  +d3.select('#push-div').style('left').split('px')[0] / +d3.select('video').node().getBoundingClientRect().width;
+                let vidHeight =  +d3.select('#push-div').style('top').split('px')[0] / +d3.select('video').node().getBoundingClientRect().height;
+
+                let coords = !d3.select('#push-div').empty() ? [vidWidth, vidHeight] : null;
+                console.log('coords', vidWidth, vidHeight)
                 let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
                 let refCom = firebase.database().ref(commentType);                     
                 refCom.push(dataPush);

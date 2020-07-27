@@ -100,6 +100,7 @@ if (videoWorks) {
   videoControls.classList.remove('hidden');
 }
 d3.select(videoControls).style('top', `${videoDim.height + 55}px`);
+d3.select('#interaction').style('height', `${videoDim.height}px`)
 
 function resizeStuff(){
   console.log('this is firing')
@@ -109,8 +110,7 @@ function resizeStuff(){
 }
 
 window.onresize = resizeStuff;
-// d3.select(videoControls).style('width', `${videoDim.width}px`);
-// Add functions here
+
 
 // formatTime takes a time length in seconds and returns the time in
 // minutes and seconds
