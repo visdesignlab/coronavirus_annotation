@@ -104,7 +104,8 @@ d3.select(videoControls).style('top', `${videoDim.height + 55}px`);
 function resizeStuff(){
   console.log('this is firing')
   let size = document.getElementById('video').getBoundingClientRect();
-  d3.select(videoControls).style('top', `${size.height + 55}px`);
+  d3.select(videoControls).style('top', `${size.height + 10}px`);
+  d3.select(videoControls).style('width', `${size.width}px`);
 }
 
 window.onresize = resizeStuff;
