@@ -590,7 +590,7 @@ export function formatCanvas(){
             // pushDiv.style('top', (d)=> (coords[1]-10)+'px');
             // pushDiv.style('left', (d)=> (coords[0]-10)+'px');
             pushDiv.style('top', (d)=> (coords[1])+'px');
-            pushDiv.style('left', (d)=> (coords[0] + leftSpace)+'px');
+            pushDiv.style('left', (d)=> (coords[0])+'px');
         }
     });
 
