@@ -35,8 +35,7 @@ html {
   grid-template-columns: 1fr 3fr 1fr;
   //grid-gap: 60px 20px;
   position:fixed;
-  grid-template-areas:
-    "side1 main side2"
+  grid-template-areas: "side1 main side2";
 }
 
 #top-bar{
@@ -64,6 +63,7 @@ html {
   grid-area: side1;
   height:calc(100%-60px);
   overflow-y: auto;
+  min-width: 50px !important;
  
  }
 
@@ -79,6 +79,10 @@ html {
   // margin-top:60px;
    height:calc(100%-60px);
    grid-area: main;
+  // grid-template-columns: 10px 3fr 10px;
+  // grid-template-areas: "space1 vid space2";
+   display:grid;
+
 
  }
 
@@ -124,12 +128,13 @@ html {
 
 
 #annotation-wrap{
-  margin:auto;
- // flex: 1;
-  justify-content: center;
-  flex-flow: column wrap;
- // height: calc(100% - 60px);
-  overflow-y: auto;
+//   margin:auto;
+//  // flex: 1;
+//   justify-content: center;
+//   flex-flow: column wrap;
+//  // height: calc(100% - 60px);
+//   overflow-y: auto;
+grid-area: vid;
   
 }
 
@@ -147,10 +152,10 @@ html {
 //#main-wrap video, 
 #main-wrap iframe, 
 #main-wrap #interaction{
-  width:90%;
-  height: auto;
-  position: absolute;
-  left:calc(var(--sidbar-width) + 1%);
+  // width:90%;
+  // height: auto;
+  // position: absolute;
+  // left:calc(var(--sidbar-width) + 1%);
 }
 
 #annotation-ui{
@@ -412,21 +417,26 @@ VIDEO CONTROLS
 **/
 
 #video-wrap {
-  width: auto;
-  height: var(--video-height);
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // width: auto;
+  // height: var(--video-height);
+  // height: 100%;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  grid-area: vid;
 }
 
 video, canvas, #interaction{
-  position: absolute;
-  left:calc(var(--sidbar-width) + 1%);
-  top:20px;
-  width: auto;
-  height: var(--video-height);
+  // position: absolute;
+  // left:calc(var(--sidbar-width) + 1%);
+  // top:20px;
+  // width: 55%;
+  // height: auto;//var(--video-height);
+  display: grid;
   border-radius: 4px;
+  grid-area: vid;
+  //position: absolute;
+  top:60px;
 }
 
 #interaction.crosshair{
@@ -597,10 +607,10 @@ video{
 }
 
 .video-controls {
-  position: absolute;
-  top: calc(var(--video-height) + var(--top-margin));
-  // right: 0;
-  left:calc(var(--sidbar-width) + 1%);
+  // position: absolute;
+  // top: calc(var(--video-height) + var(--top-margin));
+  // // right: 0;
+  // left:calc(var(--sidbar-width) + 1%);
   padding: 10px;
   transition: all 0.2s ease;
   // background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));

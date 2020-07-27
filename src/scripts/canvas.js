@@ -99,7 +99,7 @@ export async function updateVideoAnn(data, annoType){
     let vidDim = d3.select('video').node().getBoundingClientRect();
      
     let interDIV = d3.select('#interaction');
-    interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
+  //  interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
     // let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
 
@@ -521,8 +521,8 @@ export function formatPush(){
    
     let interactionDiv = d3.select('#interaction');
     
-    interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
-    interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
+   // interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
+   // interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
 
     let clickedBool = false;
 
