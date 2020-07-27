@@ -51,15 +51,13 @@ html {
   top:0;
   grid-template-columns: 1fr 1fr 1fr;
   display: grid;
+  height:50px;
 }
 
 #annotation-sidebar{
-   text-align: center;
-   z-index: 30;
-  // background: #061e2a;
-  // background: linear-gradient(to right,#fefefe, 99%, #8c8c8d);
-   padding: 1rem 0 0 0;
-  //  justify-content: flex-start;
+  text-align: center;
+  z-index: 30;
+  padding: 1rem 0 0 0;
   grid-area: side1;
   height:calc(100%-60px);
   overflow-y: auto;
@@ -73,17 +71,13 @@ html {
   height:calc(100%-60px);
 }
 
-
 #main-wrap{
-   overflow-y: hidden;  /*adds scroll to this container*/
-  // margin-top:60px;
-   height:calc(100%-60px);
-   grid-area: main;
-  // grid-template-columns: 10px 3fr 10px;
-  // grid-template-areas: "space1 vid space2";
-   display:grid;
-
-
+  overflow-y: hidden;  /*adds scroll to this container*/
+  height:calc(100%-60px);
+  grid-area: main;
+  grid-template-columns: 20px 3fr 20px;
+  grid-template-areas: "space1 vid space2";
+  display:grid;
  }
 
 // @media only screen and (max-width: 1530px) {
@@ -134,7 +128,7 @@ html {
 //   flex-flow: column wrap;
 //  // height: calc(100% - 60px);
 //   overflow-y: auto;
-grid-area: vid;
+  grid-area: vid;
   
 }
 
@@ -146,16 +140,6 @@ grid-area: vid;
 #time-update{
   text-align: center;
   width:100%;
-}
-
-
-//#main-wrap video, 
-#main-wrap iframe, 
-#main-wrap #interaction{
-  // width:90%;
-  // height: auto;
-  // position: absolute;
-  // left:calc(var(--sidbar-width) + 1%);
 }
 
 #annotation-ui{
@@ -424,19 +408,22 @@ VIDEO CONTROLS
   // justify-content: center;
   // align-items: center;
   grid-area: vid;
+  // display: grid;
+  // grid-template-rows: 1fr;
+  // grid-template-columns: 1fr;
+}
+
+#video-container{
+  display:grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
 }
 
 video, canvas, #interaction{
-  // position: absolute;
-  // left:calc(var(--sidbar-width) + 1%);
-  // top:20px;
-  // width: 55%;
-  // height: auto;//var(--video-height);
   display: grid;
   border-radius: 4px;
   grid-area: vid;
-  //position: absolute;
-  top:60px;
+  width:100%;
 }
 
 #interaction.crosshair{
@@ -444,9 +431,8 @@ video, canvas, #interaction{
 }
 
 #interaction img{
-  position:absolute;
-  left:0;
-  top:0;
+  width:100%;
+  grid-area: vid;
 }
 
 .text-input{
