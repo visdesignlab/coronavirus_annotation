@@ -603,19 +603,25 @@ export function formatCanvas(){
         if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't3'){
             let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
             pushDiv.style('position', 'absolute')
-            pushDiv.style('top', (d)=> (coords[1]-10)+'px')
-            pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+            // pushDiv.style('top', (d)=> (coords[1]-10)+'px')
+            // pushDiv.style('left', (d)=> (coords[0]-10)+'px')
+            pushDiv.style('top', (d)=> (coords[1])+'px')
+            pushDiv.style('left', (d)=> (coords[0])+'px')
             let push = pushDiv.append('div').classed('push', true);
             push.append('i').classed('fas fa-paint-brush', true);
         }
     });
 
+    let leftSpace = d3.select('#annotation-sidebar').node().getBoundingClientRect().width;
+
     interactionDiv.on('mousemove', function() {
         let coords = d3.mouse(this);
         let pushDiv = d3.select('#push-div');
         if(!pushDiv.empty()){
-            pushDiv.style('top', (d)=> (coords[1]-10)+'px');
-            pushDiv.style('left', (d)=> (coords[0]-10)+'px');
+            // pushDiv.style('top', (d)=> (coords[1]-10)+'px');
+            // pushDiv.style('left', (d)=> (coords[0]-10)+'px');
+            pushDiv.style('top', (d)=> (coords[1])+'px');
+            pushDiv.style('left', (d)=> (coords[0] + leftSpace)+'px');
         }
     });
 
