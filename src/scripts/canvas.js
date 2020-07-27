@@ -409,7 +409,7 @@ export async function annotationBar(dbRef){
 
     let svg = d3.select('#annotation-layer').select('svg');
 
-    let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, 870]);
+    let scale = d3.scaleLinear().domain([0, document.getElementById('video').duration]).range([3, d3.select('video').node().getBoundingClientRect().width]);
     let yScale = d3.scaleLinear().domain([0, 1]).range([10,15]);
 
     let commentGroup = svg.selectAll('g.comment-wrap').data([data]).join('g').classed('comment-wrap', true);

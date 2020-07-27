@@ -613,6 +613,7 @@ video{
   // left:calc(var(--sidbar-width) + 1%);
   padding: 10px;
   transition: all 0.2s ease;
+  grid-area: vid;
   // background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
   //border: 1px solid gray;
 }
@@ -637,10 +638,12 @@ video{
 #annotation-layer{
   position: relative;
   top: -10px;
+  width:100%;
 }
 
 #annotation-layer svg, #interaction svg{
-  width:890px;
+  //width:890px;
+  width:100%;
 }
 
 #annotation-layer svg{
