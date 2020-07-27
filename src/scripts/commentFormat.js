@@ -111,7 +111,7 @@ export function formatCommentBox(div){
 
             }else{
                 let coords = null;
-                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'push', button.node().value, commentType === "annotations");
+                let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'none', button.node().value, commentType === "annotations");
                 let refCom = firebase.database().ref(commentType);                     
                 refCom.push(dataPush);
                 checkDatabase(firebase.database().ref(), updateSideAnnotations);

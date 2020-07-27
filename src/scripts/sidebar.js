@@ -38,12 +38,12 @@ function replyInputBox(d, i, n, user){
     let inputDiv = d3.select(n[i].parentNode).append('div').classed('text-input-sidebar', true);
     inputDiv.append('text').text(`${user.displayName}:`)
     inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
-    let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+   // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
     let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
 
     submit.on('click',  ()=> {
-        d3.event.stopPropagation();
-        let dataPush = annotationMaker(user, null, tagButton.text(), null, true, d.key);
+        d3.event.stopPropagation();//user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool
+        let dataPush = annotationMaker(user, d3.select('video').node().currentTime, "none", null, true, d.key, "none", "none", false);
         let ref = firebase.database().ref("comments");               
         ref.push(dataPush);    
     });
@@ -135,7 +135,7 @@ export function updateSideAnnotations(dbRef){
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-                    
+                    console.log(d, i, n, user)
                     replyInputBox(d, i, n, user);
                    
                     // User is signed in.

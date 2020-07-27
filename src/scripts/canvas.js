@@ -255,6 +255,8 @@ export function clearSidebar(){
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
+
+    console.log('is this working',user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool)
    
     return {
         videoTime: currentTime,
