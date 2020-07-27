@@ -82,44 +82,44 @@ html {
 
  }
 
-@media only screen and (max-width: 1530px) {
-  #comment-sidebar {
-    background-color: lightblue;
-    display:none;
-    width:0;
-    height:0;
-  }
-}
+// @media only screen and (max-width: 1530px) {
+//   #comment-sidebar {
+//     background-color: lightblue;
+//     display:none;
+//     width:0;
+//     height:0;
+//   }
+// }
 
-@media only screen and (max-width: 1120px) {
+// @media only screen and (max-width: 1120px) {
 
-  #comment-sidebar {
-    background-color: lightblue;
-    display:none;
-    width:0;
-    height:0;
-    position:static;
-  }
+//   #comment-sidebar {
+//     background-color: lightblue;
+//     display:none;
+//     width:0;
+//     height:0;
+//     position:static;
+//   }
 
-  #annotation-sidebar{
-    width:100%;
-    display:block;
-    position:static;
+//   #annotation-sidebar{
+//     width:100%;
+//     display:block;
+//     position:static;
 
-  }
-  #annotation-sidebar .anno-wrap{
-    flex-direction: row;
-  }
-  #main-wrap{
-    width:100%;
-    display:block;
-    position:static;
-  }
-  #container{
-    display:inline-block;
-    width:100%;
-  }
-}
+//   }
+//   #annotation-sidebar .anno-wrap{
+//     flex-direction: row;
+//   }
+//   #main-wrap{
+//     width:100%;
+//     display:block;
+//     position:static;
+//   }
+//   #container{
+//     display:inline-block;
+//     width:100%;
+//   }
+// }
 
 
 
