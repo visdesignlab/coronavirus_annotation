@@ -99,9 +99,12 @@ export async function updateVideoAnn(data, annoType){
     let vidDim = d3.select('video').node().getBoundingClientRect();
      
     let interDIV = d3.select('#interaction');
-  //  interDIV.style('width', vidDim.width+'px').style('height', vidDim.height+'px');
 
-    // let data = await d3.csv('./public/anno_sheet_ji_72020.csv');
+    d3.select('.show-comments').select('.form-check').select('input').on('click', (d, i, n)=> {
+        if(!n[i].checked){
+            d3.select('#interaction').selectAll('*').remove();
+        }
+    });
 
 
     /////ANNOTATION STUFF///
