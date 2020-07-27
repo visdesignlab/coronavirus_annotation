@@ -26,7 +26,7 @@ if(mainWrap){
 
     let width = (window.innerWidth - (+vidDim.x + +vidDim.width));
  
-    d3.select('#annotation-sidebar').style('min-width', width+"px");
+    //d3.select('#annotation-sidebar').style('min-width', width+"px");
     //d3.select('#annotation-sidebar').select('#control').style('margin-left', ((width/2)-10)+"px");
 
     firebase.auth().onAuthStateChanged(function(user) {

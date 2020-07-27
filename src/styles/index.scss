@@ -401,27 +401,20 @@ VIDEO CONTROLS
 **/
 
 #video-wrap {
-  // width: auto;
-  // height: var(--video-height);
-  // height: 100%;
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
   grid-area: vid;
-  // display: grid;
-  // grid-template-rows: 1fr;
-  // grid-template-columns: 1fr;
+}
+
+.block-wrap{
+  width:100%;
+  display:block;
 }
 
 #video-container{
-  // display:grid;
-  // grid-area: vid;
-  // grid-template-rows: 10px 1fr 10px;
-  // grid-template-columns: 10px 1fr 10px;
   position: relative;
   background-color: red;
   width:100%;
- // grid-template-areas: one;
+  height:auto;
+
 }
 
 video, canvas, #interaction{
@@ -435,14 +428,6 @@ video, canvas, #interaction{
 
 #interaction.crosshair{
   cursor: crosshair !important;
-}
-
-#interaction{
-  display:grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
-  grid-template-areas: one;
-  min-width: 750px;
 }
 
 #interaction img{
@@ -613,7 +598,10 @@ video{
   padding: 10px;
   transition: all 0.2s ease;
   grid-area: vid;
+  //position: absolute;
+  width:100%;
   position: relative;
+ 
 
 }
 

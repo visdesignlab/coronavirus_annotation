@@ -99,7 +99,16 @@ if (videoWorks) {
   video.controls = false
   videoControls.classList.remove('hidden');
 }
-//d3.select(videoControls).style('width', `890px`);
+d3.select(videoControls).style('top', `${videoDim.height + 55}px`);
+
+function resizeStuff(){
+  console.log('this is firing')
+  let size = document.getElementById('video').getBoundingClientRect();
+  d3.select(videoControls).style('top', `${size.height + 55}px`);
+}
+
+window.onresize = resizeStuff;
+// d3.select(videoControls).style('width', `${videoDim.width}px`);
 // Add functions here
 
 // formatTime takes a time length in seconds and returns the time in
