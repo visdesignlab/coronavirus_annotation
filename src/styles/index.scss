@@ -414,26 +414,42 @@ VIDEO CONTROLS
 }
 
 #video-container{
-  display:grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
-  grid-template-areas: one;
+  // display:grid;
+  // grid-area: vid;
+  // grid-template-rows: 10px 1fr 10px;
+  // grid-template-columns: 10px 1fr 10px;
+  position: relative;
+  background-color: red;
+  width:100%;
+ // grid-template-areas: one;
 }
 
 video, canvas, #interaction{
-  //display: grid;
   border-radius: 4px;
-  grid-area: one;
+  min-width: 750px;
+  position: absolute;
   width:100%;
+  top:0;
+  left:0;
 }
 
 #interaction.crosshair{
   cursor: crosshair !important;
 }
 
+#interaction{
+  display:grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas: one;
+  min-width: 750px;
+}
+
 #interaction img{
   width:100%;
-  grid-area: vid;
+  position: absolute;
+  top:0;
+  left:0;
 }
 
 .text-input{
@@ -594,15 +610,11 @@ video{
 }
 
 .video-controls {
-  // position: absolute;
-  // top: calc(var(--video-height) + var(--top-margin));
-  // // right: 0;
-  // left:calc(var(--sidbar-width) + 1%);
   padding: 10px;
   transition: all 0.2s ease;
   grid-area: vid;
-  // background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
-  //border: 1px solid gray;
+  position: relative;
+
 }
 
 .video-controls.hide {
