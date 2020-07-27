@@ -417,12 +417,13 @@ VIDEO CONTROLS
   display:grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
+  grid-template-areas: one;
 }
 
 video, canvas, #interaction{
-  display: grid;
+  //display: grid;
   border-radius: 4px;
-  grid-area: vid;
+  grid-area: one;
   width:100%;
 }
 
