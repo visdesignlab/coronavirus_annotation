@@ -423,16 +423,17 @@ video, canvas, #interaction{
 
 
 .comment-initiated{
-  min-width:210px;
-  max-width:310px;
-  min-height:70px;
+  // min-width:210px;
+  // max-width:310px;
+  // min-height:70px;
   background: white;
   border-radius: 4px;
   position:relative;
-  top:-10px;
+  top:-70px;
   left:10px;
   padding: 7px;
   border: 2px solid gray;
+  color:gray;
   font-size: 12px;
 }
 
