@@ -391,9 +391,7 @@ export async function annotationBar(dbRef){
     let commentGroup = svg.selectAll('g.comment-wrap').data([data]).join('g').classed('comment-wrap', true);
 
     let rect = commentGroup.selectAll('.memo').data(d=>d).join('rect').style('width', '3px').attr('height', 10).classed('memo', true);
-    // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
-    // rect.style('fill', d=> `${tagOptions.filter(f=> f.key === d.initTag)[0].color}`);
-   // rect.style('fill', d=> `#fff`);
+
     rect.attr('x', (d)=> scale(d.videoTime));
     rect.attr('y', 10);
   
