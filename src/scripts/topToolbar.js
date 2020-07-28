@@ -54,14 +54,6 @@ export function specialUserCheck(dbRef){
       let newAnno = [...annotationType];
       newAnno.push({key:'annotation', tag:'annotation', tempCall: annotationTemplate});
 
-    //   let addAnnoButton = d3.select('.add-annotation').append('button').classed('btn btn-outline-secondary btn-sm', true);
-    //   addAnnoButton.text("Add Annotation");
-
-    //   addAnnoButton.on('click', ()=> formatAnnotationBox())
-
-    //   let tagButton = dropDown(d3.select('#annotation-wrap-r'), newAnno, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
-    //   d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
-
       var storage = firebase.storage();
       var storageRef = storage.ref();
                     
@@ -78,9 +70,6 @@ export function specialUserCheck(dbRef){
       bugLink.attr('href', 'https://github.com/visdesignlab/coronavirus_annotation/issues');
       bugLink.attr('target', "_blank");
       bugLink.append('span').classed("fas fa-bug", true);
-
-    //   let tagButton = dropDown(d3.select('#annotation-wrap-r'), annotationType, 'Type of Comment', 'ann-type-drop', currentUser, null, true);
-    //   d3.select('#annotation-wrap-r').append('div').classed('template-wrap', true);
 
       var storage = firebase.storage();
       var storageRef = storage.ref();
