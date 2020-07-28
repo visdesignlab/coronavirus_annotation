@@ -38,13 +38,13 @@ export function formatCommentBox(div){
     let dropdiv = div.append('div').classed(`dropdown ${dropId}`, true);
     // dropdiv.style('display', 'inline-block');
     let button = dropdiv.append('button').classed('btn dropbtn dropdown-toggle', true);
-    let texting = button.text('Color Code by Comment');
+    let texting = button.text('Add Category Tag');
     button.node().value = 'other';
     let dropContent = dropdiv.append('div').attr('id', dropId).classed('dropdown-content', true);
     dropContent.append('a').text('text').attr('font-size', 11);
     let options = dropContent.selectAll('a').data(tagOptions).join('a').text(d=> d.key);
 
-    options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
+   // options.append('svg').classed('color-box', true).append('rect').attr('width', 10).attr('height', 10).attr('x', 5).attr('y', 8).attr('fill', d=> d.color);
    
     options.on('click', (d, i, n)=> {
         let testToo = button.text(d.key);

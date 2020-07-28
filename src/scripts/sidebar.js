@@ -135,7 +135,7 @@ export function updateSideAnnotations(dbRef){
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-                    console.log(d, i, n, user)
+                 
                     replyInputBox(d, i, n, user);
                    
                     // User is signed in.
@@ -164,7 +164,7 @@ export function updateSideAnnotations(dbRef){
     });
 
     memoDivs.on('click', d=>{
-       console.log('click', d.videoTime)
+      
         if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
         d3.event.target.tagName.toLowerCase() === 'button' || 
         d3.event.target.tagName.toLowerCase() === 'a' || 
@@ -183,7 +183,7 @@ export function updateSideAnnotations(dbRef){
 
     function replyRender(replyDivs){
         
-        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
+        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName} replied:`);
 
         // let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
         // tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
