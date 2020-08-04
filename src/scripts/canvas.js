@@ -419,8 +419,6 @@ export async function annotationBar(dbRef){
 
     let annoType = await annoTypes();
 
-    //let formattedAnnoData = formatTime(annotationData);
-
     let annotationGroup = svg.selectAll('g.annotation-wrap').data([annotationData]).join('g').classed('annotation-wrap', true);
 
     annotationGroup.attr('transform', 'translate(0, 35)')
