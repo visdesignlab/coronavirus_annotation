@@ -3,6 +3,7 @@ import { formatCanvas, formatPush, annotationBar } from './canvas';
 import { toggleMagic } from './sidebar';
 import { checkDatabase } from './firebaseStuff';
 import * as firebase from 'firebase';
+import { mouse } from 'd3';
 
 const shapeArray = [];
 
@@ -96,9 +97,109 @@ const videoDim = document.getElementById('video').getBoundingClientRect();
 
 const videoWorks = !!document.createElement('video').canPlayType;
 if (videoWorks) {
-  video.controls = false
+ // video.controls = false
   videoControls.classList.remove('hidden');
 }
+
+
+// Main elements
+var body = document.getElementsByTagName('body')[0];
+var current_rgb = document.getElementById('current_rgb');
+var my_video = document.getElementById('video');
+var my_canvas = document.getElementById('bg-canvas');
+var my_canvas_context = my_canvas.getContext('2d');
+
+  // Update the size of the canvas to match the video
+my_canvas.width = my_video.getBoundingClientRect().width///2;
+my_canvas.height = my_video.getBoundingClientRect().height + 60///2;
+
+console.log('testing this', my_canvas.getBoundingClientRect().width)
+
+d3.select('#interaction').on('mousemove', (d, i, n)=> {
+
+    var e = window.event;
+
+    let data = pixel8(video, e.offsetX/2, e.offsetY/2, my_canvas.width, my_canvas.height);
+
+    console.log('dataaa', e.offsetX, e.offsetY)
+
+	  var pixel = data.pixelAt(e.offsetX/2, e.offsetY/2);
+    console.log("The transparency of the first pixel is: " + pixel.alpha +" "+ pixel.red +" "+pixel.blue);
+    
+     var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue + "," + pixel.alpha + ')';
+     body.style.background = new_rgb;
+  })
+
+  function pixel8(image, x, y, w, h) {
+    "use strict";
+  
+    // Image must be an image, canvas, or video
+    // For videos: Pixel data of the currently displayed frame will be extracted
+    // For canvases: Why are you using this?
+    if (!image.tagName || image.tagName !== "IMG" && image.tagName !== "VIDEO" && image.tagName !== "CANVAS") {
+      throw new TypeError("first argument must be image, video, or canvas context.");
+    }
+  
+    // Defaults for x-offset, y-offset, width, and height values
+    if (typeof x !== 'number') x = 0;
+    if (typeof y !== 'number') y = 0;
+    if (typeof w !== 'number') w = image.width;
+    if (typeof h !== 'number') h = image.height;
+  
+    // For our friend Internet Explorer, FlashCanvas is supported
+    // ExplorerCanvas does not support the getImageData function
+   // var canvas = document.createElement('canvas');
+    var canvas = document.getElementById('bg-canvas');
+    if (window.FlashCanvas) FlashCanvas.initElement(canvas);
+    if (canvas.getContext) var ctx = canvas.getContext('2d');
+    else return;
+  
+    // Draw the image/canvas/video and return a CanvasPixelArray of pixel data
+    // Image must be from the same origin! Use a server-side proxy if you need cross-domain resources.
+    // Like this one: http://benalman.com/projects/php-simple-proxy/
+    // See https://developer.mozilla.org/en-US/docs/HTML/Canvas/Pixel_manipulation_with_canvas
+    // to find out how to get specific data from the array
+    // Or just use the pixel8-provided methods below
+    //ctx.drawImage(image, x, y);
+
+    // ctx.drawImage(image, 0, 0, my_canvas.getBoundingClientRect().width/2, my_canvas.getBoundingClientRect().height/2);
+
+    ctx.drawImage(image, 0, 0, w, h);
+
+
+    var _data = ctx.getImageData(0, 0, w, h)
+    var data = _data.data;
+    data.width = _data.width;
+    data.height = _data.height;
+    
+    // Returns {red, green, blue, alpha} object of a single specified pixel
+    // or sets the specified pixel.
+    data.pixelAt = function (x, y, set) {
+      var i = y * this.width * 4 + x * 4;
+  
+      if (set) {
+        this[i] = set.red;
+        this[i + 1] = set.green;
+        this[i + 2] = set.blue;
+        this[i + 3] = set.alpha;
+      } else return {
+        red: this[i],
+        green: this[i + 1],
+        blue: this[i + 2],
+        alpha: this[i + 3]
+      };
+    };
+
+    console.log('dataaaa',_data)
+  
+    // Draws the pixel data into a canvas
+    data.draw = function(ctx, x, y) {
+      ctx.putImageData(_data, x, y);
+    };
+  
+    return data;
+  }
+
 d3.select(videoControls).style('top', `${videoDim.height + 55}px`);
 d3.select('#interaction').style('height', `${videoDim.height}px`)
 
@@ -319,7 +420,7 @@ function keyboardShortcuts(event) {
 
 // Add eventlisteners here
 playButton.addEventListener('click', togglePlay);
-video.addEventListener('play', updatePlayButton);
+//video.addEventListener('play', updatePlayButton);
 video.addEventListener('pause', updatePlayButton);
 video.addEventListener('loadedmetadata', initializeVideo);
 video.addEventListener('timeupdate', updateTimeElapsed);
@@ -327,9 +428,9 @@ video.addEventListener('timeupdate', updateProgress);
 video.addEventListener('volumechange', updateVolumeIcon);
 video.addEventListener('click', togglePlay);
 video.addEventListener('click', animatePlayback);
-video.addEventListener('mouseenter', showControls);
-video.addEventListener('mouseleave', hideControls);
-videoControls.addEventListener('mouseenter', showControls);
+// video.addEventListener('mouseenter', showControls);
+// video.addEventListener('mouseleave', hideControls);
+//videoControls.addEventListener('mouseenter', showControls);
 //videoControls.addEventListener('mouseleave', hideControls);
 seek.addEventListener('mousemove', updateSeekTooltip);
 seek.addEventListener('input', skipAhead);

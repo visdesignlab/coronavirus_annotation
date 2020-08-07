@@ -250,8 +250,8 @@ export function clearSidebar(){
     const context = canvas.getContext('2d');
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.height = 0;
-    canvas.width = 0;
+    // canvas.height = 0;
+    // canvas.width = 0;
 }
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
@@ -488,8 +488,8 @@ export function formatPush(){
     clearBoard();
 
     let canvas = d3.select('canvas').node()
-    canvas.height = 0;
-    canvas.width = 0;
+    // canvas.height = 0;
+    // canvas.width = 0;
    
     let interactionDiv = d3.select('#interaction');
     
