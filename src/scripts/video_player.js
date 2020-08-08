@@ -123,7 +123,7 @@ d3.select('#interaction').on('mousemove', (d, i, n)=> {
 
     console.log('dataaa', e.offsetX, e.offsetY)
 
-	  var pixel = data.pixelAt(e.offsetX/2, e.offsetY/2);
+	  var pixel = data.pixelAt(e.offsetX, e.offsetY);
     console.log("The transparency of the first pixel is: " + pixel.alpha +" "+ pixel.red +" "+pixel.blue);
     
      var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue + "," + pixel.alpha + ')';
