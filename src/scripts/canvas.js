@@ -2,7 +2,7 @@
 import * as d3 from 'd3';
 import * as firebase from 'firebase';
 import { Math } from 'core-js';
-import { skipAheadCircle } from './video_player';
+import { skipAheadCircle, pixel8 } from './video_player';
 import { annotationType, tagOptions, annotationInitiation, addTagFunctionality, annoTypes, defaultTemplate } from './templates';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
@@ -126,6 +126,29 @@ export async function updateVideoAnn(data, annoType){
     video.ontimeupdate = async (event) => {
      
         // let newData = formatTime(data);
+
+        let data = pixel8(d3.select('#video').node(), 0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height);
+
+        d3.select('#interaction').on('mousemove', (d, i, n)=> {
+
+            var e = window.event;
+          
+           // let data = pixel8(video, e.offsetX/2, e.offsetY/2, my_canvas.width, my_canvas.height);
+          
+            console.log('dataaa', e.offsetX, e.offsetY)
+          
+            var pixel = data.pixelAt(e.offsetX, e.offsetY);
+            console.log("The transparency of the first pixel is: " + pixel.alpha +" "+ pixel.red +" "+pixel.blue);
+            
+             //var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue + "," + pixel.alpha + ')';
+            var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
+            let body = d3.select('body').node();
+            body.style.background = new_rgb;
+          });
+
+
+        //let data = pixel8();
+
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
 
