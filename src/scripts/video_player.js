@@ -23,7 +23,189 @@ export function formatVidPlayer(div, videoPath){
      
 }
 
-export function pixel8(image, x, y, w, h) {
+
+
+var startButton;
+var canvas;
+var context;
+var video;
+var canPlay;
+var applyEffect;
+
+function init() {
+
+  resizeStuff();
+ // startButton = document.getElementById('StartButton');
+  //toggleButton = document.getElementById('ToggleButton');
+  canvas = document.getElementById('canvas');
+  context = canvas.getContext('2d');
+  video = document.getElementById('video');
+  const playButton = document.getElementById('play');
+
+  
+  video.muted = true;
+
+  if (video.readyState >= 3) {
+    readyToPlay();
+  } else {
+    video.addEventListener('canplay', readyToPlay);
+  }
+  
+  playButton.addEventListener('click', function () {
+
+    let playing = togglePlay();
+    if(playing) {
+     // video.style.opacity = 0;
+     // canvas.style.opacity = 0;
+      
+      drawFrame(video)};
+
+  });
+
+  // toggleButton.addEventListener('click', function () {
+  //   applyEffect = !applyEffect;
+  // });
+}
+
+function readyToPlay() {
+  // Set the canvas the same width and height of the video
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  console.log('test in ready', video.videoHeight, video.style.height, d3.select('#canvas').style('height'));
+
+
+
+  d3.select('#interaction').node().width = video.videoWidth+'px';//.style('width', `${video.videoWidth}px`);
+  d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');//.style('height', `${video.videoHeight}px`);
+
+  canPlay = true;
+}
+
+function drawFrame(video) {
+
+  context.drawImage(video, 0, 0);
+  
+  if (applyEffect) {
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    invertColors(imageData.data);
+    context.putImageData(imageData, 0, 0);
+  }
+
+  setTimeout(function () {
+    drawFrame(video);
+  }, 3);
+
+  
+}
+
+  ////EXPERIMENT///
+  d3.select('#interaction').on('mousemove', (d, i, n)=> {
+
+    var e = window.event;
+    
+    // canvas = document.getElementById('canvas-exp');
+    // context = canvas.getContext('2d');
+
+    var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
+    var data = _data.data;
+    data.width = _data.width;
+    data.height = _data.height;
+    
+    // Returns {red, green, blue, alpha} object of a single specified pixel
+    // or sets the specified pixel.
+    data.pixelAt = function (x, y, set) {
+      var i = y * this.width * 4 + x * 4;
+  
+      if (set) {
+        this[i] = set.red;
+        this[i + 1] = set.green;
+        this[i + 2] = set.blue;
+        this[i + 3] = set.alpha;
+      } else return {
+        red: this[i],
+        green: this[i + 1],
+        blue: this[i + 2],
+        alpha: this[i + 3]
+      };
+    };
+  
+    var pixel = data.pixelAt(e.offsetX, e.offsetY);
+
+    var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
+    let body = d3.select('body').node();
+    body.style.background = new_rgb;
+
+  }).on('click', ()=> {
+
+    let isPlaying = togglePlay();
+
+    if(isPlaying){
+
+      console.log('is playing');
+
+    }else{
+
+        var e = window.event;
+
+        var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
+        var data = _data.data;
+        data.width = _data.width;
+        data.height = _data.height;
+
+        data.pixelAt = function (x, y, set) {
+          var i = y * this.width * 4 + x * 4;
+      
+          if (set) {
+            this[i] = set.red;
+            this[i + 1] = set.green;
+            this[i + 2] = set.blue;
+            this[i + 3] = set.alpha;
+          } else return {
+            red: this[i],
+            green: this[i + 1],
+            blue: this[i + 2],
+            alpha: this[i + 3]
+          };
+        };
+  
+        var pixel = data.pixelAt(e.offsetX, e.offsetY);
+    
+       // console.log('new CLICK', data);
+
+        let groups = [];
+        for(let i = 0; i < data.length; i = i + 4){
+           // console.log(i, i+4);
+           let end = i + 4;
+            let snip = data.slice(i, end);
+            if(String(snip) === String([pixel.red, pixel.green, pixel.blue, pixel.alpha])){
+               // console.log('it works', String(snip), String([pixel.red, pixel.green, pixel.blue, pixel.alpha]))
+                
+            }else{
+                snip[3] = 0;
+            }
+            
+            snip.map(m=> groups.push(m));
+        }
+
+        var ctx = canvas.getContext('2d');
+        ctx.putImageData(new ImageData(new Uint8ClampedArray(groups), video.getBoundingClientRect().width, video.getBoundingClientRect().height), 0, 0);
+       // video.style.opacity = 0;
+    }
+  });
+
+
+function invertColors(data) {
+  for (var i = 0; i < data.length; i+= 4) {
+    data[i] = data[i] ^ 255; // Invert Red
+    data[i+1] = data[i+1] ^ 255; // Invert Green
+    data[i+2] = data[i+2] ^ 255; // Invert Blue
+  }
+}
+
+
+
+export function pixel8(image, w, h) {
   "use strict";
 
   // Image must be an image, canvas, or video
@@ -33,34 +215,22 @@ export function pixel8(image, x, y, w, h) {
     throw new TypeError("first argument must be image, video, or canvas context.");
   }
 
-  // Defaults for x-offset, y-offset, width, and height values
-  if (typeof x !== 'number') x = 0;
-  if (typeof y !== 'number') y = 0;
-  if (typeof w !== 'number') w = image.width;
-  if (typeof h !== 'number') h = image.height;
-
   // For our friend Internet Explorer, FlashCanvas is supported
   // ExplorerCanvas does not support the getImageData function
  // var canvas = document.createElement('canvas');
-  var canvas = document.getElementById('bg-canvas');
-  d3.select(canvas).style('opacity', 0)
+  var canvas = document.getElementById('canvas-exp');
+  canvas.style.width = image.getBoundingClientRect().width;
+  canvas.style.height = image.getBoundingClientRect().height;
+
+  console.log('width check',w, h)
+  //d3.select(canvas).style('opacity', 0)
   if (window.FlashCanvas) FlashCanvas.initElement(canvas);
   if (canvas.getContext) var ctx = canvas.getContext('2d');
   else return;
 
-  // Draw the image/canvas/video and return a CanvasPixelArray of pixel data
-  // Image must be from the same origin! Use a server-side proxy if you need cross-domain resources.
-  // Like this one: http://benalman.com/projects/php-simple-proxy/
-  // See https://developer.mozilla.org/en-US/docs/HTML/Canvas/Pixel_manipulation_with_canvas
-  // to find out how to get specific data from the array
-  // Or just use the pixel8-provided methods below
-  //ctx.drawImage(image, x, y);
+  ctx.drawImage(image, 0, 0, image.getBoundingClientRect().width/2, image.getBoundingClientRect().height/2);
 
-  // ctx.drawImage(image, 0, 0, my_canvas.getBoundingClientRect().width/2, my_canvas.getBoundingClientRect().height/2);
-
-  ctx.drawImage(image, 0, 0, w, h);
-
-  var _data = ctx.getImageData(0, 0, w, h)
+  var _data = ctx.getImageData(0, 0, image.getBoundingClientRect().width, image.getBoundingClientRect().height)
   var data = _data.data;
   data.width = _data.width;
   data.height = _data.height;
@@ -83,17 +253,12 @@ export function pixel8(image, x, y, w, h) {
     };
   };
 
-  console.log('dataaaa',_data)
-
   // Draws the pixel data into a canvas
   data.draw = function(ctx, x, y) {
     ctx.putImageData(_data, x, y);
   };
-
   return data;
 }
-
-
 
 // togglePlay toggles the playback state of the video.
 // If the video playback is paused or ended, the video is played
@@ -102,8 +267,10 @@ export function togglePlay() {
   let video = document.getElementById('video');
   if (video.paused || video.ended) {
     video.play();
+    return true;
   } else {
     video.pause();
+    return false;
   }
 }
 
@@ -139,192 +306,158 @@ export function updatePlayButton() {
   }
 }
 
+function resizeStuff(){
+
+  let size = document.getElementById('video').getBoundingClientRect();
+
+  console.log("sizing shit", size);
+
+  // d3.select('#interaction').style('width', `${size.width}px`);
+  // d3.select('#interaction').style('height', `${size.height + 25}px`);
+
+  // d3.select('#canvas').style('width', `${size.width}px`);
+  // d3.select('#canvas').style('height', `${size.height + 25}px`);
+
+  d3.select('#video-controls').style('top', `${(size.height + size.top) + 10}px`);
+  d3.select('#video-controls').style('width', `${size.width}px`);
+}
+
 function customControls(video){
 
-// Select elements here
-//const video = document.getElementById('video');
-const videoControls = document.getElementById('video-controls');
-const playButton = document.getElementById('play');
-const playbackIcons = document.querySelectorAll('.playback-icons use');
-const timeElapsed = document.getElementById('time-elapsed');
-const duration = document.getElementById('duration');
-const progressBar = document.getElementById('progress-bar');
-const seek = document.getElementById('seek');
-const seekTooltip = document.getElementById('seek-tooltip');
-const volumeButton = document.getElementById('volume-button');
-const volumeIcons = document.querySelectorAll('.volume-button use');
-const volumeMute = document.querySelector('use[href="#volume-mute"]');
-const volumeLow = document.querySelector('use[href="#volume-low"]');
-const volumeHigh = document.querySelector('use[href="#volume-high"]');
-const volume = document.getElementById('volume');
-const playbackAnimation = document.getElementById('playback-animation');
-const fullscreenButton = document.getElementById('fullscreen-button');
-const videoContainer = document.getElementById('video-container');
-// const fullscreenIcons = fullscreenButton.querySelectorAll('use');
-// const pipButton = document.getElementById('pip-button');
-
-const videoDim = document.getElementById('video').getBoundingClientRect();
+  const videoControls = document.getElementById('video-controls');
+  const playButton = document.getElementById('play');
+  const playbackIcons = document.querySelectorAll('.playback-icons use');
+  const timeElapsed = document.getElementById('time-elapsed');
+  const duration = document.getElementById('duration');
+  const progressBar = document.getElementById('progress-bar');
+  const seek = document.getElementById('seek');
+  const seekTooltip = document.getElementById('seek-tooltip');
+  const volumeButton = document.getElementById('volume-button');
+  const volumeIcons = document.querySelectorAll('.volume-button use');
+  const volumeMute = document.querySelector('use[href="#volume-mute"]');
+  const volumeLow = document.querySelector('use[href="#volume-low"]');
+  const volumeHigh = document.querySelector('use[href="#volume-high"]');
+  const volume = document.getElementById('volume');
+  const playbackAnimation = document.getElementById('playback-animation');
+  const fullscreenButton = document.getElementById('fullscreen-button');
+  const videoContainer = document.getElementById('video-container');
+  const videoDim = document.getElementById('video').getBoundingClientRect();
 
 
-const videoWorks = !!document.createElement('video').canPlayType;
-if (videoWorks) {
- // video.controls = false
-  videoControls.classList.remove('hidden');
-}
+  const videoWorks = !!document.createElement('video').canPlayType;
+  if (videoWorks) {
+  // video.controls = false
+    videoControls.classList.remove('hidden');
+  }
 
 
-// Main elements
-var body = document.getElementsByTagName('body')[0];
-var current_rgb = document.getElementById('current_rgb');
-var my_video = document.getElementById('video');
-var my_canvas = document.getElementById('bg-canvas');
-var my_canvas_context = my_canvas.getContext('2d');
+  window.onresize = resizeStuff;
 
-  // Update the size of the canvas to match the video
-my_canvas.width = my_video.getBoundingClientRect().width///2;
-my_canvas.height = my_video.getBoundingClientRect().height + 60///2;
+  // formatTime takes a time length in seconds and returns the time in
+  // minutes and seconds
+  function formatTime(timeInSeconds) {
 
+    const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
 
-
-// d3.select('#interaction').on('mousemove', (d, i, n)=> {
-
-//   var e = window.event;
-
-//   let data = pixel8(video, e.offsetX/2, e.offsetY/2, my_canvas.width, my_canvas.height);
-
-//   console.log('dataaa', e.offsetX, e.offsetY)
-
-//   var pixel = data.pixelAt(e.offsetX, e.offsetY);
-//   console.log("The transparency of the first pixel is: " + pixel.alpha +" "+ pixel.red +" "+pixel.blue);
-  
-//    //var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue + "," + pixel.alpha + ')';
-//   var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
-//    body.style.background = new_rgb;
-// })
-
-  
-
-d3.select(videoControls).style('top', `${videoDim.height + 55}px`);
-d3.select('#interaction').style('height', `${videoDim.height}px`)
-
-function resizeStuff(){
-  console.log('this is firing')
-  let size = document.getElementById('video').getBoundingClientRect();
-  d3.select(videoControls).style('top', `${size.height + 10}px`);
-  d3.select(videoControls).style('width', `${size.width}px`);
-}
-
-window.onresize = resizeStuff;
-
-
-// formatTime takes a time length in seconds and returns the time in
-// minutes and seconds
-function formatTime(timeInSeconds) {
-
-  const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
-
-  return {
-    minutes: result.substr(3, 2),
-    seconds: result.substr(6, 2),
+    return {
+      minutes: result.substr(3, 2),
+      seconds: result.substr(6, 2),
+    };
   };
-};
 
-
-// initializeVideo sets the video duration, and maximum value of the
-// progressBar
-function initializeVideo() {
-  const videoDuration = Math.round(video.duration);
-  seek.setAttribute('max', videoDuration);
-  progressBar.setAttribute('max', videoDuration);
-  const time = formatTime(videoDuration);
-  duration.innerText = `${time.minutes}:${time.seconds}`;
-  duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
-}
-
-// updateTimeElapsed indicates how far through the video
-// the current playback is by updating the timeElapsed element
-function updateTimeElapsed() {
-  const time = formatTime(Math.round(video.currentTime));
-  timeElapsed.innerText = `${time.minutes}:${time.seconds}`;
-  timeElapsed.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
-  d3.select('#time-update').select('text').text(`${time.minutes}m ${time.seconds}s`);
-}
-
-// updateProgress indicates how far through the video
-// the current playback is by updating the progress bar
-function updateProgress() {
-  seek.value = Math.floor(video.currentTime);
-  progressBar.value = Math.floor(video.currentTime);
-}
-
-// updateSeekTooltip uses the position of the mouse on the progress bar to
-// roughly work out what point in the video the user will skip to if
-// the progress bar is clicked at that point
-function updateSeekTooltip(event) {
-  const skipTo = Math.round((event.offsetX / event.target.clientWidth) * parseInt(event.target.getAttribute('max'), 10));
-  seek.setAttribute('data-seek', skipTo)
-  const t = formatTime(skipTo);
-  seekTooltip.textContent = `${t.minutes}:${t.seconds}`;
-  const rect = video.getBoundingClientRect();
-  seekTooltip.style.left = `${event.pageX - rect.left}px`;
-}
-
-// skipAhead jumps to a different point in the video when the progress bar
-// is clicked
-function skipAhead(event) {
-
-  const skipTo = event.target.dataset.seek
-    ? event.target.dataset.seek
-    : event.target.value;
-  video.currentTime = skipTo;
-  progressBar.value = skipTo;
-  seek.value = skipTo;
-}
-
-
-
-// updateVolume updates the video's volume
-// and disables the muted state if active
-function updateVolume() {
-  if (video.muted) {
-    video.muted = false;
+  // initializeVideo sets the video duration, and maximum value of the
+  // progressBar
+  function initializeVideo() {
+    const videoDuration = Math.round(video.duration);
+    seek.setAttribute('max', videoDuration);
+    progressBar.setAttribute('max', videoDuration);
+    const time = formatTime(videoDuration);
+    duration.innerText = `${time.minutes}:${time.seconds}`;
+    duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
   }
 
-  video.volume = volume.value;
-}
-
-// updateVolumeIcon updates the volume icon so that it correctly reflects
-// the volume of the video
-function updateVolumeIcon() {
-  volumeIcons.forEach(icon => {
-    icon.classList.add('hidden');
-  });
-
-  volumeButton.setAttribute('data-title', 'Mute (m)');
-
-  if (video.muted || video.volume === 0) {
-    volumeMute.classList.remove('hidden');
-    volumeButton.setAttribute('data-title', 'Unmute (m)')
-  } else if (video.volume > 0 && video.volume <= 0.5) {
-    volumeLow.classList.remove('hidden');
-  } else {
-    volumeHigh.classList.remove('hidden');
+  // updateTimeElapsed indicates how far through the video
+  // the current playback is by updating the timeElapsed element
+  function updateTimeElapsed() {
+    const time = formatTime(Math.round(video.currentTime));
+    timeElapsed.innerText = `${time.minutes}:${time.seconds}`;
+    timeElapsed.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
+    d3.select('#time-update').select('text').text(`${time.minutes}m ${time.seconds}s`);
   }
-}
 
-// toggleMute mutes or unmutes the video when executed
-// When the video is unmuted, the volume is returned to the value
-// it was set to before the video was muted
-function toggleMute() {
-  video.muted = !video.muted;
-
-  if (video.muted) {
-    volume.setAttribute('data-volume', volume.value);
-    volume.value = 0;
-  } else {
-    volume.value = volume.dataset.volume;
+  // updateProgress indicates how far through the video
+  // the current playback is by updating the progress bar
+  function updateProgress() {
+    seek.value = Math.floor(video.currentTime);
+    progressBar.value = Math.floor(video.currentTime);
   }
-}
+
+  // updateSeekTooltip uses the position of the mouse on the progress bar to
+  // roughly work out what point in the video the user will skip to if
+  // the progress bar is clicked at that point
+  function updateSeekTooltip(event) {
+    const skipTo = Math.round((event.offsetX / event.target.clientWidth) * parseInt(event.target.getAttribute('max'), 10));
+    seek.setAttribute('data-seek', skipTo)
+    const t = formatTime(skipTo);
+    seekTooltip.textContent = `${t.minutes}:${t.seconds}`;
+    const rect = video.getBoundingClientRect();
+    seekTooltip.style.left = `${event.pageX - rect.left}px`;
+  }
+
+  // skipAhead jumps to a different point in the video when the progress bar
+  // is clicked
+  function skipAhead(event) {
+
+    const skipTo = event.target.dataset.seek
+      ? event.target.dataset.seek
+      : event.target.value;
+    video.currentTime = skipTo;
+    progressBar.value = skipTo;
+    seek.value = skipTo;
+  }
+
+  // updateVolume updates the video's volume
+  // and disables the muted state if active
+  function updateVolume() {
+    if (video.muted) {
+      video.muted = false;
+    }
+
+    video.volume = volume.value;
+  }
+
+  // updateVolumeIcon updates the volume icon so that it correctly reflects
+  // the volume of the video
+  function updateVolumeIcon() {
+    volumeIcons.forEach(icon => {
+      icon.classList.add('hidden');
+    });
+
+    volumeButton.setAttribute('data-title', 'Mute (m)');
+
+    if (video.muted || video.volume === 0) {
+      volumeMute.classList.remove('hidden');
+      volumeButton.setAttribute('data-title', 'Unmute (m)')
+    } else if (video.volume > 0 && video.volume <= 0.5) {
+      volumeLow.classList.remove('hidden');
+    } else {
+      volumeHigh.classList.remove('hidden');
+    }
+  }
+
+  // toggleMute mutes or unmutes the video when executed
+  // When the video is unmuted, the volume is returned to the value
+  // it was set to before the video was muted
+  function toggleMute() {
+    video.muted = !video.muted;
+
+    if (video.muted) {
+      volume.setAttribute('data-volume', volume.value);
+      volume.value = 0;
+    } else {
+      volume.value = volume.dataset.volume;
+    }
+  }
 
 // animatePlayback displays an animation when
 // the video is played or paused
@@ -424,8 +557,7 @@ function keyboardShortcuts(event) {
 }
 
 // Add eventlisteners here
-playButton.addEventListener('click', togglePlay);
-//video.addEventListener('play', updatePlayButton);
+window.addEventListener('load', init);
 video.addEventListener('pause', updatePlayButton);
 video.addEventListener('loadedmetadata', initializeVideo);
 video.addEventListener('timeupdate', updateTimeElapsed);
@@ -433,22 +565,14 @@ video.addEventListener('timeupdate', updateProgress);
 video.addEventListener('volumechange', updateVolumeIcon);
 video.addEventListener('click', togglePlay);
 video.addEventListener('click', animatePlayback);
-// video.addEventListener('mouseenter', showControls);
-// video.addEventListener('mouseleave', hideControls);
-//videoControls.addEventListener('mouseenter', showControls);
-//videoControls.addEventListener('mouseleave', hideControls);
 seek.addEventListener('mousemove', updateSeekTooltip);
 seek.addEventListener('input', skipAhead);
 volume.addEventListener('input', updateVolume);
 volumeButton.addEventListener('click', toggleMute);
-//fullscreenButton.addEventListener('click', toggleFullScreen);
 videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
 
 d3.select("#play-r").on('click', togglePlay);
 d3.select("#pause-r").on('click', togglePlay);
-
-
-//pipButton.addEventListener('click', togglePip);
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!('pictureInPictureEnabled' in document)) {

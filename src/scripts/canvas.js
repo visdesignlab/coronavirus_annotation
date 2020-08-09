@@ -1,13 +1,17 @@
 
 import * as d3 from 'd3';
+import * as d3Array from 'd3-array';
 import * as firebase from 'firebase';
 import { Math } from 'core-js';
-import { skipAheadCircle, pixel8 } from './video_player';
+import { skipAheadCircle, pixel8, togglePlay } from './video_player';
 import { annotationType, tagOptions, annotationInitiation, addTagFunctionality, annoTypes, defaultTemplate } from './templates';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import { updateSideAnnotations } from './sidebar';
 import { noMarkFormat } from './commentFormat';
 import { currentUserKeeper } from './annotation';
+
+
+export let formatPushBool = false;
 
 export const doodleKeeper = []
 
@@ -125,30 +129,9 @@ export async function updateVideoAnn(data, annoType){
 
     video.ontimeupdate = async (event) => {
      
-        // let newData = formatTime(data);
+       // let data = pixel8(d3.select('#video').node(), video.getBoundingClientRect().width, video.getBoundingClientRect().height);
 
-        let data = pixel8(d3.select('#video').node(), 0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height);
-
-        d3.select('#interaction').on('mousemove', (d, i, n)=> {
-
-            var e = window.event;
-          
-           // let data = pixel8(video, e.offsetX/2, e.offsetY/2, my_canvas.width, my_canvas.height);
-          
-            console.log('dataaa', e.offsetX, e.offsetY)
-          
-            var pixel = data.pixelAt(e.offsetX, e.offsetY);
-            console.log("The transparency of the first pixel is: " + pixel.alpha +" "+ pixel.red +" "+pixel.blue);
-            
-             //var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue + "," + pixel.alpha + ')';
-            var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
-            let body = d3.select('body').node();
-            body.style.background = new_rgb;
-          });
-
-
-        //let data = pixel8();
-
+        let canvas2 = document.getElementById('canvas');
 
         let timeRange = [video.currentTime - 1.5, video.currentTime + 1.5];
 
@@ -510,14 +493,13 @@ export function formatPush(){
 
     clearBoard();
 
+    formatPushBool = true;
+
     let canvas = d3.select('canvas').node()
     // canvas.height = 0;
     // canvas.width = 0;
    
     let interactionDiv = d3.select('#interaction');
-    
-   // interactionDiv.style('width', `${document.getElementById('video').getBoundingClientRect().width}px`);
-   // interactionDiv.style('height', `${document.getElementById('video').getBoundingClientRect().height}px`);
 
     let clickedBool = false;
 
@@ -590,11 +572,12 @@ export function formatCanvas(){
 
     clearBoard();
 
+    formatPushBool = false;
+
     let interactionDiv = d3.select('#interaction');
     interactionDiv.on('mouseenter', function(){
         let coords = d3.mouse(this);
 
-        //interactionDiv.classed('crosshair', true);
         if(d3.select('#push-div').empty() && d3.select('.media-tabber').node().value === 't3'){
             let pushDiv = interactionDiv.append('div').attr('id', 'push-div');
             pushDiv.style('position', 'absolute')
@@ -611,8 +594,7 @@ export function formatCanvas(){
         let coords = d3.mouse(this);
         let pushDiv = d3.select('#push-div');
         if(!pushDiv.empty()){
-            // pushDiv.style('top', (d)=> (coords[1]-10)+'px');
-            // pushDiv.style('left', (d)=> (coords[0]-10)+'px');
+        
             pushDiv.style('top', (d)=> (coords[1])+'px');
             pushDiv.style('left', (d)=> (coords[0])+'px');
         }

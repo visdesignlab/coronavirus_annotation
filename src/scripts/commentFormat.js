@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { updatePlayButton, togglePlay } from "./video_player";
 import { defaultTemplate, tagOptions } from './templates';
-import { radioBlob, formatPush, formatCanvas, clearSidebar, annotationMaker, doodleSubmit } from './canvas';
+import { radioBlob, formatPush, formatCanvas, clearSidebar, annotationMaker, doodleSubmit, formatPushBool } from './canvas';
 import { checkDatabase, firebaseConfig } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { currentUserKeeper } from './annotation';
@@ -15,7 +15,8 @@ export function formatAnnotationBox(){
 }
 
 export function noMarkFormat(){
-    console.log("this is a test");
+  
+    formatPushBool = false;
 
     let canvas = d3.select('canvas').node()
     const context = canvas.getContext('2d');
@@ -80,6 +81,8 @@ export function formatCommentBox(div){
         d3.event.stopPropagation();
 
         if(d3.select('#text-area-id').node().value != ''){
+
+            formatPushBool = false;
 
             let tags = d3.select('.tag-wrap').selectAll('.badge');
       
