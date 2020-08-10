@@ -74,8 +74,6 @@ function readyToPlay() {
 
   console.log('test in ready', video.videoHeight, video.style.height, d3.select('#canvas').style('height'));
 
-
-
   d3.select('#interaction').node().width = video.videoWidth+'px';//.style('width', `${video.videoWidth}px`);
   d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');//.style('height', `${video.videoHeight}px`);
 
@@ -314,6 +312,8 @@ function resizeStuff(){
 
   // d3.select('#interaction').style('width', `${size.width}px`);
   // d3.select('#interaction').style('height', `${size.height + 25}px`);
+  d3.select('#interaction').style('width', `${size.width}px`);
+  d3.select('#interaction').node().style.height = d3.select('#video').style('height');
 
   // d3.select('#canvas').style('width', `${size.width}px`);
   // d3.select('#canvas').style('height', `${size.height + 25}px`);
