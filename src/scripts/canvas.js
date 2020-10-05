@@ -198,15 +198,19 @@ export async function updateVideoAnn(data, annoType){
                 return `${(vidDim.height * +d.posTop) + 10}px`;
             });
             circ.attr('fill', 'red');
+
             circ.on('mouseover', (d)=>{
+
                 let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').filter(f=> f.key === d.key);
                 memoDivs.classed('selected', true);
                 memoDivs.nodes()[0].scrollIntoView({behavior: "smooth"});
     
             }).on('mouseout', (d)=> {
+
                 let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
                 let memoDivs = wrap.selectAll('.memo').classed('selected', false);
+                
             });
 
            // d3.select('#comment-sidebar').select('#annotation-wrap').node().scrollTop -= 60;
@@ -234,10 +238,7 @@ export async function updateVideoAnn(data, annoType){
                  }else{
                      return '50px'
                  }
-            });
-
-
-            
+            });            
         }
     };
 }

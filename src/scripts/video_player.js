@@ -23,8 +23,6 @@ export function formatVidPlayer(div, videoPath){
      
 }
 
-
-
 var startButton;
 var canvas;
 var context;
@@ -35,14 +33,12 @@ var applyEffect;
 function init() {
 
   resizeStuff();
- // startButton = document.getElementById('StartButton');
-  //toggleButton = document.getElementById('ToggleButton');
+ 
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
   video = document.getElementById('video');
   const playButton = document.getElementById('play');
 
-  
   video.muted = true;
 
   if (video.readyState >= 3) {
@@ -55,27 +51,27 @@ function init() {
 
     let playing = togglePlay();
     if(playing) {
-     // video.style.opacity = 0;
-     // canvas.style.opacity = 0;
       
-      drawFrame(video)};
+    drawFrame(video)};
 
   });
 
-  // toggleButton.addEventListener('click', function () {
-  //   applyEffect = !applyEffect;
-  // });
 }
 
+const getColorIndicesForCoord = (x, y, width) => {
+  const red = y * (width * 4) + x * 4;
+  return [red, red + 1, red + 2, red + 3];
+};
+
 function readyToPlay() {
+
+  console.log('when does this wotk?? ready to play')
   // Set the canvas the same width and height of the video
-  canvas.width = video.videoWidth;
+  canvas.width = Math.round(video.videoWidth);
   canvas.height = video.videoHeight;
 
-  console.log('test in ready', video.videoHeight, video.style.height, d3.select('#canvas').style('height'));
-
-  d3.select('#interaction').node().width = video.videoWidth+'px';//.style('width', `${video.videoWidth}px`);
-  d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');//.style('height', `${video.videoHeight}px`);
+  d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
+  d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');
 
   canPlay = true;
 }
@@ -100,37 +96,67 @@ function drawFrame(video) {
   ////EXPERIMENT///
   d3.select('#interaction').on('mousemove', (d, i, n)=> {
 
-    var e = window.event;
-    
-    // canvas = document.getElementById('canvas-exp');
-    // context = canvas.getContext('2d');
+    var coord = d3.mouse(n[i]);
 
+    console.log('COORDS',coord)
+
+    var e = window.event;
     var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
     var data = _data.data;
     data.width = _data.width;
     data.height = _data.height;
     
+
     // Returns {red, green, blue, alpha} object of a single specified pixel
     // or sets the specified pixel.
-    data.pixelAt = function (x, y, set) {
-      var i = y * this.width * 4 + x * 4;
-  
-      if (set) {
-        this[i] = set.red;
-        this[i + 1] = set.green;
-        this[i + 2] = set.blue;
-        this[i + 3] = set.alpha;
-      } else return {
-        red: this[i],
-        green: this[i + 1],
-        blue: this[i + 2],
-        alpha: this[i + 3]
-      };
-    };
-  
-    var pixel = data.pixelAt(e.offsetX, e.offsetY);
+    // data.pixelAt = function (x, y, set) {
 
-    var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
+    //   console.log('width',this.width, x, y)
+    //   var i = y * this.width * 4 + x * 4;
+  
+    //   if (set) {
+    //     this[i] = set.red;
+    //     this[i + 1] = set.green;
+    //     this[i + 2] = set.blue;
+    //     this[i + 3] = set.alpha;
+    //   } else return {
+    //     red: this[i],
+    //     green: this[i + 1],
+    //     blue: this[i + 2],
+    //     alpha: this[i + 3]
+    //   };
+    // };
+
+    // var pixel = data.pixelAt(e.offsetX, e.offsetY);
+    
+    let rect = n[i].getBoundingClientRect(); 
+    let x = e.clientX - rect.left; 
+    let y = e.clientY - rect.top; 
+
+    console.log('why this no work',coord[0], coord[1])
+          
+
+    //console.log("testing this out", data.width, video.getBoundingClientRect().width, n[i].getBoundingClientRect().width)
+
+    const colorIndices = getColorIndicesForCoord(Math.round(coord[0]) -10, (coord[1]-59), data.width);
+
+    const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+
+
+
+    var redForCoord = _data.data[redIndex];
+    var greenForCoord = _data.data[greenIndex];
+    var blueForCoord = _data.data[blueIndex];
+    var alphaForCoord = _data.data[alphaIndex];
+
+    console.log('index', redIndex, redForCoord)
+
+
+    //var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
+    var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+
+    console.log('color', new_rgb, data);
+
     let body = d3.select('body').node();
     body.style.background = new_rgb;
 
@@ -152,6 +178,8 @@ function drawFrame(video) {
         data.height = _data.height;
 
         data.pixelAt = function (x, y, set) {
+
+          console.log('width', x, y, this.width)
           var i = y * this.width * 4 + x * 4;
       
           if (set) {
@@ -308,18 +336,14 @@ function resizeStuff(){
 
   let size = document.getElementById('video').getBoundingClientRect();
 
-  console.log("sizing shit", size);
+  d3.select('#video').style('width', `${Math.round(size.width)}px`);
 
-  // d3.select('#interaction').style('width', `${size.width}px`);
-  // d3.select('#interaction').style('height', `${size.height + 25}px`);
-  d3.select('#interaction').style('width', `${size.width}px`);
+
+  d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
   d3.select('#interaction').node().style.height = d3.select('#video').style('height');
 
-  // d3.select('#canvas').style('width', `${size.width}px`);
-  // d3.select('#canvas').style('height', `${size.height + 25}px`);
-
   d3.select('#video-controls').style('top', `${(size.height + size.top) + 10}px`);
-  d3.select('#video-controls').style('width', `${size.width}px`);
+  d3.select('#video-controls').style('width', `${Math.round(size.width)}px`);
 }
 
 function customControls(video){
@@ -342,7 +366,6 @@ function customControls(video){
   const fullscreenButton = document.getElementById('fullscreen-button');
   const videoContainer = document.getElementById('video-container');
   const videoDim = document.getElementById('video').getBoundingClientRect();
-
 
   const videoWorks = !!document.createElement('video').canPlayType;
   if (videoWorks) {

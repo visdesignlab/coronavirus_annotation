@@ -21,13 +21,7 @@ if(!firebase.apps.length){
 
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
-    vid.formatVidPlayer(mainWrap, './public/entryComp_071420.mp4');
-    let vidDim = d3.select('video').node().getBoundingClientRect();
-
-    let width = (window.innerWidth - (+vidDim.x + +vidDim.width));
- 
-    //d3.select('#annotation-sidebar').style('min-width', width+"px");
-    //d3.select('#annotation-sidebar').select('#control').style('margin-left', ((width/2)-10)+"px");
+    vid.formatVidPlayer(mainWrap, './public/entry_flat_082020.mp4');
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
