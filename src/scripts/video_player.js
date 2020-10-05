@@ -34,15 +34,49 @@ var playing;
 
 
 var currentImageData = {};
+var currentColorCodes = [];
 
+function colorChecker(code){
+
+  if(code[2] > 70 && code[0] < 50 && code[2] > code[0] && code[2] > code[1]){
+    console.log('its blue', code)
+  }else if(code[2] > 70 && code[0] > 50 && code[2] > code[0] && code[2] > code[1]){
+    console.log('its purple', code)
+  }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
+    console.log('its red', code);
+  }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
+    console.log('its orange', code);
+
+  }
+
+}
 
 function make2DArray(dat){
 
-  console.log('data length', dat.length, "data.width", dat.width, "video", video.getBoundingClientRect(), dat.height, (dat.length/4)/dat.height);
-  for(let i = 0; i<dat.length; i += 4){
-    
-  }
+    let groups = [];
+    for(let i = 0; i < dat.data.length; i = i + 4){
+      
+      let end = i + 4;
+      let snip = dat.data.slice(i, end);
 
+      let color = currentColorCodes[currentColorCodes.length-1]
+
+      //console.log('color', color, snip);
+      //console.log(i, i+4, snip, dat.data.slice(0, dat.data.length));
+       if(snip[0] === color[0] && snip[1] === color[1] && snip[2] === color[2]){
+             // console.log('it works', String(snip), String(currentColorCodes[currentColorCodes.length-1])) 
+      // }else{
+      //   snip[3] = 0;
+        }
+
+      //colorChecker(snip);
+
+      groups.push(snip);
+            
+          //  snip.map(m=> groups.push(m));
+    }
+
+    //
 }
 
 function init() {
@@ -72,6 +106,7 @@ function init() {
     drawFrame(video);
   }else{
     console.log(currentImageData);
+    make2DArray(currentImageData);
   }
 
 
@@ -84,6 +119,8 @@ const getColorIndicesForCoord = (x, y, width) => {
   const red = y * (width * 4) + x * 4;
   return [red, red + 1, red + 2, red + 3];
 };
+
+const getColorCode = []
 
 function readyToPlay() {
 
@@ -134,18 +171,17 @@ function drawFrame(video) {
 
     var coord = d3.mouse(n[i]);
 
-    console.log(currentImageData.data, currentImageData.width, currentImageData.height);
-    
-    let rect = n[i].getBoundingClientRect(); 
-
     const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-
     const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
 
     var redForCoord = currentImageData.data[redIndex];
     var greenForCoord = currentImageData.data[greenIndex];
     var blueForCoord = currentImageData.data[blueIndex];
     var alphaForCoord = currentImageData.data[alphaIndex];
+
+    currentColorCodes.push([redForCoord, greenForCoord, blueForCoord, alphaForCoord])
+
+    colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord])
 
     var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
@@ -163,7 +199,8 @@ function drawFrame(video) {
     }else{
 
 
-      console.log('current image data',currentImageData)
+     
+      make2DArray(currentImageData);
 
         // var e = window.event;
 
