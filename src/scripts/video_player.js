@@ -30,6 +30,21 @@ var video;
 var canPlay;
 var applyEffect;
 
+var playing;
+
+
+var currentImageData = {};
+
+
+function make2DArray(dat){
+
+  console.log('data length', dat.length, "data.width", dat.width, "video", video.getBoundingClientRect(), dat.height, (dat.length/4)/dat.height);
+  for(let i = 0; i<dat.length; i += 4){
+    
+  }
+
+}
+
 function init() {
 
   resizeStuff();
@@ -41,6 +56,8 @@ function init() {
 
   video.muted = true;
 
+  currentImageData.index = 0;
+
   if (video.readyState >= 3) {
     readyToPlay();
   } else {
@@ -49,10 +66,15 @@ function init() {
   
   playButton.addEventListener('click', function () {
 
-    let playing = togglePlay();
+    playing = togglePlay();
     if(playing) {
       
-    drawFrame(video)};
+    drawFrame(video);
+  }else{
+    console.log(currentImageData);
+  }
+
+
 
   });
 
@@ -79,15 +101,29 @@ function readyToPlay() {
 function drawFrame(video) {
 
   context.drawImage(video, 0, 0);
+
+  var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
+  currentImageData.data = _data.data;
+  currentImageData.width = _data.width;
+  currentImageData.height = _data.height;
+
+  //currentImageData.data = data;
+  currentImageData.index = currentImageData.index += 1;
+
   
   if (applyEffect) {
-    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+   
     invertColors(imageData.data);
     context.putImageData(imageData, 0, 0);
   }
 
   setTimeout(function () {
+    
+   if(playing){
     drawFrame(video);
+
+   }
+   
   }, 3);
 
   
@@ -98,124 +134,83 @@ function drawFrame(video) {
 
     var coord = d3.mouse(n[i]);
 
-    console.log('COORDS',coord)
-
-    var e = window.event;
-    var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
-    var data = _data.data;
-    data.width = _data.width;
-    data.height = _data.height;
-    
-
-    // Returns {red, green, blue, alpha} object of a single specified pixel
-    // or sets the specified pixel.
-    // data.pixelAt = function (x, y, set) {
-
-    //   console.log('width',this.width, x, y)
-    //   var i = y * this.width * 4 + x * 4;
-  
-    //   if (set) {
-    //     this[i] = set.red;
-    //     this[i + 1] = set.green;
-    //     this[i + 2] = set.blue;
-    //     this[i + 3] = set.alpha;
-    //   } else return {
-    //     red: this[i],
-    //     green: this[i + 1],
-    //     blue: this[i + 2],
-    //     alpha: this[i + 3]
-    //   };
-    // };
-
-    // var pixel = data.pixelAt(e.offsetX, e.offsetY);
+    console.log(currentImageData.data, currentImageData.width, currentImageData.height);
     
     let rect = n[i].getBoundingClientRect(); 
-    let x = e.clientX - rect.left; 
-    let y = e.clientY - rect.top; 
 
-    console.log('why this no work',coord[0], coord[1])
-          
-
-    //console.log("testing this out", data.width, video.getBoundingClientRect().width, n[i].getBoundingClientRect().width)
-
-    const colorIndices = getColorIndicesForCoord(Math.round(coord[0]) -10, (coord[1]-59), data.width);
+    const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
 
     const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
 
+    var redForCoord = currentImageData.data[redIndex];
+    var greenForCoord = currentImageData.data[greenIndex];
+    var blueForCoord = currentImageData.data[blueIndex];
+    var alphaForCoord = currentImageData.data[alphaIndex];
 
-
-    var redForCoord = _data.data[redIndex];
-    var greenForCoord = _data.data[greenIndex];
-    var blueForCoord = _data.data[blueIndex];
-    var alphaForCoord = _data.data[alphaIndex];
-
-    console.log('index', redIndex, redForCoord)
-
-
-    //var new_rgb = 'rgba(' + pixel.red +","+ pixel.green +","+pixel.blue +')';
     var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
-
-    console.log('color', new_rgb, data);
 
     let body = d3.select('body').node();
     body.style.background = new_rgb;
 
   }).on('click', ()=> {
 
-    let isPlaying = togglePlay();
+    playing = togglePlay();
 
-    if(isPlaying){
+    if(playing){
 
-      console.log('is playing');
+      drawFrame(video);
 
     }else{
 
-        var e = window.event;
 
-        var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
-        var data = _data.data;
-        data.width = _data.width;
-        data.height = _data.height;
+      console.log('current image data',currentImageData)
 
-        data.pixelAt = function (x, y, set) {
+        // var e = window.event;
 
-          console.log('width', x, y, this.width)
-          var i = y * this.width * 4 + x * 4;
+        // var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
+        // var data = _data.data;
+        // data.width = _data.width;
+        // data.height = _data.height;
+
+        // data.pixelAt = function (x, y, set) {
+
+        //   console.log('width', x, y, this.width)
+        //   var i = y * this.width * 4 + x * 4;
       
-          if (set) {
-            this[i] = set.red;
-            this[i + 1] = set.green;
-            this[i + 2] = set.blue;
-            this[i + 3] = set.alpha;
-          } else return {
-            red: this[i],
-            green: this[i + 1],
-            blue: this[i + 2],
-            alpha: this[i + 3]
-          };
-        };
+        //   if (set) {
+        //     this[i] = set.red;
+        //     this[i + 1] = set.green;
+        //     this[i + 2] = set.blue;
+        //     this[i + 3] = set.alpha;
+        //   } else return {
+        //     red: this[i],
+        //     green: this[i + 1],
+        //     blue: this[i + 2],
+        //     alpha: this[i + 3]
+        //   };
+        // };
   
-        var pixel = data.pixelAt(e.offsetX, e.offsetY);
+        // var pixel = data.pixelAt(e.offsetX, e.offsetY);
     
        // console.log('new CLICK', data);
 
-        let groups = [];
-        for(let i = 0; i < data.length; i = i + 4){
-           // console.log(i, i+4);
-           let end = i + 4;
-            let snip = data.slice(i, end);
-            if(String(snip) === String([pixel.red, pixel.green, pixel.blue, pixel.alpha])){
-               // console.log('it works', String(snip), String([pixel.red, pixel.green, pixel.blue, pixel.alpha]))
+        // let groups = [];
+        // for(let i = 0; i < data.length; i = i + 4){
+        //    // console.log(i, i+4);
+        //    let end = i + 4;
+        //     let snip = data.slice(i, end);
+        //     if(String(snip) === String([pixel.red, pixel.green, pixel.blue, pixel.alpha])){
+        //        // console.log('it works', String(snip), String([pixel.red, pixel.green, pixel.blue, pixel.alpha]))
                 
-            }else{
-                snip[3] = 0;
-            }
+        //     }else{
+        //         snip[3] = 0;
+        //     }
             
-            snip.map(m=> groups.push(m));
-        }
+        //     snip.map(m=> groups.push(m));
+        // }
 
-        var ctx = canvas.getContext('2d');
-        ctx.putImageData(new ImageData(new Uint8ClampedArray(groups), video.getBoundingClientRect().width, video.getBoundingClientRect().height), 0, 0);
+        // var ctx = canvas.getContext('2d');
+        // ctx.putImageData(new ImageData(new Uint8ClampedArray(groups), video.getBoundingClientRect().width, video.getBoundingClientRect().height), 0, 0);
        // video.style.opacity = 0;
     }
   });
