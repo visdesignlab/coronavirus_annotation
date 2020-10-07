@@ -39,14 +39,29 @@ var currentColorCodes = [];
 function colorChecker(code){
 
   if(code[2] > 70 && code[0] < 50 && code[2] > code[0] && code[2] > code[1]){
-    console.log('its blue', code)
+   // console.log('its blue', code)
+    return 'blue';
   }else if(code[2] > 70 && code[0] > 50 && code[2] > code[0] && code[2] > code[1]){
-    console.log('its purple', code)
+   // console.log('its purple (ACE2)', code);
+    return 'purple';
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
-    console.log('its red', code);
+    //console.log('its red', code);
+    return 'red';
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
-    console.log('its orange', code);
-
+   // console.log('its orange (TMPRSS2)', code);
+    return 'orange';
+  }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 80 && code[0] < 220){
+   // console.log('this is green (spike protein)', code);
+    return 'green';
+  }else if(code[1] > code[2] && code[1] > 200 && code[0] > 220){
+   // console.log('this is yellow (Furin)', code);
+    return 'yellow';
+  }else if(code[0] > 220 && code[1] > 220 && code[2] > 220){
+   // console.log('this white', code);
+    return 'white';
+  }else{
+    //console.log('this is black');
+    return 'black';
   }
 
 }
@@ -59,22 +74,34 @@ function make2DArray(dat){
       let end = i + 4;
       let snip = dat.data.slice(i, end);
 
-      let color = currentColorCodes[currentColorCodes.length-1]
+      let color = currentColorCodes[currentColorCodes.length-1];
 
-      //console.log('color', color, snip);
-      //console.log(i, i+4, snip, dat.data.slice(0, dat.data.length));
-       if(snip[0] === color[0] && snip[1] === color[1] && snip[2] === color[2]){
+      if(snip[0] === color[0] && snip[1] === color[1] && snip[2] === color[2]){
              // console.log('it works', String(snip), String(currentColorCodes[currentColorCodes.length-1])) 
       // }else{
       //   snip[3] = 0;
-        }
+      }
 
-      //colorChecker(snip);
+      let colorP = colorChecker(snip);
 
-      groups.push(snip);
+      if(colorP === "purple"){
+        //console.log('coooooolor purple', colorP);
+        dat.data[i] = 255;
+        dat.data[i + 1] = 255;
+        dat.data[i + 2] = 255;
+        
+        //console.log('purple',dat.data[i])
+      } 
+
+     // groups.push(snip);
             
           //  snip.map(m=> groups.push(m));
     }
+
+    console.log('this is done',dat.data, dat);
+    const myimg = new ImageData(dat.data, dat.width, dat.height);
+    context.putImageData(myimg, 0, 0);
+
 
     //
 }
@@ -90,7 +117,7 @@ function init() {
 
   video.muted = true;
 
-  currentImageData.index = 0;
+  //currentImageData.index = 0;
 
   if (video.readyState >= 3) {
     readyToPlay();
@@ -145,7 +172,7 @@ function drawFrame(video) {
   currentImageData.height = _data.height;
 
   //currentImageData.data = data;
-  currentImageData.index = currentImageData.index += 1;
+ // currentImageData.index = currentImageData.index += 1;
 
   
   if (applyEffect) {
