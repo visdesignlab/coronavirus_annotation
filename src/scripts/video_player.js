@@ -66,40 +66,35 @@ function colorChecker(code){
 
 }
 
-function make2DArray(dat){
+function make2DArray(dat, hoverColor){
 
-    let groups = [];
-    for(let i = 0; i < dat.data.length; i = i + 4){
+  let newData = Object.assign({}, dat);
+   
+
+  // let newData = JSON.parse(JSON.stringify(dat));
+   newData.data = Uint8ClampedArray.from([...dat.data])
+
+    console.log('newdata', newData)
+
+    for(let i = 0; i < newData.data.length; i = i + 4){
       
       let end = i + 4;
-      let snip = dat.data.slice(i, end);
-
-      let color = currentColorCodes[currentColorCodes.length-1];
-
-      if(snip[0] === color[0] && snip[1] === color[1] && snip[2] === color[2]){
-             // console.log('it works', String(snip), String(currentColorCodes[currentColorCodes.length-1])) 
-      // }else{
-      //   snip[3] = 0;
-      }
+      let snip = newData.data.slice(i, end);
 
       let colorP = colorChecker(snip);
 
-      if(colorP === "purple"){
-        //console.log('coooooolor purple', colorP);
-        dat.data[i] = 255;
-        dat.data[i + 1] = 255;
-        dat.data[i + 2] = 255;
+      if(colorP === hoverColor){
+      
+        newData.data[i] = 255;
+        newData.data[i + 1] = 255;
+        newData.data[i + 2] = 255;
         
-        //console.log('purple',dat.data[i])
       } 
 
-     // groups.push(snip);
-            
-          //  snip.map(m=> groups.push(m));
     }
 
-    console.log('this is done',dat.data, dat);
-    const myimg = new ImageData(dat.data, dat.width, dat.height);
+  
+    const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
 
 
@@ -133,7 +128,7 @@ function init() {
     drawFrame(video);
   }else{
     console.log(currentImageData);
-    make2DArray(currentImageData);
+  //  make2DArray(currentImageData, 'purple');
   }
 
 
@@ -151,7 +146,6 @@ const getColorCode = []
 
 function readyToPlay() {
 
-  console.log('when does this wotk?? ready to play')
   // Set the canvas the same width and height of the video
   canvas.width = Math.round(video.videoWidth);
   canvas.height = video.videoHeight;
@@ -171,10 +165,6 @@ function drawFrame(video) {
   currentImageData.width = _data.width;
   currentImageData.height = _data.height;
 
-  //currentImageData.data = data;
- // currentImageData.index = currentImageData.index += 1;
-
-  
   if (applyEffect) {
    
     invertColors(imageData.data);
@@ -206,14 +196,25 @@ function drawFrame(video) {
     var blueForCoord = currentImageData.data[blueIndex];
     var alphaForCoord = currentImageData.data[alphaIndex];
 
-    currentColorCodes.push([redForCoord, greenForCoord, blueForCoord, alphaForCoord])
-
-    colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord])
+   
 
     var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
     let body = d3.select('body').node();
     body.style.background = new_rgb;
+
+    let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+
+    if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
+      currentColorCodes.push(snip);
+      make2DArray(currentImageData, snip);
+    }else if(snip === "black" || snip === "white"){
+      console.log('thisshould work')
+      currentColorCodes.push(snip);
+      const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
+      context.putImageData(myimg, 0, 0);
+    }
+    
 
   }).on('click', ()=> {
 
@@ -225,57 +226,8 @@ function drawFrame(video) {
 
     }else{
 
+      //make2DArray(currentImageData, 'purple');
 
-     
-      make2DArray(currentImageData);
-
-        // var e = window.event;
-
-        // var _data = context.getImageData(0, 0, video.getBoundingClientRect().width, video.getBoundingClientRect().height)
-        // var data = _data.data;
-        // data.width = _data.width;
-        // data.height = _data.height;
-
-        // data.pixelAt = function (x, y, set) {
-
-        //   console.log('width', x, y, this.width)
-        //   var i = y * this.width * 4 + x * 4;
-      
-        //   if (set) {
-        //     this[i] = set.red;
-        //     this[i + 1] = set.green;
-        //     this[i + 2] = set.blue;
-        //     this[i + 3] = set.alpha;
-        //   } else return {
-        //     red: this[i],
-        //     green: this[i + 1],
-        //     blue: this[i + 2],
-        //     alpha: this[i + 3]
-        //   };
-        // };
-  
-        // var pixel = data.pixelAt(e.offsetX, e.offsetY);
-    
-       // console.log('new CLICK', data);
-
-        // let groups = [];
-        // for(let i = 0; i < data.length; i = i + 4){
-        //    // console.log(i, i+4);
-        //    let end = i + 4;
-        //     let snip = data.slice(i, end);
-        //     if(String(snip) === String([pixel.red, pixel.green, pixel.blue, pixel.alpha])){
-        //        // console.log('it works', String(snip), String([pixel.red, pixel.green, pixel.blue, pixel.alpha]))
-                
-        //     }else{
-        //         snip[3] = 0;
-        //     }
-            
-        //     snip.map(m=> groups.push(m));
-        // }
-
-        // var ctx = canvas.getContext('2d');
-        // ctx.putImageData(new ImageData(new Uint8ClampedArray(groups), video.getBoundingClientRect().width, video.getBoundingClientRect().height), 0, 0);
-       // video.style.opacity = 0;
     }
   });
 
