@@ -3,7 +3,7 @@ import { formatCanvas, formatPush, annotationBar } from './canvas';
 import { toggleMagic } from './sidebar';
 import { checkDatabase } from './firebaseStuff';
 import * as firebase from 'firebase';
-import { mouse } from 'd3';
+import { mouse, select } from 'd3';
 
 const shapeArray = [];
 
@@ -18,6 +18,16 @@ export function formatVidPlayer(div, videoPath){
   src.attr('type', "video/mp4");
 
   customControls(videoSelect.node());
+
+   // create a tooltip
+   var tooltip = d3.select('#main-wrap').append('div');
+   tooltip.style("opacity", 0)
+   .attr("class", "tooltip")
+   .style("background-color", "white")
+   .style("border", "solid")
+   .style("border-width", "2px")
+   .style("border-radius", "5px")
+   .style("padding", "5px")
 
   return div;
      
@@ -50,7 +60,7 @@ function colorChecker(code){
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
    // console.log('its orange (TMPRSS2)', code);
     return 'orange';
-  }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 80 && code[0] < 220){
+  }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 220){
    // console.log('this is green (spike protein)', code);
     return 'green';
   }else if(code[1] > code[2] && code[1] > 200 && code[0] > 220){
@@ -69,12 +79,7 @@ function colorChecker(code){
 function make2DArray(dat, hoverColor){
 
   let newData = Object.assign({}, dat);
-   
-
-  // let newData = JSON.parse(JSON.stringify(dat));
-   newData.data = Uint8ClampedArray.from([...dat.data])
-
-    console.log('newdata', newData)
+  newData.data = Uint8ClampedArray.from([...dat.data])
 
     for(let i = 0; i < newData.data.length; i = i + 4){
       
@@ -92,13 +97,9 @@ function make2DArray(dat, hoverColor){
       } 
 
     }
-
-  
     const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
 
-
-    //
 }
 
 function init() {
@@ -195,9 +196,6 @@ function drawFrame(video) {
     var greenForCoord = currentImageData.data[greenIndex];
     var blueForCoord = currentImageData.data[blueIndex];
     var alphaForCoord = currentImageData.data[alphaIndex];
-
-   
-
     var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
     let body = d3.select('body').node();
@@ -208,8 +206,16 @@ function drawFrame(video) {
     if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
       currentColorCodes.push(snip);
       make2DArray(currentImageData, snip);
+
+    d3.select('.tooltip')
+      .style('position', 'absolute')
+      .style("opacity", 1)
+      .html(`${snip} stucture`)
+      .style("left", (coord[0]+ 200) + "px")
+      .style("top", (coord[1]) + "px")
+
     }else if(snip === "black" || snip === "white"){
-      console.log('thisshould work')
+      d3.select('.tooltip').style("opacity", 0);
       currentColorCodes.push(snip);
       const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
       context.putImageData(myimg, 0, 0);
