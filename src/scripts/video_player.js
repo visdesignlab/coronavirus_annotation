@@ -46,31 +46,46 @@ var playing;
 var currentImageData = {};
 var currentColorCodes = [];
 
+let purpArray = [];
+let yellowArray = [];
+let greenArray = [];
+let mintArray = [];
+let orangeArray = [];
+let redArray = [];
+let blackArray = [];
+let blueArray = [];
+let tealArray = [];
+
 function colorChecker(code){
 
-  if(code[2] > 70 && code[0] < 50 && code[2] > code[0] && code[2] > code[1]){
-   // console.log('its blue', code)
+  if(code[2] > 70 && code[0] < 100 && code[2] > code[0] && code[2] > code[1]){
+    blueArray.push(code)
     return 'blue';
-  }else if(code[2] > 70 && code[0] > 50 && code[2] > code[0] && code[2] > code[1]){
-   // console.log('its purple (ACE2)', code);
+  }else if(code[2] > 70 && code[0] > 100 && code[2] > code[0] && code[2] > code[1]){
+    purpArray.push(code);
     return 'purple';
-  }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
-    //console.log('its red', code);
+  }else if(code[2] < 70 && code[0] > 200 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
+    redArray.push(code);
     return 'red';
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
-   // console.log('its orange (TMPRSS2)', code);
+    orangeArray.push(code);
     return 'orange';
-  }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 220){
-   // console.log('this is green (spike protein)', code);
+  }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 200){
+    mintArray.push(code);
+    return 'mint';
+  }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 120 && code[1] < 200){
+    tealArray.push(code);
+    return 'teal';
+  }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 120 && code[0] < 220){
+    greenArray.push(code);
     return 'green';
   }else if(code[1] > code[2] && code[1] > 200 && code[0] > 220){
-   // console.log('this is yellow (Furin)', code);
+    yellowArray.push(code);
     return 'yellow';
   }else if(code[0] > 220 && code[1] > 220 && code[2] > 220){
-   // console.log('this white', code);
     return 'white';
   }else{
-    //console.log('this is black');
+    blackArray.push(code);
     return 'black';
   }
 
@@ -85,18 +100,31 @@ function make2DArray(dat, hoverColor){
       
       let end = i + 4;
       let snip = newData.data.slice(i, end);
+      let color = colorChecker(snip);
 
-      let colorP = colorChecker(snip);
-
-      if(colorP === hoverColor){
-      
+      if(color === hoverColor){
         newData.data[i] = 255;
         newData.data[i + 1] = 255;
         newData.data[i + 2] = 255;
-        
       } 
-
     }
+    let first = [];
+    let second = [];
+    let third = [];
+    let fourth = [];
+    let purpleTest = orangeArray.map(m=> {
+      first.push(m[0]);
+      second.push(m[1]);
+      third.push(m[2]);
+      fourth.push(m[3]);
+      return String(m);
+    });
+
+    console.log('test', Array.from(new Set(purpleTest)))
+    console.log('first', d3.extent(first));
+    console.log('second', d3.extent(second));
+    console.log('third', d3.extent(third));
+      
     const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
 
@@ -167,21 +195,17 @@ function drawFrame(video) {
   currentImageData.height = _data.height;
 
   if (applyEffect) {
-   
     invertColors(imageData.data);
     context.putImageData(imageData, 0, 0);
   }
 
   setTimeout(function () {
-    
    if(playing){
     drawFrame(video);
-
    }
    
   }, 3);
 
-  
 }
 
   ////EXPERIMENT///
@@ -210,7 +234,10 @@ function drawFrame(video) {
     d3.select('.tooltip')
       .style('position', 'absolute')
       .style("opacity", 1)
-      .html(`${snip} stucture`)
+      .html(`${snip} stucture: <br>
+      Number of associated annotations go here. <br>
+      Certainty level also shown here.
+      `)
       .style("left", (coord[0]+ 200) + "px")
       .style("top", (coord[1]) + "px")
 
@@ -227,16 +254,11 @@ function drawFrame(video) {
     playing = togglePlay();
 
     if(playing){
-
       drawFrame(video);
-
     }else{
-
       //make2DArray(currentImageData, 'purple');
-
     }
   });
-
 
 function invertColors(data) {
   for (var i = 0; i < data.length; i+= 4) {
@@ -244,63 +266,6 @@ function invertColors(data) {
     data[i+1] = data[i+1] ^ 255; // Invert Green
     data[i+2] = data[i+2] ^ 255; // Invert Blue
   }
-}
-
-
-
-export function pixel8(image, w, h) {
-  "use strict";
-
-  // Image must be an image, canvas, or video
-  // For videos: Pixel data of the currently displayed frame will be extracted
-  // For canvases: Why are you using this?
-  if (!image.tagName || image.tagName !== "IMG" && image.tagName !== "VIDEO" && image.tagName !== "CANVAS") {
-    throw new TypeError("first argument must be image, video, or canvas context.");
-  }
-
-  // For our friend Internet Explorer, FlashCanvas is supported
-  // ExplorerCanvas does not support the getImageData function
- // var canvas = document.createElement('canvas');
-  var canvas = document.getElementById('canvas-exp');
-  canvas.style.width = image.getBoundingClientRect().width;
-  canvas.style.height = image.getBoundingClientRect().height;
-
-  console.log('width check',w, h)
-  //d3.select(canvas).style('opacity', 0)
-  if (window.FlashCanvas) FlashCanvas.initElement(canvas);
-  if (canvas.getContext) var ctx = canvas.getContext('2d');
-  else return;
-
-  ctx.drawImage(image, 0, 0, image.getBoundingClientRect().width/2, image.getBoundingClientRect().height/2);
-
-  var _data = ctx.getImageData(0, 0, image.getBoundingClientRect().width, image.getBoundingClientRect().height)
-  var data = _data.data;
-  data.width = _data.width;
-  data.height = _data.height;
-  
-  // Returns {red, green, blue, alpha} object of a single specified pixel
-  // or sets the specified pixel.
-  data.pixelAt = function (x, y, set) {
-    var i = y * this.width * 4 + x * 4;
-
-    if (set) {
-      this[i] = set.red;
-      this[i + 1] = set.green;
-      this[i + 2] = set.blue;
-      this[i + 3] = set.alpha;
-    } else return {
-      red: this[i],
-      green: this[i + 1],
-      blue: this[i + 2],
-      alpha: this[i + 3]
-    };
-  };
-
-  // Draws the pixel data into a canvas
-  data.draw = function(ctx, x, y) {
-    ctx.putImageData(_data, x, y);
-  };
-  return data;
 }
 
 // togglePlay toggles the playback state of the video.
