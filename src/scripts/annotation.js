@@ -21,7 +21,7 @@ if(!firebase.apps.length){
 
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
-    vid.formatVidPlayer(mainWrap, './public/entry_flat_082020.mp4');
+    vid.formatVidPlayer(mainWrap, './public/entry_notflat_082020.mp4');
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {

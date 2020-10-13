@@ -6,33 +6,6 @@ import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
 
 const shapeArray = [];
-
-export function formatVidPlayer(div, videoPath){
-
-  let videoSelect = d3.select(div).select('video');
-  videoSelect.attr('id', 'video');
-
-  let src = videoSelect.append('source');
-
-  src.attr('src', videoPath);
-  src.attr('type', "video/mp4");
-
-  customControls(videoSelect.node());
-
-   // create a tooltip
-   var tooltip = d3.select('#main-wrap').append('div');
-   tooltip.style("opacity", 0)
-   .attr("class", "tooltip")
-   .style("background-color", "white")
-   .style("border", "solid")
-   .style("border-width", "2px")
-   .style("border-radius", "5px")
-   .style("padding", "5px")
-
-  return div;
-     
-}
-
 var startButton;
 var canvas;
 var context;
@@ -41,7 +14,6 @@ var canPlay;
 var applyEffect;
 
 var playing;
-
 
 var currentImageData = {};
 var currentColorCodes = [];
@@ -55,6 +27,41 @@ let redArray = [];
 let blackArray = [];
 let blueArray = [];
 let tealArray = [];
+
+var video2;
+
+const getColorCode = [];
+
+export function formatVidPlayer(div, videoPath){
+
+  let videoMain = d3.select(div).select('video');
+  videoMain.attr('id', 'video');
+
+  let src = videoMain.append('source');
+
+  src.attr('src', videoPath);
+  src.attr('type', "video/mp4");
+
+  video2 = document.createElement('video');
+  video2.src = "./public/entry_flat_082020.mp4";
+  video2.id = 'context-map';
+  video2.muted = true;
+  video2.autoplay = true;
+
+  customControls(videoMain.node());
+
+  // create a tooltip
+  var tooltip = d3.select('#main-wrap').append('div');
+  tooltip.style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px");
+
+  return div;
+}
 
 function colorChecker(code){
 
@@ -108,22 +115,7 @@ function make2DArray(dat, hoverColor){
         newData.data[i + 2] = 255;
       } 
     }
-    // let first = [];
-    // let second = [];
-    // let third = [];
-    // let fourth = [];
-    // let purpleTest = orangeArray.map(m=> {
-    //   first.push(m[0]);
-    //   second.push(m[1]);
-    //   third.push(m[2]);
-    //   fourth.push(m[3]);
-    //   return String(m);
-    // });
 
-    // console.log('test', Array.from(new Set(purpleTest)))
-    // console.log('first', d3.extent(first));
-    // console.log('second', d3.extent(second));
-    // console.log('third', d3.extent(third));
       
     const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
@@ -153,9 +145,9 @@ function init() {
 
     playing = togglePlay();
     if(playing) {
-      
-    drawFrame(video);
+    //drawFrame(video);
   }else{
+    drawFrameOnPause(d3.select('#context-map').node());
     console.log(currentImageData);
   //  make2DArray(currentImageData, 'purple');
   }
@@ -170,8 +162,6 @@ const getColorIndicesForCoord = (x, y, width) => {
   const red = y * (width * 4) + x * 4;
   return [red, red + 1, red + 2, red + 3];
 };
-
-const getColorCode = []
 
 function readyToPlay() {
 
@@ -194,11 +184,6 @@ function drawFrame(video) {
   currentImageData.width = _data.width;
   currentImageData.height = _data.height;
 
-  if (applyEffect) {
-    invertColors(imageData.data);
-    context.putImageData(imageData, 0, 0);
-  }
-
   setTimeout(function () {
    if(playing){
     drawFrame(video);
@@ -208,65 +193,75 @@ function drawFrame(video) {
 
 }
 
+function drawFrameOnPause(video) {
+
+  console.log('dra vid',video, )
+
+  canvas = document.getElementById('canvas');
+  context = canvas.getContext('2d');
+
+  context.drawImage(video2, 0, 0);
+
+  var _data = context.getImageData(0, 0, video2.getBoundingClientRect().width, video2.getBoundingClientRect().height)
+  currentImageData.data = _data.data;
+  currentImageData.width = _data.width;
+  currentImageData.height = _data.height;
+
+  context.putImageData(_data, 0, 0);
+
+}
+
   ////EXPERIMENT///
-  d3.select('#interaction').on('mousemove', (d, i, n)=> {
+  // d3.select('#interaction').on('mousemove', (d, i, n)=> {
 
-    var coord = d3.mouse(n[i]);
+  //   // var coord = d3.mouse(n[i]);
 
-    const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-    const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+  //   // const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
+  //   // const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
 
-    var redForCoord = currentImageData.data[redIndex];
-    var greenForCoord = currentImageData.data[greenIndex];
-    var blueForCoord = currentImageData.data[blueIndex];
-    var alphaForCoord = currentImageData.data[alphaIndex];
-    var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+  //   // var redForCoord = currentImageData.data[redIndex];
+  //   // var greenForCoord = currentImageData.data[greenIndex];
+  //   // var blueForCoord = currentImageData.data[blueIndex];
+  //   // var alphaForCoord = currentImageData.data[alphaIndex];
+  //   // var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
-    let body = d3.select('body').node();
-    body.style.background = new_rgb;
+  //   // let body = d3.select('body').node();
+  //   // body.style.background = new_rgb;
 
-    let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+  //   // let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
 
-    if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
-      currentColorCodes.push(snip);
-      make2DArray(currentImageData, snip);
+  //   // if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
+  //   //   currentColorCodes.push(snip);
+  //   //   make2DArray(currentImageData, snip);
 
-    d3.select('.tooltip')
-      .style('position', 'absolute')
-      .style("opacity", 1)
-      .html(`${snip} stucture: <br>
-      Number of associated annotations go here. <br>
-      Certainty level also shown here.
-      `)
-      .style("left", (coord[0]+ 200) + "px")
-      .style("top", (coord[1]) + "px")
+  //   // d3.select('.tooltip')
+  //   //   .style('position', 'absolute')
+  //   //   .style("opacity", 1)
+  //   //   .html(`${snip} stucture: <br>
+  //   //   Number of associated annotations go here. <br>
+  //   //   Certainty level also shown here.
+  //   //   `)
+  //   //   .style("left", (coord[0]+ 200) + "px")
+  //   //   .style("top", (coord[1]) + "px")
 
-    }else if(snip === "black" || snip === "white"){
-      d3.select('.tooltip').style("opacity", 0);
-      currentColorCodes.push(snip);
-      const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
-      context.putImageData(myimg, 0, 0);
-    }
+  //   // }else if(snip === "black" || snip === "white"){
+  //   //   d3.select('.tooltip').style("opacity", 0);
+  //   //   currentColorCodes.push(snip);
+  //   //   const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
+  //   //   context.putImageData(myimg, 0, 0);
+  //   // }
     
 
-  }).on('click', ()=> {
+  // }).on('click', ()=> {
 
-    playing = togglePlay();
+  //   playing = togglePlay();
 
-    if(playing){
-      drawFrame(video);
-    }else{
-      //make2DArray(currentImageData, 'purple');
-    }
-  });
-
-function invertColors(data) {
-  for (var i = 0; i < data.length; i+= 4) {
-    data[i] = data[i] ^ 255; // Invert Red
-    data[i+1] = data[i+1] ^ 255; // Invert Green
-    data[i+2] = data[i+2] ^ 255; // Invert Blue
-  }
-}
+  //   if(playing){
+  //     drawFrame(video);
+  //   }else{
+  //     //make2DArray(currentImageData, 'purple');
+  //   }
+  // });
 
 // togglePlay toggles the playback state of the video.
 // If the video playback is paused or ended, the video is played
