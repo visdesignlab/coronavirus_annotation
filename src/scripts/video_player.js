@@ -108,22 +108,22 @@ function make2DArray(dat, hoverColor){
         newData.data[i + 2] = 255;
       } 
     }
-    let first = [];
-    let second = [];
-    let third = [];
-    let fourth = [];
-    let purpleTest = orangeArray.map(m=> {
-      first.push(m[0]);
-      second.push(m[1]);
-      third.push(m[2]);
-      fourth.push(m[3]);
-      return String(m);
-    });
+    // let first = [];
+    // let second = [];
+    // let third = [];
+    // let fourth = [];
+    // let purpleTest = orangeArray.map(m=> {
+    //   first.push(m[0]);
+    //   second.push(m[1]);
+    //   third.push(m[2]);
+    //   fourth.push(m[3]);
+    //   return String(m);
+    // });
 
-    console.log('test', Array.from(new Set(purpleTest)))
-    console.log('first', d3.extent(first));
-    console.log('second', d3.extent(second));
-    console.log('third', d3.extent(third));
+    // console.log('test', Array.from(new Set(purpleTest)))
+    // console.log('first', d3.extent(first));
+    // console.log('second', d3.extent(second));
+    // console.log('third', d3.extent(third));
       
     const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
