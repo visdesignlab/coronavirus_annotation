@@ -145,6 +145,7 @@ function init() {
 
     playing = togglePlay();
     if(playing) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
     //drawFrame(video);
   }else{
     drawFrameOnPause(d3.select('#context-map').node());
@@ -270,9 +271,11 @@ export function togglePlay() {
   let video = document.getElementById('video');
   if (video.paused || video.ended) {
     video.play();
+    video2.play();
     return true;
   } else {
     video.pause();
+    video2.pause();
     return false;
   }
 }
