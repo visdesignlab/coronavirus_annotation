@@ -156,8 +156,6 @@ function init() {
   //  make2DArray(currentImageData, 'purple');
   }
 
-
-
   });
 
 }
