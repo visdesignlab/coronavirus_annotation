@@ -109,11 +109,14 @@ function make2DArray(dat, hoverColor){
       let snip = newData.data.slice(i, end);
       let color = colorChecker(snip);
 
-      if(color === hoverColor){
+      if(color != hoverColor){
         newData.data[i] = 255;
         newData.data[i + 1] = 255;
         newData.data[i + 2] = 255;
-      } 
+        newData.data[i + 3] = 150;
+      }else if(color === hoverColor){
+        newData.data[i + 3] = 0;
+      }
     }
 
       
@@ -194,16 +197,14 @@ function drawFrame(video) {
 
 }
 
-function drawFrameOnPause(video) {
-
-  console.log('dra vid',video, )
+function drawFrameOnPause() {
 
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
 
   context.drawImage(video2, 0, 0);
 
-  var _data = context.getImageData(0, 0, video2.getBoundingClientRect().width, video2.getBoundingClientRect().height)
+  var _data = context.getImageData(0, 0, document.getElementById('video').getBoundingClientRect().width, document.getElementById('video').getBoundingClientRect().height)
   currentImageData.data = _data.data;
   currentImageData.width = _data.width;
   currentImageData.height = _data.height;
@@ -213,56 +214,58 @@ function drawFrameOnPause(video) {
 }
 
   ////EXPERIMENT///
-  // d3.select('#interaction').on('mousemove', (d, i, n)=> {
+  d3.select('#interaction').on('mousemove', (d, i, n)=> {
 
-  //   // var coord = d3.mouse(n[i]);
+    if(!playing){
 
-  //   // const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-  //   // const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+      var coord = d3.mouse(n[i]);
 
-  //   // var redForCoord = currentImageData.data[redIndex];
-  //   // var greenForCoord = currentImageData.data[greenIndex];
-  //   // var blueForCoord = currentImageData.data[blueIndex];
-  //   // var alphaForCoord = currentImageData.data[alphaIndex];
-  //   // var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+      const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
+      const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+  
+      var redForCoord = currentImageData.data[redIndex];
+      var greenForCoord = currentImageData.data[greenIndex];
+      var blueForCoord = currentImageData.data[blueIndex];
+      var alphaForCoord = currentImageData.data[alphaIndex];
+      var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+  
+      let body = d3.select('body').node();
+      body.style.background = new_rgb;
+  
+      let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+  
+      if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
+        currentColorCodes.push(snip);
+        make2DArray(currentImageData, snip);
+  
+      d3.select('.tooltip')
+        .style('position', 'absolute')
+        .style("opacity", 1)
+        .html(`${snip} stucture: <br>
+        Number of associated annotations go here. <br>
+        Certainty level also shown here.
+        `)
+        .style("left", (coord[0]+ 200) + "px")
+        .style("top", (coord[1]) + "px")
+  
+      }else if(snip === "black" || snip === "white"){
+        d3.select('.tooltip').style("opacity", 0);
+        currentColorCodes.push(snip);
+        const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
+        context.putImageData(myimg, 0, 0);
+      }
+    }
 
-  //   // let body = d3.select('body').node();
-  //   // body.style.background = new_rgb;
+  }).on('click', ()=> {
 
-  //   // let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+    playing = togglePlay();
 
-  //   // if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
-  //   //   currentColorCodes.push(snip);
-  //   //   make2DArray(currentImageData, snip);
-
-  //   // d3.select('.tooltip')
-  //   //   .style('position', 'absolute')
-  //   //   .style("opacity", 1)
-  //   //   .html(`${snip} stucture: <br>
-  //   //   Number of associated annotations go here. <br>
-  //   //   Certainty level also shown here.
-  //   //   `)
-  //   //   .style("left", (coord[0]+ 200) + "px")
-  //   //   .style("top", (coord[1]) + "px")
-
-  //   // }else if(snip === "black" || snip === "white"){
-  //   //   d3.select('.tooltip').style("opacity", 0);
-  //   //   currentColorCodes.push(snip);
-  //   //   const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
-  //   //   context.putImageData(myimg, 0, 0);
-  //   // }
-    
-
-  // }).on('click', ()=> {
-
-  //   playing = togglePlay();
-
-  //   if(playing){
-  //     drawFrame(video);
-  //   }else{
-  //     //make2DArray(currentImageData, 'purple');
-  //   }
-  // });
+    if(playing){
+      drawFrame(video);
+    }else{
+      //make2DArray(currentImageData, 'purple');
+    }
+  });
 
 // togglePlay toggles the playback state of the video.
 // If the video playback is paused or ended, the video is played
@@ -318,6 +321,8 @@ function resizeStuff(){
 
   d3.select('#video').style('width', `${Math.round(size.width)}px`);
 
+  video2.width = Math.round(size.width);
+  video2.height = size.height;
 
   d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
   d3.select('#interaction').node().style.height = d3.select('#video').style('height');
@@ -492,30 +497,30 @@ function toggleFullScreen() {
 
 // updateFullscreenButton changes the icon of the full screen button
 // and tooltip to reflect the current full screen state of the video
-function updateFullscreenButton() {
-  fullscreenIcons.forEach(icon => icon.classList.toggle('hidden'));
-  if (document.fullscreenElement) {
-    fullscreenButton.setAttribute('data-title', 'Exit full screen (f)')
-  } else {
-    fullscreenButton.setAttribute('data-title', 'Full screen (f)')
-  }
-}
+// function updateFullscreenButton() {
+//   fullscreenIcons.forEach(icon => icon.classList.toggle('hidden'));
+//   if (document.fullscreenElement) {
+//     fullscreenButton.setAttribute('data-title', 'Exit full screen (f)')
+//   } else {
+//     fullscreenButton.setAttribute('data-title', 'Full screen (f)')
+//   }
+// }
 
 // togglePip toggles Picture-in-Picture mode on the video
-async function togglePip() {
-  try {
-    if (video !== document.pictureInPictureElement) {
-      pipButton.disabled = true;
-      await video.requestPictureInPicture();
-    } else {
-      await document.exitPictureInPicture();
-    }
-  } catch (error) {
-    console.error(error)
-  } finally {
-    pipButton.disabled = false;
-  }
-}
+// async function togglePip() {
+//   try {
+//     if (video !== document.pictureInPictureElement) {
+//       pipButton.disabled = true;
+//       await video.requestPictureInPicture();
+//     } else {
+//       await document.exitPictureInPicture();
+//     }
+//   } catch (error) {
+//     console.error(error)
+//   } finally {
+//     pipButton.disabled = false;
+//   }
+// }
 
 // hideControls hides the video controls when not in use
 // if the video is paused, the controls must remain visible
@@ -572,7 +577,7 @@ seek.addEventListener('mousemove', updateSeekTooltip);
 seek.addEventListener('input', skipAhead);
 volume.addEventListener('input', updateVolume);
 volumeButton.addEventListener('click', toggleMute);
-videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
+//videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
 
 d3.select("#play-r").on('click', togglePlay);
 d3.select("#pause-r").on('click', togglePlay);
