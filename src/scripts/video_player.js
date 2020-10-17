@@ -28,7 +28,9 @@ let blackArray = [];
 let blueArray = [];
 let tealArray = [];
 
+var video;
 var video2;
+var size;
 
 const getColorCode = [];
 
@@ -36,6 +38,8 @@ export function formatVidPlayer(div, videoPath){
 
   let videoMain = d3.select(div).select('video');
   videoMain.attr('id', 'video');
+
+  video = videoMain;
 
   let src = videoMain.append('source');
 
@@ -100,6 +104,8 @@ function colorChecker(code){
 
 function make2DArray(dat, hoverColor){
 
+  console.log('dat', dat, video2, video);
+
   let newData = Object.assign({}, dat);
   newData.data = Uint8ClampedArray.from([...dat.data])
 
@@ -119,7 +125,6 @@ function make2DArray(dat, hoverColor){
       }
     }
 
-      
     const myimg = new ImageData(newData.data, dat.width, dat.height);
     context.putImageData(myimg, 0, 0);
 
@@ -131,6 +136,7 @@ function init() {
  
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
+
   video = document.getElementById('video');
   const playButton = document.getElementById('play');
 
@@ -149,12 +155,10 @@ function init() {
     playing = togglePlay();
     if(playing) {
       context.clearRect(0, 0, canvas.width, canvas.height);
-    //drawFrame(video);
-  }else{
-    drawFrameOnPause(d3.select('#context-map').node());
-    console.log(currentImageData);
-  //  make2DArray(currentImageData, 'purple');
-  }
+    }else{
+      drawFrameOnPause(d3.select('#context-map').node());
+      console.log(currentImageData);
+    }
 
   });
 
@@ -208,7 +212,6 @@ function drawFrameOnPause() {
   currentImageData.height = _data.height;
 
   context.putImageData(_data, 0, 0);
-
 }
 
   ////EXPERIMENT///
@@ -218,6 +221,8 @@ function drawFrameOnPause() {
 
       var coord = d3.mouse(n[i]);
 
+      console.log('current',currentImageData, coord, n[i])
+
       const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
       const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
   
@@ -226,6 +231,8 @@ function drawFrameOnPause() {
       var blueForCoord = currentImageData.data[blueIndex];
       var alphaForCoord = currentImageData.data[alphaIndex];
       var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+
+      console.log(new_rgb)
   
       let body = d3.select('body').node();
       body.style.background = new_rgb;
@@ -259,8 +266,10 @@ function drawFrameOnPause() {
     playing = togglePlay();
 
     if(playing){
-      drawFrame(video);
+     // drawFrame(video);
+     context.clearRect(0, 0, canvas.width, canvas.height);
     }else{
+      drawFrameOnPause();
       //make2DArray(currentImageData, 'purple');
     }
   });
@@ -315,15 +324,16 @@ export function updatePlayButton() {
 
 function resizeStuff(){
 
-  let size = document.getElementById('video').getBoundingClientRect();
+  size = document.getElementById('video').getBoundingClientRect();
 
   d3.select('#video').style('width', `${Math.round(size.width)}px`);
+  d3.select('#video').style('height', `${Math.round(size.size)}px`);
 
   video2.width = Math.round(size.width);
   video2.height = size.height;
 
   d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
-  d3.select('#interaction').node().style.height = d3.select('#video').style('height');
+  d3.select('#interaction').node().style.height = size.height;
 
   d3.select('#video-controls').style('top', `${(size.height + size.top) + 10}px`);
   d3.select('#video-controls').style('width', `${Math.round(size.width)}px`);

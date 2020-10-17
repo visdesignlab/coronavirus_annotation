@@ -7,7 +7,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: {
     app: Path.resolve(__dirname, '../src/scripts/index.js'),
-    annotation: Path.resolve(__dirname, '../src/scripts/annotation.js')
+    annotation: Path.resolve(__dirname, '../src/scripts/annotation.js'),
+    just_video: Path.resolve(__dirname, '../src/scripts/just_video.js'),
   },
   output: {
     path: Path.join(__dirname, '../build'),
@@ -33,6 +34,12 @@ module.exports = {
       chunks: ['annotation'],
       filename: 'annotation.html'
   }),
+  new HtmlWebpackPlugin({
+    template: Path.resolve(__dirname, '../src/just_video.html'),
+    inject: true,
+    chunks: ['just_video'],
+    filename: 'just_video.html'
+}),
   ],
   resolve: {
     alias: {
