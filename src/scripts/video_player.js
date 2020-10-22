@@ -239,8 +239,6 @@ function drawFrameOnPause() {
   currentImageData.width = _data.width;
   currentImageData.height = _data.height;
 
-  console.log('get image data', currentImageData, document.getElementById('video').getBoundingClientRect().width)
-
   context.putImageData(_data, 0, 0);
 }
 
@@ -265,13 +263,37 @@ export function mouseMoveVideo(coord){
         let body = d3.select('body').node();
         body.style.background = new_rgb;
 
+        let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+  
+        if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
+          currentColorCodes.push(snip);
+          make2DArray(currentImageData, snip);
+    
+        d3.select('.tooltip')
+          .style('position', 'absolute')
+          .style("opacity", 1)
+          .html(`${snip} stucture: <br>
+          Number of associated annotations go here. <br>
+          Certainty level also shown here.
+          `)
+          .style("left", (coord[0]+ 200) + "px")
+          .style("top", (coord[1]) + "px")
+    
+        }else if(snip === "black" || snip === "white"){
+          d3.select('.tooltip').style("opacity", 0);
+          currentColorCodes.push(snip);
+          const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
+          context.putImageData(myimg, 0, 0);
+        }
       }
+
+      
 }
 
 export function videoClicked(){
  
   if(isPlaying()){
-    togglePlay(isPlaying());
+    togglePlay(true);//.then(()=> drawFrameOnPause());
     drawFrameOnPause();
   }else{
     togglePlay(isPlaying());
