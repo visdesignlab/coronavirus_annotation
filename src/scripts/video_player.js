@@ -13,7 +13,7 @@ var video;
 var canPlay;
 var applyEffect;
 
-var playing;
+export var playing;
 
 var currentImageData = {};
 var currentColorCodes = [];
@@ -34,38 +34,96 @@ var size;
 
 const getColorCode = [];
 
-export function formatVidPlayer(div, videoPath){
+export function formatVidPlayer(div, videoPath, secondVidPath){
 
-  let videoMain = d3.select(div).select('video');
-  videoMain.attr('id', 'video');
+  const playButton = document.getElementById('play');
 
-  video = videoMain;
+  let videoSelection = d3.select(div).select('video');
+  videoSelection.attr('id', 'video');
 
-  let src = videoMain.append('source');
-
+  let src = videoSelection.append('source');
   src.attr('src', videoPath);
   src.attr('type', "video/mp4");
 
-  video2 = document.createElement('video');
-  video2.src = "./public/entry_flat_082020.mp4";
-  video2.id = 'context-map';
-  video2.muted = true;
-  video2.autoplay = true;
+  video = videoSelection.node();
+  video.muted = true;
 
-  customControls(videoMain.node());
+  video.oncanplay = function(){
 
-  // create a tooltip
-  var tooltip = d3.select('#main-wrap').append('div');
-  tooltip.style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px");
+    if (video.readyState >= 3) {
 
-  return div;
-}
+      readyToPlay(video2);
+  
+      if(secondVidPath){
+        video2 = document.createElement('video');
+        video2.src = secondVidPath;
+        video2.id = 'context-map';
+        video2.muted = true;
+        video2.autoplay = true;
+    
+        resizeStuff(video2);
+     
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext('2d');
+    
+        context.drawImage(video2, 0, 0);
+    
+        // var _data = context.getImageData(0, 0, document.getElementById('video').getBoundingClientRect().width, document.getElementById('video').getBoundingClientRect().height)
+    
+        var _data = context.getImageData(0, 0, size.width, size.height)
+    
+        currentImageData.data = _data.data;
+        currentImageData.width = _data.width;
+        currentImageData.height = _data.height;
+    
+        context.putImageData(_data, 0, 0);
+    
+        console.log("current inage data",currentImageData)
+    
+      }else{
+        resizeStuff();
+      }
+  
+    } else {
+      video.addEventListener('canplay', readyToPlay(video2));
+    }
+    
+    playButton.addEventListener('click', function () {
+  
+      if(togglePlay()) {
+        video.pause();
+        video2.pause();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }else{
+        video.play();
+        video2.play();
+        drawFrameOnPause(d3.select('#context-map').node());
+    
+      }
+  
+    });
+  
+    customControls(video);
+  
+    // create a tooltip
+    var tooltip = d3.select('#main-wrap').append('div');
+    tooltip.style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
+  
+    return playing;
+  }
+
+
+  }
+
+  //currentImageData.index = 0;
+
+ 
 
 function colorChecker(code){
 
@@ -130,55 +188,25 @@ function make2DArray(dat, hoverColor){
 
 }
 
-function init() {
-
-  resizeStuff();
- 
-  canvas = document.getElementById('canvas');
-  context = canvas.getContext('2d');
-
-  video = document.getElementById('video');
-  const playButton = document.getElementById('play');
-
-  video.muted = true;
-
-  //currentImageData.index = 0;
-
-  if (video.readyState >= 3) {
-    readyToPlay();
-  } else {
-    video.addEventListener('canplay', readyToPlay);
-  }
-  
-  playButton.addEventListener('click', function () {
-
-    playing = togglePlay();
-    if(playing) {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }else{
-      drawFrameOnPause(d3.select('#context-map').node());
-      console.log(currentImageData);
-    }
-
-  });
-
-}
-
 const getColorIndicesForCoord = (x, y, width) => {
   const red = y * (width * 4) + x * 4;
   return [red, red + 1, red + 2, red + 3];
 };
 
-function readyToPlay() {
+export function readyToPlay(secondVid) {
 
   // Set the canvas the same width and height of the video
-  canvas.width = Math.round(video.videoWidth);
-  canvas.height = video.videoHeight;
+  // canvas.width = Math.round(video.videoWidth);
+  // canvas.height = video.videoHeight;
 
-  d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
-  d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');
+  if(secondVid){
 
-  canPlay = true;
+    d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
+    d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');
+  
+    canPlay = true;
+  }
+  
 }
 
 function drawFrame(video) {
@@ -206,88 +234,131 @@ function drawFrameOnPause() {
 
   context.drawImage(video2, 0, 0);
 
-  var _data = context.getImageData(0, 0, document.getElementById('video').getBoundingClientRect().width, document.getElementById('video').getBoundingClientRect().height)
+  var _data = context.getImageData(0, 0, size.width, size.height)
   currentImageData.data = _data.data;
   currentImageData.width = _data.width;
   currentImageData.height = _data.height;
 
+  console.log('get image data', currentImageData, document.getElementById('video').getBoundingClientRect().width)
+
   context.putImageData(_data, 0, 0);
 }
 
-  ////EXPERIMENT///
-  d3.select('#interaction').on('mousemove', (d, i, n)=> {
+export function mouseMoveVideo(coord){
 
-    if(!playing){
+      if(isPlaying()){
+        console.log('videoPlaying');
+      }else{
+        
+        const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
 
-      var coord = d3.mouse(n[i]);
+        const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+  
+        var redForCoord = currentImageData.data[redIndex];
+        var greenForCoord = currentImageData.data[greenIndex];
+        var blueForCoord = currentImageData.data[blueIndex];
+        var alphaForCoord = currentImageData.data[alphaIndex];
+        var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
-      console.log('current',currentImageData, coord, n[i])
+        //console.log(new_rgb)
+    
+        let body = d3.select('body').node();
+        body.style.background = new_rgb;
 
-      const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-      const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
-  
-      var redForCoord = currentImageData.data[redIndex];
-      var greenForCoord = currentImageData.data[greenIndex];
-      var blueForCoord = currentImageData.data[blueIndex];
-      var alphaForCoord = currentImageData.data[alphaIndex];
-      var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
-
-      console.log(new_rgb)
-  
-      let body = d3.select('body').node();
-      body.style.background = new_rgb;
-  
-      let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
-  
-      if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
-        currentColorCodes.push(snip);
-        make2DArray(currentImageData, snip);
-  
-      d3.select('.tooltip')
-        .style('position', 'absolute')
-        .style("opacity", 1)
-        .html(`${snip} stucture: <br>
-        Number of associated annotations go here. <br>
-        Certainty level also shown here.
-        `)
-        .style("left", (coord[0]+ 200) + "px")
-        .style("top", (coord[1]) + "px")
-  
-      }else if(snip === "black" || snip === "white"){
-        d3.select('.tooltip').style("opacity", 0);
-        currentColorCodes.push(snip);
-        const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
-        context.putImageData(myimg, 0, 0);
       }
-    }
+}
 
-  }).on('click', ()=> {
+export function videoClicked(){
+ 
+  if(isPlaying()){
+    togglePlay(isPlaying());
+    drawFrameOnPause();
+  }else{
+    togglePlay(isPlaying());
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+  // ////EXPERIMENT///
+  // d3.select('#interaction').on('mousemove', (d, i, n)=> {
 
-    playing = togglePlay();
+  //   if(!playing){
 
-    if(playing){
-     // drawFrame(video);
-     context.clearRect(0, 0, canvas.width, canvas.height);
-    }else{
-      drawFrameOnPause();
-      //make2DArray(currentImageData, 'purple');
-    }
-  });
+  //     var coord = d3.mouse(n[i]);
+
+  //     console.log('current',currentImageData, coord, n[i])
+
+  //     const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
+  //     const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+  
+  //     var redForCoord = currentImageData.data[redIndex];
+  //     var greenForCoord = currentImageData.data[greenIndex];
+  //     var blueForCoord = currentImageData.data[blueIndex];
+  //     var alphaForCoord = currentImageData.data[alphaIndex];
+  //     var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+
+  //     console.log(new_rgb)
+  
+  //     let body = d3.select('body').node();
+  //     body.style.background = new_rgb;
+  
+  //     let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+  
+  //     if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
+  //       currentColorCodes.push(snip);
+  //       make2DArray(currentImageData, snip);
+  
+  //     d3.select('.tooltip')
+  //       .style('position', 'absolute')
+  //       .style("opacity", 1)
+  //       .html(`${snip} stucture: <br>
+  //       Number of associated annotations go here. <br>
+  //       Certainty level also shown here.
+  //       `)
+  //       .style("left", (coord[0]+ 200) + "px")
+  //       .style("top", (coord[1]) + "px")
+  
+  //     }else if(snip === "black" || snip === "white"){
+  //       d3.select('.tooltip').style("opacity", 0);
+  //       currentColorCodes.push(snip);
+  //       const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
+  //       context.putImageData(myimg, 0, 0);
+  //     }
+  //   }
+
+  // }).on('click', ()=> {
+
+  //   playing = togglePlay();
+
+  //   if(playing){
+  //    // drawFrame(video);
+  //    context.clearRect(0, 0, canvas.width, canvas.height);
+  //   }else{
+  //     drawFrameOnPause();
+  //     //make2DArray(currentImageData, 'purple');
+  //   }
+  // });
 
 // togglePlay toggles the playback state of the video.
 // If the video playback is paused or ended, the video is played
 // otherwise, the video is paused
-export function togglePlay() {
-  let video = document.getElementById('video');
-  if (video.paused || video.ended) {
-    video.play();
-    video2.play();
-    return true;
-  } else {
+export function togglePlay(playingBool) {
+  if (playingBool) {
     video.pause();
     video2.pause();
-    return false;
+  } else {
+    video.play();
+    video2.play();
   }
+}
+
+export function isPlaying(){
+  let video = document.getElementById('video');
+  if (video.paused || video.ended) {
+    return false;
+  } else {
+    return true;
+  }
+
 }
 
 export function skipAheadCircle(data){
@@ -322,18 +393,36 @@ export function updatePlayButton() {
   }
 }
 
-function resizeStuff(){
+export function resizeStuff(secondVid){
 
   size = document.getElementById('video').getBoundingClientRect();
 
-  d3.select('#video').style('width', `${Math.round(size.width)}px`);
-  d3.select('#video').style('height', `${Math.round(size.size)}px`);
 
-  video2.width = Math.round(size.width);
-  video2.height = size.height;
+  console.log('resize', size, video.width, video.videoWidth, d3.select('#video').style('width'))
 
-  d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
-  d3.select('#interaction').node().style.height = size.height;
+  // d3.select('#video').style('width', `${Math.round(size.width)}px`);
+  // d3.select('#video').style('height', `${Math.round(size.size)}px`);
+
+  if(secondVid){
+    console.log('second video width', secondVid)
+    video2.width = Math.round(size.width);
+    video2.height = size.height;
+
+    d3.select(video2).style('width', `${Math.round(size.width)}px`);
+    d3.select(video2).style('height', `${Math.round(size.size)}px`);
+
+    d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
+    d3.select('#interaction').style('height', `${Math.round(size.height)}px`);
+
+    // d3.select('#canvas').style('width', `${Math.round(size.width)}px`);
+    // d3.select('#canvas').style('height', `${Math.round(size.size)}px`);
+
+    d3.select('#canvas').node().width = size.width;
+    d3.select('#canvas').node().height = size.height;
+
+
+    // d3.select('#interaction').node().style.height = size.height;
+  }
 
   d3.select('#video-controls').style('top', `${(size.height + size.top) + 10}px`);
   d3.select('#video-controls').style('width', `${Math.round(size.width)}px`);
@@ -355,19 +444,17 @@ function customControls(video){
   const volumeLow = document.querySelector('use[href="#volume-low"]');
   const volumeHigh = document.querySelector('use[href="#volume-high"]');
   const volume = document.getElementById('volume');
-  const playbackAnimation = document.getElementById('playback-animation');
+  //const playbackAnimation = document.getElementById('playback-animation');
   const fullscreenButton = document.getElementById('fullscreen-button');
   const videoContainer = document.getElementById('video-container');
   const videoDim = document.getElementById('video').getBoundingClientRect();
 
   const videoWorks = !!document.createElement('video').canPlayType;
   if (videoWorks) {
-  // video.controls = false
     videoControls.classList.remove('hidden');
   }
 
-
-  window.onresize = resizeStuff;
+  window.onresize = resizeStuff(video2);
 
   // formatTime takes a time length in seconds and returns the time in
   // minutes and seconds
@@ -466,7 +553,6 @@ function customControls(video){
   // it was set to before the video was muted
   function toggleMute() {
     video.muted = !video.muted;
-
     if (video.muted) {
       volume.setAttribute('data-volume', volume.value);
       volume.value = 0;
@@ -475,22 +561,22 @@ function customControls(video){
     }
   }
 
-// animatePlayback displays an animation when
-// the video is played or paused
-function animatePlayback() {
-    playbackAnimation.animate([
-      {
-        opacity: 1,
-        transform: "scale(1)",
-      },
-      {
-        opacity: 0,
-        transform: "scale(1.3)",
-      }
-    ], {
-      duration: 500,
-    });
-}
+// // animatePlayback displays an animation when
+// // the video is played or paused
+// function animatePlayback() {
+//     playbackAnimation.animate([
+//       {
+//         opacity: 1,
+//         transform: "scale(1)",
+//       },
+//       {
+//         opacity: 0,
+//         transform: "scale(1.3)",
+//       }
+//     ], {
+//       duration: 500,
+//     });
+// }
 
 // toggleFullScreen toggles the full screen state of the video
 // If the browser is currently in fullscreen mode,
@@ -551,7 +637,7 @@ function keyboardShortcuts(event) {
   switch(key) {
     case 'k':
       togglePlay();
-      animatePlayback();
+     // animatePlayback();
       if (video.paused) {
         showControls();
       } else {
@@ -573,19 +659,16 @@ function keyboardShortcuts(event) {
 }
 
 // Add eventlisteners here
-window.addEventListener('load', init);
 video.addEventListener('pause', updatePlayButton);
 video.addEventListener('loadedmetadata', initializeVideo);
 video.addEventListener('timeupdate', updateTimeElapsed);
 video.addEventListener('timeupdate', updateProgress);
 video.addEventListener('volumechange', updateVolumeIcon);
-video.addEventListener('click', togglePlay);
-video.addEventListener('click', animatePlayback);
+//video.addEventListener('click', togglePlay);
 seek.addEventListener('mousemove', updateSeekTooltip);
 seek.addEventListener('input', skipAhead);
 volume.addEventListener('input', updateVolume);
 volumeButton.addEventListener('click', toggleMute);
-//videoContainer.addEventListener('fullscreenchange', updateFullscreenButton);
 
 d3.select("#play-r").on('click', togglePlay);
 d3.select("#pause-r").on('click', togglePlay);
@@ -597,7 +680,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let ref = firebase.database().ref();                     
-
 checkDatabase(ref, annotationBar);
 
 }

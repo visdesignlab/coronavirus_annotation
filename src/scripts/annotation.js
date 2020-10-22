@@ -13,6 +13,8 @@ import { specialUserCheck, addCommentButton } from './topToolbar';
 export const currentUserKeeper = [];
 export const specialUserKeeper = [];
 
+var playing = vid.playing;
+
 
 
 if(!firebase.apps.length){
@@ -21,7 +23,13 @@ if(!firebase.apps.length){
 
 let mainWrap = document.getElementById('main-wrap');
 if(mainWrap){
-    vid.formatVidPlayer(mainWrap, './public/entry_notflat_082020.mp4');
+
+    let play = vid.formatVidPlayer(mainWrap, './public/entry_notflat_082020.mp4', "./public/entry_flat_082020.mp4");
+    //let play = vid.formatVidPlayer(mainWrap, "./public/entry_flat_082020.mp4", "./public/entry_flat_082020.mp4");
+      ////EXPERIMENT///
+
+    console.log(d3.select('#interaction').node())
+    d3.select('#interaction').on('mousemove', (d, i, n)=> vid.mouseMoveVideo(d3.mouse(n[i]))).on('click', ()=> vid.videoClicked());
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
