@@ -128,40 +128,39 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
 function colorChecker(code){
 
   if(code[2] > 70 && code[0] < 100 && code[2] > code[0] && code[2] > code[1]){
-    blueArray.push(code)
+    //blueArray.push(code)
     return 'blue';
   }else if(code[2] > 70 && code[0] > 100 && code[2] > code[0] && code[2] > code[1]){
-    purpArray.push(code);
+    //purpArray.push(code);
     return 'purple';
   }else if(code[2] < 70 && code[0] > 200 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
-    redArray.push(code);
+   // redArray.push(code);
     return 'red';
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
-    orangeArray.push(code);
+   // orangeArray.push(code);
     return 'orange';
   }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 200){
-    mintArray.push(code);
+   // mintArray.push(code);
     return 'mint';
   }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 120 && code[1] < 200){
-    tealArray.push(code);
+   // tealArray.push(code);
     return 'teal';
   }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 120 && code[0] < 220){
-    greenArray.push(code);
+   // greenArray.push(code);
     return 'green';
   }else if(code[1] > code[2] && code[1] > 200 && code[0] > 220){
-    yellowArray.push(code);
+   // yellowArray.push(code);
     return 'yellow';
   }else if(code[0] > 220 && code[1] > 220 && code[2] > 220){
     return 'white';
   }else{
-    blackArray.push(code);
+    //blackArray.push(code);
     return 'black';
   }
 
 }
 
 function make2DArray(dat, hoverColor){
-
 
   let newData = Object.assign({}, dat);
   newData.data = Uint8ClampedArray.from([...dat.data])
@@ -228,8 +227,14 @@ function drawFrame(video) {
 
 function drawFrameOnPause() {
 
+    // video2.pause();
+  video2.currentTime = video.currentTime + .32;
+  console.log(video.currentTime, video2.currentTime)
+
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
+
+  console.log('current time', video2.currentTime, video.currentTime)
 
   context.drawImage(video2, 0, 0);
 
@@ -246,7 +251,8 @@ export function mouseMoveVideo(coord){
       if(isPlaying()){
         console.log('videoPlaying');
       }else{
-        
+
+  
         const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
 
         const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
@@ -257,8 +263,6 @@ export function mouseMoveVideo(coord){
         var alphaForCoord = currentImageData.data[alphaIndex];
         var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
-     
-    
         let body = d3.select('body').node();
         body.style.background = new_rgb;
 
@@ -307,10 +311,10 @@ export async function videoClicked(){
 export function togglePlay(playingBool) {
   if (playingBool) {
     video.pause();
-    video2.pause();
+ 
   } else {
     video.play();
-    video2.play();
+    //video2.play();
   }
 }
 
