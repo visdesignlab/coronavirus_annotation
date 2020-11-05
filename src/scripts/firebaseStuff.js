@@ -20,11 +20,11 @@ if(!firebase.apps.length){
     firebase.initializeApp(firebaseConfig)
 }
 
-export function checkDatabase(ref, callback){
+export function checkDatabase(ref, callback, extraArgs){
  
   ref.on("value", function(snapshot) {
 
-      callback(snapshot.val());
+      extraArgs != null ? callback(snapshot.val(), extraArgs) : callback(snapshot.val());
       dataKeeper.push(snapshot.val());
       
   }, function (error) {

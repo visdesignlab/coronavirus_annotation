@@ -16,7 +16,7 @@ export let formatPushBool = false;
 export const doodleKeeper = []
 
         /////parsing data//////
- function formatTime(d){
+ export function formatTime(d){
 
     return d.map(m=> {
         if(m.video_time.includes("-")){
@@ -377,7 +377,7 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
     });
 }
 
-export async function annotationBar(dbRef){
+export async function annotationBar(dbRef, annotationData){
 
     let dataAnno = d3.entries(dbRef.comments)
     .map(m=> {
@@ -419,10 +419,10 @@ export async function annotationBar(dbRef){
         skipAheadCircle(d.videoTime);
     });
 
-    let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv')).map((m, i)=> {
-        m.index = i;
-        return m;
-    });
+    // let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv')).map((m, i)=> {
+    //     m.index = i;
+    //     return m;
+    // });
 
     let annoType = await annoTypes();
 

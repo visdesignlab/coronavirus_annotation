@@ -34,9 +34,14 @@ if(mainWrap){
       if (user) {
         
           let ref = firebase.database().ref();  
-        
-          checkDatabase(ref, updateSideAnnotations);
-          checkDatabase(ref, specialUserCheck);
+
+          // let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv')).map((m, i)=> {
+          //   m.index = i;
+          //   return m;
+          // });
+    
+          checkDatabase(ref, updateSideAnnotations, null);
+          checkDatabase(ref, specialUserCheck, null);
 
           d3.select('.add-comment').select('button').on('click', (d, i, n)=> addCommentButton(d, i, n));
 

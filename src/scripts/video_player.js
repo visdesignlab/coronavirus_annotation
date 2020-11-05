@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas, formatPush, annotationBar } from './canvas';
+import { formatCanvas, formatPush, annotationBar, formatTime } from './canvas';
 import { toggleMagic } from './sidebar';
 import { checkDatabase } from './firebaseStuff';
 import * as firebase from 'firebase';
@@ -221,8 +221,6 @@ function drawFrameOnPause() {
   let pullFrame = Math.floor((video.currentTime) * 30);
   let pathImg = './public/imgStack/meshAll.';
 
-  console.log(pathImg + pullFrame + '.png');
-
     //The path to the image that we want to add.
   var imgPath = pathImg + pullFrame + '.png';
   
@@ -279,14 +277,7 @@ function drawFrameOnPause() {
 //       }
       
 //     }
-//     console.log('green', Array.from(new Set(greenK)));
-//     console.log('mint', Array.from(new Set(mintK)));
-//     console.log('red', Array.from(new Set(redK)));
-//     console.log('purple', Array.from(new Set(purpleK)));
-//     console.log('orange', Array.from(new Set(orangeK)));
-//     console.log('teal', Array.from(new Set(tealK)));
-//     console.log('blue', Array.from(new Set(blueK)));
-//     console.log('yellow', Array.from(new Set(yellK)));
+
 
 
 
@@ -326,7 +317,7 @@ export function mouseMoveVideo(coord){
 
         let snip = getCoordColor(coord);
 
-        console.log(snip, currentColorCodes[currentColorCodes.length - 1]);
+     
   
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
           currentColorCodes.push(snip);
@@ -362,7 +353,7 @@ export async function videoClicked(coord){
   }else{
     
     let snip = getCoordColor(coord);
-    console.log(snip, coord);
+  
     if(snip === "black" || snip === "white" || snip === "unknown"){
       structureClicked = false;
       togglePlay(false);
@@ -373,17 +364,30 @@ export async function videoClicked(coord){
     }else{
       structureClicked = true;
       make2DArray(currentImageData, snip);
+
+      let annotationData = formatTime(await d3.csv('./public/annotation_2.csv')).map((m, i)=> {
+        m.index = i;
+        return m;
+      });
+
+  
+      let structureData = annotationData.filter(f=> {
+        return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure.toUpperCase()) > -1;
+      });
+
+      console.log('stD',structureData)
+
       d3.select('.tooltip')
             .style('position', 'absolute')
             .style("opacity", 1)
             .html(`${colorDictionary[snip].structure}: <br>
-            <button>Add information on this structure</button> <br>
-            Certainty level also shown here.
+            ${structureData.length} annotations for this structure. <br>
+            ${structureData.filter(f=> f.has_unkown === "TRUE").length} Unknowns. <br>
+            <button class="btn btn-secondary">Add information on this structure</button> <br>
             `)
             .style("left", (coord[0]+ 200) + "px")
             .style("top", (coord[1]) + "px")
     }
-    
   }
 }
   
@@ -471,7 +475,7 @@ export function resizeStuff(secondVid){
   d3.select('#video-controls').style('width', `${Math.round(size.width)}px`);
 }
 
-function customControls(video){
+async function customControls(video){
 
   const videoControls = document.getElementById('video-controls');
   const playButton = document.getElementById('play');
@@ -501,7 +505,7 @@ function customControls(video){
 
   // formatTime takes a time length in seconds and returns the time in
   // minutes and seconds
-  function formatTime(timeInSeconds) {
+  function formatVideoTime(timeInSeconds) {
 
     const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
 
@@ -517,7 +521,7 @@ function customControls(video){
     const videoDuration = Math.round(video.duration);
     seek.setAttribute('max', videoDuration);
     progressBar.setAttribute('max', videoDuration);
-    const time = formatTime(videoDuration);
+    const time = formatVideoTime(videoDuration);
     duration.innerText = `${time.minutes}:${time.seconds}`;
     duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
   }
@@ -525,7 +529,7 @@ function customControls(video){
   // updateTimeElapsed indicates how far through the video
   // the current playback is by updating the timeElapsed element
   function updateTimeElapsed() {
-    const time = formatTime(Math.round(video.currentTime));
+    const time = formatVideoTime(Math.round(video.currentTime));
     timeElapsed.innerText = `${time.minutes}:${time.seconds}`;
     timeElapsed.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)
     d3.select('#time-update').select('text').text(`${time.minutes}m ${time.seconds}s`);
@@ -544,7 +548,7 @@ function customControls(video){
   function updateSeekTooltip(event) {
     const skipTo = Math.round((event.offsetX / event.target.clientWidth) * parseInt(event.target.getAttribute('max'), 10));
     seek.setAttribute('data-seek', skipTo)
-    const t = formatTime(skipTo);
+    const t = formatVideoTime(skipTo);
     seekTooltip.textContent = `${t.minutes}:${t.seconds}`;
     const rect = video.getBoundingClientRect();
     seekTooltip.style.left = `${event.pageX - rect.left}px`;
@@ -722,8 +726,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-let ref = firebase.database().ref();                     
-checkDatabase(ref, annotationBar);
+let annotationData = formatTime(await d3.csv('./public/annotation_2.csv')).map((m, i)=> {
+  m.index = i;
+  return m;
+})
+
+  let ref = firebase.database().ref();                     
+  checkDatabase(ref, annotationBar, annotationData);
+
+
+
+
 
 }
 
