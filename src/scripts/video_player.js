@@ -372,6 +372,7 @@ export async function videoClicked(coord){
             .style("opacity", 0)
     }else{
       structureClicked = true;
+      make2DArray(currentImageData, snip);
       d3.select('.tooltip')
             .style('position', 'absolute')
             .style("opacity", 1)
