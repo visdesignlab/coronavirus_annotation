@@ -121,13 +121,13 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
 
   }
 
-  //currentImageData.index = 0;
-
- 
-
 function colorChecker(code){
-
-  if(code[2] > 70 && code[0] < 100 && code[2] > code[0] && code[2] > code[1]){
+  if((code[0] + code[1] + code[2]) === 0){
+    return 'black';
+  }else if(code[0]<14 && code[1] > 142 && code[1] < 199 && code[2] > 142 && code[2] < 147){
+    // tealArray.push(code);
+     return 'teal';
+  }else if(code[2] > 70 && code[0] < 100 && code[2] > code[0] && code[2] > code[1]){
     //blueArray.push(code)
     return 'blue';
   }else if(code[2] > 70 && code[0] > 100 && code[2] > code[0] && code[2] > code[1]){
@@ -142,9 +142,6 @@ function colorChecker(code){
   }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 200){
    // mintArray.push(code);
     return 'mint';
-  }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 120 && code[1] < 200){
-   // tealArray.push(code);
-    return 'teal';
   }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 120 && code[0] < 220){
    // greenArray.push(code);
     return 'green';
@@ -155,7 +152,7 @@ function colorChecker(code){
     return 'white';
   }else{
     //blackArray.push(code);
-    return 'black';
+    return 'unknown';
   }
 
 }
@@ -228,22 +225,83 @@ function drawFrame(video) {
 function drawFrameOnPause() {
 
     // video2.pause();
-  video2.currentTime = video.currentTime + .32;
-  console.log(video.currentTime, video2.currentTime)
+  video2.currentTime = video.currentTime;
+ 
+  let pullFrame = Math.floor((video.currentTime) * 30);
+  let pathImg = './public/imgStack/meshAll.';
 
+  console.log(pathImg + pullFrame + '.png');
+
+    //The path to the image that we want to add.
+  var imgPath = pathImg + pullFrame + '.png';
+  
+  //Create a new Image object.
+  var imgObj = new Image();
+  
+  //Set the src of this Image object.
+  imgObj.src = imgPath;
+  
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
 
-  console.log('current time', video2.currentTime, video.currentTime)
+  imgObj.onload = function() {
+    context.drawImage(imgObj, 0, 0);
+  
+    var _data = context.getImageData(0, 0, size.width, size.height);
+    currentImageData.data = _data.data;
+    currentImageData.width = _data.width;
+    currentImageData.height = _data.height;
 
-  context.drawImage(video2, 0, 0);
+    context.putImageData(_data, 0, 0);
 
-  var _data = context.getImageData(0, 0, size.width, size.height)
-  currentImageData.data = _data.data;
-  currentImageData.width = _data.width;
-  currentImageData.height = _data.height;
+    // let dataKeeper = []
 
-  context.putImageData(_data, 0, 0);
+    // let greenK = [];
+    // let mintK = [];
+    // let redK = [];
+    // let purpleK = [];
+    // let orangeK = [];
+    // let tealK = [];
+    // let blueK = [];
+    // let yellK = [];
+
+//     for(let i = 0; i < _data.data.length; i += 4){
+//    // for(let i = 0; i < 200; i += 4){
+//       let color = colorChecker(_data.data.slice(i, i+4))
+//       dataKeeper.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       if(color === 'green'){
+//         greenK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'mint'){
+//         mintK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'red'){
+//         redK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'purple'){
+//         purpleK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'orange'){
+//         orangeK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'teal'){
+//         tealK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'blue'){
+//         blueK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }else if(color === 'yellow'){
+//         yellK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
+//       }
+      
+//     }
+//     console.log('green', Array.from(new Set(greenK)));
+//     console.log('mint', Array.from(new Set(mintK)));
+//     console.log('red', Array.from(new Set(redK)));
+//     console.log('purple', Array.from(new Set(purpleK)));
+//     console.log('orange', Array.from(new Set(orangeK)));
+//     console.log('teal', Array.from(new Set(tealK)));
+//     console.log('blue', Array.from(new Set(blueK)));
+//     console.log('yellow', Array.from(new Set(yellK)));
+
+
+
+  };
+
+  
 }
 
 export function mouseMoveVideo(coord){
@@ -252,7 +310,7 @@ export function mouseMoveVideo(coord){
         console.log('videoPlaying');
       }else{
 
-  
+
         const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
 
         const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
@@ -263,28 +321,32 @@ export function mouseMoveVideo(coord){
         var alphaForCoord = currentImageData.data[alphaIndex];
         var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
+
+
         let body = d3.select('body').node();
         body.style.background = new_rgb;
 
-        let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+       let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+
+       console.log(snip, new_rgb, currentImageData);
   
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
          // currentColorCodes.push(snip);
-          make2DArray(currentImageData, snip);
+          //make2DArray(currentImageData, snip);
     
-        d3.select('.tooltip')
-          .style('position', 'absolute')
-          .style("opacity", 1)
-          .html(`${snip} stucture: <br>
-          Number of associated annotations go here. <br>
-          Certainty level also shown here.
-          `)
-          .style("left", (coord[0]+ 200) + "px")
-          .style("top", (coord[1]) + "px")
+          d3.select('.tooltip')
+            .style('position', 'absolute')
+            .style("opacity", 1)
+            .html(`${snip} stucture: <br>
+            Number of associated annotations go here. <br>
+            Certainty level also shown here.
+            `)
+            .style("left", (coord[0]+ 200) + "px")
+            .style("top", (coord[1]) + "px")
     
         }else if(snip === "black" || snip === "white"){
           d3.select('.tooltip').style("opacity", 0);
-         // currentColorCodes.push(snip);
+         
           const myimg = new ImageData(currentImageData.data, currentImageData.width, currentImageData.height);
           context.putImageData(myimg, 0, 0);
         }
