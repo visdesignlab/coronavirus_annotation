@@ -136,14 +136,14 @@ function colorChecker(code){
 
 }
 const colorDictionary = {
-  'blue': [0, 0, 255],
-  'purple':[102, 0, 204],
-  'red':[255,0,0],
-  'green':[0,255,0],
-  'orange':[255,128,0],
-  'yellow':[255,255,0],
-  'mint':[40,255,150],
-  'teal':[10,160,140],
+  'blue': {'code':[0, 0, 255], 'structure': 'ACE2'},
+  'purple':{'code':[102, 0, 204], 'structure': 'ACE2'},
+  'red':{'code':[255,0,0], 'structure': 'TMPRSS2'},
+  'green':{'code':[0,255,0], 'structure': 'Spike Protein'},
+  'orange':{'code':[255,128,0], 'structure': 'Furin'},
+  'yellow':{'code':[255,255,0], 'structure': 'Membrane Protein'},
+  'mint':{'code':[40,255,150]}, 'structure': 'Spike Protein',
+  'teal':{'code':[10,160,140], 'structure': 'Spike Protein'},
 }
 function make2DArray(dat, hoverColor){
 
@@ -162,9 +162,9 @@ function make2DArray(dat, hoverColor){
         newData.data[i + 2] = 255;
         newData.data[i + 3] = 150;
       }else if(color === hoverColor){
-        newData.data[i] = colorDictionary[color][0];
-        newData.data[i + 1] = colorDictionary[color][1];
-        newData.data[i + 2] = colorDictionary[color][2];
+        newData.data[i] = colorDictionary[color].code[0];
+        newData.data[i + 1] = colorDictionary[color].code[1];
+        newData.data[i + 2] = colorDictionary[color].code[2];
         newData.data[i + 3] = 100;
       }
     }
@@ -308,7 +308,7 @@ function getCoordColor(coord){
   var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
   let body = d3.select('body').node();
-  body.style.background = new_rgb;
+  //body.style.background = new_rgb;
 
   let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
 
@@ -335,7 +335,7 @@ export function mouseMoveVideo(coord){
           d3.select('.tooltip')
             .style('position', 'absolute')
             .style("opacity", 1)
-            .html(`${snip} stucture: <br>
+            .html(`${colorDictionary[snip].structure}: <br>
             Number of associated annotations go here. <br>
             Certainty level also shown here.
             `)
@@ -376,7 +376,7 @@ export async function videoClicked(coord){
       d3.select('.tooltip')
             .style('position', 'absolute')
             .style("opacity", 1)
-            .html(`${snip} stucture: <br>
+            .html(`${colorDictionary[snip].structure}: <br>
             <button>Add information on this structure</button> <br>
             Certainty level also shown here.
             `)
