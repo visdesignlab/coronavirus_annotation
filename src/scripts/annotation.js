@@ -26,9 +26,9 @@ if(mainWrap){
 
     let play = vid.formatVidPlayer(mainWrap, './public/entry_notflat_082020.mp4', "./public/entry_flat_082020.mp4");
 
-    d3.select('#interaction').on('mousemove', (d, i, n)=> {
-
-      vid.mouseMoveVideo(d3.mouse(n[i]))}).on('click', ()=> vid.videoClicked());
+    d3.select('#interaction')
+    .on('mousemove', (d, i, n)=> vid.mouseMoveVideo(d3.mouse(n[i])))
+    .on('click', (d, i, n) => vid.videoClicked(d3.mouse(n[i])));
 
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {

@@ -18,19 +18,11 @@ export var playing;
 var currentImageData = {};
 var currentColorCodes = [];
 
-let purpArray = [];
-let yellowArray = [];
-let greenArray = [];
-let mintArray = [];
-let orangeArray = [];
-let redArray = [];
-let blackArray = [];
-let blueArray = [];
-let tealArray = [];
-
 var video;
 var video2;
 var size;
+
+var structureClicked = false;
 
 const getColorCode = [];
 
@@ -68,8 +60,6 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
     
         context.drawImage(video2, 0, 0);
     
-        // var _data = context.getImageData(0, 0, document.getElementById('video').getBoundingClientRect().width, document.getElementById('video').getBoundingClientRect().height)
-    
         var _data = context.getImageData(0, 0, size.width, size.height)
     
         currentImageData.data = _data.data;
@@ -97,8 +87,6 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
         video.play();
         video2.play();
         context.clearRect(0, 0, canvas.width, canvas.height);
-       
-    
       }
   
     });
@@ -125,38 +113,38 @@ function colorChecker(code){
   if((code[0] + code[1] + code[2]) === 0){
     return 'black';
   }else if(code[0]<14 && code[1] > 142 && code[1] < 199 && code[2] > 142 && code[2] < 147){
-    // tealArray.push(code);
      return 'teal';
   }else if(code[2] > 70 && code[0] < 100 && code[2] > code[0] && code[2] > code[1]){
-    //blueArray.push(code)
     return 'blue';
   }else if(code[2] > 70 && code[0] > 100 && code[2] > code[0] && code[2] > code[1]){
-    //purpArray.push(code);
     return 'purple';
   }else if(code[2] < 70 && code[0] > 200 && code[2] < code[0] && code[1] < code[0] && code[1] < 80){
-   // redArray.push(code);
     return 'red';
   }else if(code[2] < 70 && code[0] > 50 && code[2] < code[0] && code[1] < code[0] && code[1] > 80){
-   // orangeArray.push(code);
     return 'orange';
   }else if(code[1] > code[2] && code[1] > code[0] && code[2] > 49 && code[2] > 110 && code[0] < 120 && code[1] > 200){
-   // mintArray.push(code);
     return 'mint';
   }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 120 && code[0] < 220){
-   // greenArray.push(code);
     return 'green';
-  }else if(code[1] > code[2] && code[1] > 200 && code[0] > 220){
-   // yellowArray.push(code);
+  }else if(code[0] > 250 && code[1] > 200){
     return 'yellow';
   }else if(code[0] > 220 && code[1] > 220 && code[2] > 220){
     return 'white';
   }else{
-    //blackArray.push(code);
     return 'unknown';
   }
 
 }
-
+const colorDictionary = {
+  'blue': [0, 0, 255],
+  'purple':[102, 0, 204],
+  'red':[255,0,0],
+  'green':[0,255,0],
+  'orange':[255,128,0],
+  'yellow':[255,255,0],
+  'mint':[40,255,150],
+  'teal':[10,160,140],
+}
 function make2DArray(dat, hoverColor){
 
   let newData = Object.assign({}, dat);
@@ -174,7 +162,10 @@ function make2DArray(dat, hoverColor){
         newData.data[i + 2] = 255;
         newData.data[i + 3] = 150;
       }else if(color === hoverColor){
-        newData.data[i + 3] = 0;
+        newData.data[i] = colorDictionary[color][0];
+        newData.data[i + 1] = colorDictionary[color][1];
+        newData.data[i + 2] = colorDictionary[color][2];
+        newData.data[i + 3] = 100;
       }
     }
 
@@ -304,35 +295,42 @@ function drawFrameOnPause() {
   
 }
 
+function getCoordColor(coord){
+
+  const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
+
+  const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+
+  var redForCoord = currentImageData.data[redIndex];
+  var greenForCoord = currentImageData.data[greenIndex];
+  var blueForCoord = currentImageData.data[blueIndex];
+  var alphaForCoord = currentImageData.data[alphaIndex];
+  var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
+
+  let body = d3.select('body').node();
+  body.style.background = new_rgb;
+
+  let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
+
+  return snip;
+
+}
+
 export function mouseMoveVideo(coord){
 
       if(isPlaying()){
         console.log('videoPlaying');
+      }else if(structureClicked){
+        console.log('structure clicked',structureClicked)
       }else{
 
+        let snip = getCoordColor(coord);
 
-        const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-
-        const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
-  
-        var redForCoord = currentImageData.data[redIndex];
-        var greenForCoord = currentImageData.data[greenIndex];
-        var blueForCoord = currentImageData.data[blueIndex];
-        var alphaForCoord = currentImageData.data[alphaIndex];
-        var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
-
-
-
-        let body = d3.select('body').node();
-        body.style.background = new_rgb;
-
-       let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
-
-       console.log(snip, new_rgb, currentImageData);
+        console.log(snip, currentColorCodes[currentColorCodes.length - 1]);
   
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
-         // currentColorCodes.push(snip);
-          //make2DArray(currentImageData, snip);
+          currentColorCodes.push(snip);
+          make2DArray(currentImageData, snip);
     
           d3.select('.tooltip')
             .style('position', 'absolute')
@@ -355,14 +353,36 @@ export function mouseMoveVideo(coord){
       
 }
 
-export async function videoClicked(){
+export async function videoClicked(coord){
  
   if(isPlaying()){
+    structureClicked = false;
     await togglePlay(true);
     drawFrameOnPause();
   }else{
-    togglePlay(false);
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    let snip = getCoordColor(coord);
+    console.log(snip, coord);
+    if(snip === "black" || snip === "white" || snip === "unknown"){
+      structureClicked = false;
+      togglePlay(false);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      d3.select('.tooltip')
+            .style('position', 'absolute')
+            .style("opacity", 0)
+    }else{
+      structureClicked = true;
+      d3.select('.tooltip')
+            .style('position', 'absolute')
+            .style("opacity", 1)
+            .html(`${snip} stucture: <br>
+            <button>Add information on this structure</button> <br>
+            Certainty level also shown here.
+            `)
+            .style("left", (coord[0]+ 200) + "px")
+            .style("top", (coord[1]) + "px")
+    }
+    
   }
 }
   
