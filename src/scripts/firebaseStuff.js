@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import * as d3 from 'd3';
+import { comments } from './annotation';
 
 export const dataKeeper = [];
 
@@ -26,6 +27,7 @@ export function checkDatabase(ref, callback, extraArgs){
 
       extraArgs != null ? callback(snapshot.val(), extraArgs) : callback(snapshot.val());
       dataKeeper.push(snapshot.val());
+      
       
   }, function (error) {
       console.log("Error: " + error.code);
