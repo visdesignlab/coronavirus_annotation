@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import { formatCanvas, formatPush, annotationBar, formatTime } from './canvas';
-import { toggleMagic } from './sidebar';
+import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime } from './canvas';
+import { drawCommentBoxes, formatCommentData, toggleMagic } from './sidebar';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
@@ -368,17 +368,21 @@ export async function videoClicked(coord){
       let annoWrap = d3.select('#annotation-wrap');
       annoWrap.selectAll('*').remove();
 
-      let dataAnno = d3.entries(dataKeeper[dataKeeper.length -1].comments)
-                .map(m=> {
-                    let value = m.value;
-                    value.key = m.key;
-                    return value;
-                    });
+      annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
+      annoWrap.append('h7').text("Annotations:");
+      let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
+      let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
+      blurb.text(d=> {return d.text_description});
+      annos.filter(f=> {
+        return f.has_unkown === 'TRUE';
+      }).classed('unknown', true);
 
-      let test = dataAnno.filter((f)=> {
-       // console.log(f.comment, "struct", colorDictionary[snip].structure);
+      annoWrap.append('h7').text("Comments:");
+
+      let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1]);
+
+      let test = nestReplies.filter((f)=> {
         if(colorDictionary[snip].structure[1]){
-          //console.log(f.comment, "struct")
           return f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
         }else{
           return f.comment.includes(colorDictionary[snip].structure[0]);
@@ -386,15 +390,8 @@ export async function videoClicked(coord){
        
       });
 
-      console.log('test',test, structureData);
-
-      annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
-      let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
-      let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
-      blurb.text(d=> {return d.text_description});
-      // annos.filter(f=> {
-      //   return f.has_unkown === TRUE;
-      // }).classed('unknown', true);
+      drawCommentBoxes(test, annoWrap);
+      
 
 
 
