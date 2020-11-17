@@ -422,8 +422,7 @@ export async function annotationBar(dbRef, annotationData){
     // let annotationData = formatTime(await d3.csv('./public/anno_sheet_ji_72020.csv')).map((m, i)=> {
     //     m.index = i;
     //     return m;
-    // });
-
+    // })
     let annoType = await annoTypes();
 
     let annotationGroup = svg.selectAll('g.annotation-wrap').data([annotationData]).join('g').classed('annotation-wrap', true);

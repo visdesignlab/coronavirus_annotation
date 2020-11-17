@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
 import { formatCanvas, formatPush, annotationBar, formatTime } from './canvas';
 import { toggleMagic } from './sidebar';
-import { checkDatabase } from './firebaseStuff';
+import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
+import { comments } from './annotation';
 
 const shapeArray = [];
 var startButton;
@@ -26,7 +27,7 @@ var structureClicked = false;
 
 const getColorCode = [];
 
-export function formatVidPlayer(div, videoPath, secondVidPath){
+export function formatVidPlayer(div, videoPath, isInteractive){
 
   const playButton = document.getElementById('play');
 
@@ -44,29 +45,35 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
 
     if (video.readyState >= 3) {
 
-      readyToPlay(video2);
-  
-      if(secondVidPath){
-        video2 = document.createElement('video');
-        video2.src = secondVidPath;
-        video2.id = 'context-map';
-        video2.muted = true;
-        video2.autoplay = true;
-    
-        resizeStuff(video2);
+      canPlay = true;
+
+      if(isInteractive){
+
+        d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
+        d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');
+
+        resizeStuff(true);
      
         canvas = document.getElementById('canvas');
         context = canvas.getContext('2d');
+
+        let imgOb = loadPngForFrame();
     
-        context.drawImage(video2, 0, 0);
+        //context.drawImage(video2, 0, 0);
+        // imgOb.onload = ()=> {
+
+  
+        //   context.drawImage(imgOb, 0, 0);
     
-        var _data = context.getImageData(0, 0, size.width, size.height)
-    
-        currentImageData.data = _data.data;
-        currentImageData.width = _data.width;
-        currentImageData.height = _data.height;
-    
-        context.putImageData(_data, 0, 0);
+        //   var _data = context.getImageData(0, 0, size.width, size.height)
+      
+        //   currentImageData.data = _data.data;
+        //   currentImageData.width = _data.width;
+        //   currentImageData.height = _data.height;
+      
+        //   context.putImageData(_data, 0, 0);
+        // }
+        
     
     
       }else{
@@ -74,18 +81,16 @@ export function formatVidPlayer(div, videoPath, secondVidPath){
       }
   
     } else {
-      video.addEventListener('canplay', readyToPlay(video2));
+      video.addEventListener('canplay', canPlay = true);
     }
     
     playButton.addEventListener('click', function () {
   
       if(togglePlay()) {
         video.pause();
-        video2.pause();
         drawFrameOnPause(d3.select('#context-map').node());
       }else{
         video.play();
-        video2.play();
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
   
@@ -126,7 +131,7 @@ function colorChecker(code){
     return 'mint';
   }else if(code[1] > code[2] && code[1]> code[0] && code[2] > 49 && code[0] < 120 && code[0] < 220){
     return 'green';
-  }else if(code[0] > 250 && code[1] > 200){
+  }else if(code[0] > 250 && code[1] > 200 && code[2] < 100){
     return 'yellow';
   }else if(code[0] > 220 && code[1] > 220 && code[2] > 220){
     return 'white';
@@ -136,14 +141,14 @@ function colorChecker(code){
 
 }
 const colorDictionary = {
-  'blue': {'code':[0, 0, 255], 'structure': 'ACE2'},
-  'purple':{'code':[102, 0, 204], 'structure': 'ACE2'},
-  'red':{'code':[255,0,0], 'structure': 'TMPRSS2'},
-  'green':{'code':[0,255,0], 'structure': 'Spike Protein'},
-  'orange':{'code':[255,128,0], 'structure': 'Furin'},
-  'yellow':{'code':[255,255,0], 'structure': 'Membrane Protein'},
-  'mint':{'code':[40,255,150]}, 'structure': 'Spike Protein',
-  'teal':{'code':[10,160,140], 'structure': 'Spike Protein'},
+  'blue': {'code':[0, 0, 255], 'structure': ['ACE2']},
+  'purple':{'code':[102, 0, 204], 'structure': ['ACE2']},
+  'red':{'code':[255,0,0], 'structure': ['TMPRSS2']},
+  'green':{'code':[0,255,0], 'structure': ['Spike Protein', 's protein']},
+  'orange':{'code':[255,128,0], 'structure': ['Furin']},
+  'yellow':{'code':[255,255,0], 'structure': ['Membrane Protein']},
+  'mint':{'code':[40,255,150], 'structure': ['Spike Protein', 's protein']},
+  'teal':{'code':[10,160,140], 'structure': ['Spike Protein', 's protein']},
 }
 function make2DArray(dat, hoverColor){
 
@@ -179,21 +184,6 @@ const getColorIndicesForCoord = (x, y, width) => {
   return [red, red + 1, red + 2, red + 3];
 };
 
-export function readyToPlay(secondVid) {
-
-  // Set the canvas the same width and height of the video
-  // canvas.width = Math.round(video.videoWidth);
-  // canvas.height = video.videoHeight;
-
-  if(secondVid){
-
-    d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
-    d3.select('#interaction').node().style.height = d3.select('#canvas').style('height');
-  
-    canPlay = true;
-  }
-  
-}
 
 function drawFrame(video) {
 
@@ -213,77 +203,50 @@ function drawFrame(video) {
 
 }
 
-function drawFrameOnPause() {
-
-    // video2.pause();
-  video2.currentTime = video.currentTime;
+async function loadPngForFrame(){
  
   let pullFrame = Math.floor((video.currentTime) * 30);
   let pathImg = './public/imgStack/meshAll.';
 
     //The path to the image that we want to add.
-  var imgPath = pathImg + pullFrame + '.png';
+  var imgPath = pathImg + (pullFrame+1) + '.png';
+
+  console.log(imgPath);
   
   //Create a new Image object.
   var imgObj = new Image();
   
   //Set the src of this Image object.
-  imgObj.src = imgPath;
+  imgObj.src = imgPath;  
   
   canvas = document.getElementById('canvas');
   context = canvas.getContext('2d');
 
   imgObj.onload = function() {
+  
     context.drawImage(imgObj, 0, 0);
   
     var _data = context.getImageData(0, 0, size.width, size.height);
-    currentImageData.data = _data.data;
+
+    currentImageData.data = _data.data.map((m,i)=> {
+      if((i+1) % 4 === 0) m = 0;
+      return m;
+    });
     currentImageData.width = _data.width;
     currentImageData.height = _data.height;
 
     context.putImageData(_data, 0, 0);
+  }
 
-    // let dataKeeper = []
+}
 
-    // let greenK = [];
-    // let mintK = [];
-    // let redK = [];
-    // let purpleK = [];
-    // let orangeK = [];
-    // let tealK = [];
-    // let blueK = [];
-    // let yellK = [];
+function drawFrameOnPause() {
 
-//     for(let i = 0; i < _data.data.length; i += 4){
-//    // for(let i = 0; i < 200; i += 4){
-//       let color = colorChecker(_data.data.slice(i, i+4))
-//       dataKeeper.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       if(color === 'green'){
-//         greenK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'mint'){
-//         mintK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'red'){
-//         redK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'purple'){
-//         purpleK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'orange'){
-//         orangeK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'teal'){
-//         tealK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'blue'){
-//         blueK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }else if(color === 'yellow'){
-//         yellK.push(String(_data.data[i] +','+ _data.data[i+1]+','+ _data.data[i+2]+','+ _data.data[i+3]));
-//       }
-      
-//     }
+  canvas = document.getElementById('canvas');
+  context = canvas.getContext('2d');
 
-
-
-
-  };
-
-  
+  let imgObj = loadPngForFrame();
+ 
 }
 
 function getCoordColor(coord){
@@ -307,31 +270,31 @@ function getCoordColor(coord){
 
 }
 
-export function mouseMoveVideo(coord){
+export async function mouseMoveVideo(coord){
 
       if(isPlaying()){
         console.log('videoPlaying');
       }else if(structureClicked){
-        console.log('structure clicked',structureClicked)
+       
       }else{
 
         let snip = getCoordColor(coord);
 
-     
-  
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
           currentColorCodes.push(snip);
           make2DArray(currentImageData, snip);
+
+          let annotationData = formatTime(await d3.csv('./public/annotation_2.csv')).map((m, i)=> {
+            m.index = i;
+            return m;
+          });
     
-          d3.select('.tooltip')
-            .style('position', 'absolute')
-            .style("opacity", 1)
-            .html(`${colorDictionary[snip].structure}: <br>
-            Number of associated annotations go here. <br>
-            Certainty level also shown here.
-            `)
-            .style("left", (coord[0]+ 200) + "px")
-            .style("top", (coord[1]) + "px")
+          let structureData = annotationData.filter(f=> {
+            return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
+          });
+
+          structureTooltip(colorDictionary, structureData, coord, snip);
+    
     
         }else if(snip === "black" || snip === "white"){
           d3.select('.tooltip').style("opacity", 0);
@@ -344,19 +307,44 @@ export function mouseMoveVideo(coord){
       
 }
 
+function structureTooltip(colorDictionary, structureData, coord, snip){
+
+    d3.select('.tooltip')
+    .style('position', 'absolute')
+    .style("opacity", 1)
+    .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
+    <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
+    <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
+    <br>
+    <button class="btn btn-outline-secondary">Add information on this structure</button> <br>
+    `)
+    .style("left", (coord[0]+ 200) + "px")
+    .style("top", (coord[1]) + "px");
+
+}
+
 export async function videoClicked(coord){
- 
+
   if(isPlaying()){
+
     structureClicked = false;
     await togglePlay(true);
     drawFrameOnPause();
-  }else{
+
+  // }else if(structureClicked === false){
+  //   const context = canvas.getContext('2d');
+  //   context.clearRect(0, 0, canvas.width, canvas.height); 
+  //   await togglePlay(false);
+
+  }else{ 
     
+   
     let snip = getCoordColor(coord);
   
     if(snip === "black" || snip === "white" || snip === "unknown"){
       structureClicked = false;
       togglePlay(false);
+
       context.clearRect(0, 0, canvas.width, canvas.height);
       d3.select('.tooltip')
             .style('position', 'absolute')
@@ -372,21 +360,44 @@ export async function videoClicked(coord){
 
   
       let structureData = annotationData.filter(f=> {
-        return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure.toUpperCase()) > -1;
+        return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
       });
 
-      console.log('stD',structureData)
+      structureTooltip(colorDictionary, structureData, coord, snip);
 
-      d3.select('.tooltip')
-            .style('position', 'absolute')
-            .style("opacity", 1)
-            .html(`${colorDictionary[snip].structure}: <br>
-            ${structureData.length} annotations for this structure. <br>
-            ${structureData.filter(f=> f.has_unkown === "TRUE").length} Unknowns. <br>
-            <button class="btn btn-secondary">Add information on this structure</button> <br>
-            `)
-            .style("left", (coord[0]+ 200) + "px")
-            .style("top", (coord[1]) + "px")
+      let annoWrap = d3.select('#annotation-wrap');
+      annoWrap.selectAll('*').remove();
+
+      let dataAnno = d3.entries(dataKeeper[dataKeeper.length -1].comments)
+                .map(m=> {
+                    let value = m.value;
+                    value.key = m.key;
+                    return value;
+                    });
+
+      let test = dataAnno.filter((f)=> {
+       // console.log(f.comment, "struct", colorDictionary[snip].structure);
+        if(colorDictionary[snip].structure[1]){
+          //console.log(f.comment, "struct")
+          return f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
+        }else{
+          return f.comment.includes(colorDictionary[snip].structure[0]);
+        }
+       
+      });
+
+      console.log('test',test, structureData);
+
+      annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
+      let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
+      let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
+      blurb.text(d=> {return d.text_description});
+      // annos.filter(f=> {
+      //   return f.has_unkown === TRUE;
+      // }).classed('unknown', true);
+
+
+
     }
   }
 }
@@ -407,6 +418,7 @@ export function togglePlay(playingBool) {
 
 export function isPlaying(){
   let video = document.getElementById('video');
+
   if (video.paused || video.ended) {
     return false;
   } else {
@@ -447,20 +459,20 @@ export function updatePlayButton() {
   }
 }
 
-export function resizeStuff(secondVid){
+export function resizeStuff(isInteractive){
 
   size = document.getElementById('video').getBoundingClientRect();
 
   // d3.select('#video').style('width', `${Math.round(size.width)}px`);
   // d3.select('#video').style('height', `${Math.round(size.size)}px`);
 
-  if(secondVid){
+  if(isInteractive){
 
-    video2.width = Math.round(size.width);
-    video2.height = size.height;
+    // video2.width = Math.round(size.width);
+    // video2.height = size.height;
 
-    d3.select(video2).style('width', `${Math.round(size.width)}px`);
-    d3.select(video2).style('height', `${Math.round(size.size)}px`);
+    // d3.select(video2).style('width', `${Math.round(size.width)}px`);
+    // d3.select(video2).style('height', `${Math.round(size.size)}px`);
 
     d3.select('#interaction').style('width', `${Math.round(size.width)}px`);
     d3.select('#interaction').style('height', `${Math.round(size.height)}px`);
@@ -501,7 +513,7 @@ async function customControls(video){
     videoControls.classList.remove('hidden');
   }
 
-  window.onresize = resizeStuff(video2);
+  window.onresize = resizeStuff(true);
 
   // formatTime takes a time length in seconds and returns the time in
   // minutes and seconds
@@ -521,6 +533,7 @@ async function customControls(video){
     const videoDuration = Math.round(video.duration);
     seek.setAttribute('max', videoDuration);
     progressBar.setAttribute('max', videoDuration);
+
     const time = formatVideoTime(videoDuration);
     duration.innerText = `${time.minutes}:${time.seconds}`;
     duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`)

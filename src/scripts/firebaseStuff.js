@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import * as d3 from 'd3';
+import { comments } from './annotation';
 
 export const dataKeeper = [];
 
