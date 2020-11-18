@@ -5,6 +5,7 @@ import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
 import { comments } from './annotation';
+import { addStructureLabelFromButton } from './topToolbar';
 
 const shapeArray = [];
 var startButton;
@@ -369,14 +370,11 @@ export async function videoClicked(coord){
       let annoWrap = d3.select('#annotation-wrap');
       annoWrap.selectAll('*').remove();
 
-      annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
+      //annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
+      addStructureLabelFromButton(colorDictionary[snip].structure[0]);
       annoWrap.append('h7').text("Annotations:");
 
       let stackedData = structureData.filter(f=> f.has_unkown == "TRUE").concat(structureData.filter(f=> f.has_unkown == "FALSE"));
-
-      console.log('stacked',stackedData);
-
-     // let annoU = annoWrap.selectAll('.anno').data(structureData.filter(f=> f.has_unkown === 'False')).join('div').classed('anno', true);
 
       let annos = annoWrap.selectAll('.anno').data(stackedData).join('div').classed('anno', true);
 
@@ -388,23 +386,24 @@ export async function videoClicked(coord){
    
       let annoTypeHeader = annosTop.selectAll('h6').data(d=> [d]).join('h6');
       let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
-      annoHeadSpan.classed('badge badge-secondary', true);
+     // annoHeadSpan.classed('badge badge-secondary', true);
       annoTypeHeader.style("display", "inline");
 
       let annoTime = annosTop.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time)
       .style("padding-left", "10px").style("font-size", "11px");
 
-      let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
-      blurb.text(d=> {return d.text_description});
+      let blurb = annos.selectAll('.anno-body').data(d=> [d]).join('div').classed('anno-body', true);
 
-      let annoRef = annos.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+      let blurbMainText = blurb.selectAll('.anno-text').data(d=> [d]).join('div').classed('anno-text', true);
+      blurbMainText.selectAll('text').data(d=> [d]).join('text').text(d=> {return d.text_description});
 
-      let annoLink = annos.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
+      let annoRef = blurb.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+
+      let annoLink = blurb.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
       annoLink.attr('href', d=> d.url);
       annoLink.attr('target', '_blank');
 
       
-
       annoWrap.append('h7').text("Comments:");
 
       let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1]);

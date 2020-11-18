@@ -49,10 +49,10 @@ html {
   //grid-area: head;
   position:fixed;
   top:0;
-  grid-template-columns: 1fr 1fr 1fr;
-  display: grid;
+ // grid-template-columns: 1fr 1fr 1fr 1fr;
+//  display: grid;
   height:50px;
-  justify-items: center;
+//  justify-items: center;
 }
 
 .user-wrap a:hover svg path{
@@ -90,19 +90,16 @@ html {
 }
 
 #annotation-wrap .anno{
-  //background-color: aliceblue;
   line-height: 80%;
-  padding:5px;
   border: 1px solid gray;
   border-radius: 5px;
+  margin-bottom:3px;
 }
 
 #annotation-wrap .anno.unknown{
- // background-color: red;
-  line-height: 80%;
-  padding:5px;
+ // line-height: 80%;
   border: 2px solid red;
-  border-radius: 5px;
+  //border-radius: 5px;
 }
 
 #annotation-wrap .anno .anno-text{
@@ -130,26 +127,28 @@ html {
 }
 
 .add-comment{
-  //float:right;
-  padding-top:3px;
   text-align: center;
-  //width:20%;
   display: inline;
-  flex: 1 0 auto;
- // align-self: flex-end;
-  align-items: flex-end;
+  position:relative;
+  float:right;
+  width:300px;
+  height:50px;
+}
 
-  
+.add-comment  button{
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%);
+  transform: translate(-50%);
 }
 
 .user-wrap{
   //text-align: center;
   padding:8px 30px;
   //width:40%;
-  display:inline-block;
-  flex: 1 0 auto;
-  align-self: start;
-  //background-color: var(--ui-gray);
+  display:inline;
+
 }
 
 .show-comments{
@@ -929,7 +928,6 @@ svg {
   height:35px;
 }
 
-
 #annotation-sidebar .anno{
   border: 1px solid gray;
   border-radius: 5px;
@@ -947,14 +945,33 @@ svg {
   font-style: italic;
 }
 
-
 #annotation-sidebar .anno .link, 
 .anno .link{
   display: block;
-  
   font-size: 12px;
   margin-top:10px;
+}
 
+.anno .header-anno{
+  position:relative;
+  top:0;
+  left:0;
+  width:100%;
+  background-color: gray;
+  color:#fff;
+  padding:3px;
+}
+
+.anno .anno-body{
+  margin:5px;
+}
+
+.anno.anno.unknown .header-anno{
+  position:relative;
+  top:0;
+  left:0;
+  width:100%;
+  background-color: red;
 }
 
 #pause-r path, #play-r path{
