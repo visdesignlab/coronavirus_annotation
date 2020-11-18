@@ -90,15 +90,19 @@ html {
 }
 
 #annotation-wrap .anno{
-  background-color: aliceblue;
+  //background-color: aliceblue;
   line-height: 80%;
   padding:5px;
+  border: 1px solid gray;
+  border-radius: 5px;
 }
 
 #annotation-wrap .anno.unknown{
-  background-color: red;
+ // background-color: red;
   line-height: 80%;
   padding:5px;
+  border: 2px solid red;
+  border-radius: 5px;
 }
 
 #annotation-wrap .anno .anno-text{
@@ -943,7 +947,8 @@ svg {
 }
 
 
-#annotation-sidebar .anno .link{
+#annotation-sidebar .anno .link, 
+.anno .link{
   display: block;
   
   font-size: 12px;

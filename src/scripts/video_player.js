@@ -88,7 +88,8 @@ export function formatVidPlayer(div, videoPath, isInteractive){
   
       if(togglePlay()) {
         video.pause();
-        drawFrameOnPause(d3.select('#context-map').node());
+       // drawFrameOnPause(d3.select('#context-map').node());
+       drawFrameOnPause();
       }else{
         video.play();
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -370,9 +371,18 @@ export async function videoClicked(coord){
 
       annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
       annoWrap.append('h7').text("Annotations:");
+
       let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
+   
+      let annoTypeHeader = annos.selectAll('h6').data(d=> [d]).join('h6');
+      let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
+      annoHeadSpan.classed('badge badge-secondary', true);
+      //annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color);
+
       let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
       blurb.text(d=> {return d.text_description});
+
+
       annos.filter(f=> {
         return f.has_unkown === 'TRUE';
       }).classed('unknown', true);
