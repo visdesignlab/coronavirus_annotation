@@ -261,11 +261,12 @@ export function clearSidebar(){
     // canvas.width = 0;
 }
 
-export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool){
+export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool, annoReply){
 
-    console.log('is this working',user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool)
+    //console.log('is this working',user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool)
    
     return {
+        annoReply: annoReply,
         videoTime: currentTime,
         postTime: new Date().toString(), //.toDateString(),
         comment: d3.select('#text-area-id').node().value,
@@ -365,7 +366,7 @@ export function doodleSubmit(commentType, user, tags, d, currentTime){
       //  let currentTime = document.getElementById('video').currentTime;
         let coords = !d3.select('#push-div').empty() ? [d3.select('#push-div').style('left'), d3.select('#push-div').style('top')] : null;
     
-        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d === null ? 'other' : d.tag, false);
+        let dataPush = annotationMaker(user, currentTime, tags.data().toString(), coords, false, null, 'doodle', d === null ? 'other' : d.tag, false, false);
         dataPush.doodle = true;
         dataPush.doodleName = snapshot.metadata.name;
        

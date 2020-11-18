@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime } from './canvas';
+import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime, annotationMaker } from './canvas';
 import { drawCommentBoxes, formatCommentData, toggleMagic } from './sidebar';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
@@ -376,6 +376,8 @@ export async function videoClicked(coord){
 
       let stackedData = structureData.filter(f=> f.has_unkown == "TRUE").concat(structureData.filter(f=> f.has_unkown == "FALSE"));
 
+      let testData = formatCommentData(dataKeeper[dataKeeper.length -1], stackedData);
+
       let annos = annoWrap.selectAll('.anno').data(stackedData).join('div').classed('anno', true);
 
       let unknowns = annos.filter(f=> f.has_unkown === 'TRUE');
@@ -408,7 +410,7 @@ export async function videoClicked(coord){
 
       annoWrap.append('h7').text("Comments:");
 
-      let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1]);
+      let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
 
       let test = nestReplies.filter((f)=> {
         if(colorDictionary[snip].structure[1]){
@@ -420,6 +422,47 @@ export async function videoClicked(coord){
       });
 
       drawCommentBoxes(test, annoWrap);
+
+
+      reply.on("click", function(d, i, n) {
+
+        d3.event.stopPropagation();
+        if(d.replyBool === false){
+
+            d.replyBool = true;
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                
+                   // replyInputBox(d, i, n, user);
+                   console.log("user data", d);
+
+                   let inputDiv = d3.select(n[i].parentNode.parentNode).append('div').classed('text-input-sidebar', true);
+                   inputDiv.append('text').text(`${user.displayName}:`)
+                   inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');
+                  // let tagButton = dropDown(inputDiv, tagOptions, 'Tag', 'tag-drop');
+                   let submit = inputDiv.append('button').text('Add').classed('btn btn-secondary', true);
+               
+                   submit.on('click',  ()=> {
+
+                        d3.event.stopPropagation();//user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool, annoReply
+                        let dataPush = annotationMaker(user, d3.select('video').node().currentTime, "none", null, true, d.key, "none", "none", false, true);
+                        let ref = firebase.database().ref("comments");               
+                        ref.push(dataPush);    
+                   });
+                   
+                    // User is signed in.
+                } else {
+                    console.log("NO USER", user);
+                    // No user is signed in.
+                }
+            });   
+
+        }else{
+            d.replyBool = false;
+            d3.select(n[i].parentNode.parentNode).select('.text-input-sidebar').remove();
+        }
+      });
       
 
 
