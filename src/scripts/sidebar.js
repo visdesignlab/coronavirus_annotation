@@ -206,7 +206,9 @@ export function drawCommentBoxes(nestedData, wrap){
      
 }
 
-function recurseDraw(selectDiv){
+export function recurseDraw(selectDiv){
+
+    console.log('testing',selectDiv, selectDiv.data())
   
     let replyDivs = selectDiv.selectAll('.reply-memo').data(d=> d.replyKeeper).join('div').classed('reply-memo', true);
     replyDivs.style('margin-left', d=> `${d.level * 10}px`);

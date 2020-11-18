@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime, annotationMaker } from './canvas';
-import { drawCommentBoxes, formatCommentData, toggleMagic } from './sidebar';
+import { drawCommentBoxes, formatCommentData, toggleMagic, recurseDraw } from './sidebar';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
@@ -422,6 +422,14 @@ export async function videoClicked(coord){
       });
 
       drawCommentBoxes(test, annoWrap);
+
+    //   annos.each((d, i, n)=> {
+        
+    //     if(d.replyKeeper.length > 0){
+          
+    //         recurseDraw(d3.select(n[i]));
+    //     }
+    // });
 
 
       reply.on("click", function(d, i, n) {
