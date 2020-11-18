@@ -378,9 +378,8 @@ export async function videoClicked(coord){
 
       let annos = annoWrap.selectAll('.anno').data(stackedData).join('div').classed('anno', true);
 
-      annos.filter(f=> {
-        return f.has_unkown === 'TRUE';
-      }).classed('unknown', true);
+      let unknowns = annos.filter(f=> f.has_unkown === 'TRUE');
+      unknowns.classed('unknown', true);
 
       let annosTop = annos.append('div').classed('header-anno', true);
    
@@ -391,6 +390,10 @@ export async function videoClicked(coord){
 
       let annoTime = annosTop.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time)
       .style("padding-left", "10px").style("font-size", "11px");
+
+      let reply = unknowns.select('.header-anno').selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text('Add Info ');
+      reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots fa-lg reply', true);
+      reply.style('float', 'right');
 
       let blurb = annos.selectAll('.anno-body').data(d=> [d]).join('div').classed('anno-body', true);
 
@@ -403,7 +406,6 @@ export async function videoClicked(coord){
       annoLink.attr('href', d=> d.url);
       annoLink.attr('target', '_blank');
 
-      
       annoWrap.append('h7').text("Comments:");
 
       let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1]);
