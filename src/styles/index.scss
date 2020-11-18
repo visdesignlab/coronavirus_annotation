@@ -938,7 +938,8 @@ svg {
   font-size: 12px;
 }
 
-#annotation-sidebar .anno .ref{
+#annotation-sidebar .anno .ref,
+.anno .ref{
   display: block;
   color: gray;
   font-size: 12px;

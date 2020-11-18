@@ -382,6 +382,12 @@ export async function videoClicked(coord){
       let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
       blurb.text(d=> {return d.text_description});
 
+      let annoRef = annos.filter(f=> f.ref != "" && f.ref != "na").selectAll('text.ref').data(d=> [d]).join('text').classed('ref', true).text(d=> d.ref);
+
+      let annoLink = annos.filter(f=> f.url != "" && f.url != "na").selectAll('a.link').data(d=> [d]).join('a').classed('link', true).text(d=> d.url);
+      annoLink.attr('href', d=> d.url);
+      annoLink.attr('target', '_blank');
+
 
       annos.filter(f=> {
         return f.has_unkown === 'TRUE';
