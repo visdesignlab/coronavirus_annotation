@@ -372,12 +372,27 @@ export async function videoClicked(coord){
       annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
       annoWrap.append('h7').text("Annotations:");
 
-      let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
+      let stackedData = structureData.filter(f=> f.has_unkown == "TRUE").concat(structureData.filter(f=> f.has_unkown == "FALSE"));
+
+      console.log('stacked',stackedData);
+
+     // let annoU = annoWrap.selectAll('.anno').data(structureData.filter(f=> f.has_unkown === 'False')).join('div').classed('anno', true);
+
+      let annos = annoWrap.selectAll('.anno').data(stackedData).join('div').classed('anno', true);
+
+      annos.filter(f=> {
+        return f.has_unkown === 'TRUE';
+      }).classed('unknown', true);
+
+      let annosTop = annos.append('div').classed('header-anno', true);
    
-      let annoTypeHeader = annos.selectAll('h6').data(d=> [d]).join('h6');
+      let annoTypeHeader = annosTop.selectAll('h6').data(d=> [d]).join('h6');
       let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
       annoHeadSpan.classed('badge badge-secondary', true);
-      //annoHeadSpan.style('background-color', (d)=> annoType.filter(f=> f.type === d.annotation_type)[0].color);
+      annoTypeHeader.style("display", "inline");
+
+      let annoTime = annosTop.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time)
+      .style("padding-left", "10px").style("font-size", "11px");
 
       let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
       blurb.text(d=> {return d.text_description});
@@ -388,10 +403,7 @@ export async function videoClicked(coord){
       annoLink.attr('href', d=> d.url);
       annoLink.attr('target', '_blank');
 
-
-      annos.filter(f=> {
-        return f.has_unkown === 'TRUE';
-      }).classed('unknown', true);
+      
 
       annoWrap.append('h7').text("Comments:");
 
