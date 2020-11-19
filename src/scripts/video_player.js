@@ -297,7 +297,7 @@ export async function mouseMoveVideo(coord){
             return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
           });
 
-          structureTooltip(colorDictionary, structureData, coord, snip, true);
+          structureTooltip(colorDictionary, structureData, formatCommentData(dataKeeper[dataKeeper.length -1], null), coord, snip, true);
     
     
         }else if(snip === "black" || snip === "white"){
@@ -311,8 +311,20 @@ export async function mouseMoveVideo(coord){
       
 }
 
-function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool){
+function structureTooltip(colorDictionary, structureData, commentData, coord, snip, hoverBool){
+  
+  let commentsRef = commentData.filter(f=> {
+    let has = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase());
+    let hasRef = f.comment.toUpperCase().includes('http') || f.comment.includes('et al');
+    let rep = f.replyKeeper.filter(d=> {
+      let hasS = d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase());
+      let http = d.comment.includes('http') || d.comment.includes('et al');
+      return hasS && http;
+    });
+    return (hasRef && has) || rep.length > 0;
+  });
 
+  console.log("strucut",structureData);
   if(hoverBool){
     d3.select('.tooltip')
     .style('position', 'absolute')
@@ -320,6 +332,7 @@ function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool
     .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
     <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
     <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
+    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> References. <br>
     <br>
     <h7>Click Structure for more Info</h7>
     `)
@@ -332,6 +345,7 @@ function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool
     .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
     <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
     <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
+    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> References. <br>
     <br>
     <button class="btn btn-outline-secondary">Add information on this structure</button> <br>
     `)
@@ -350,8 +364,6 @@ export async function videoClicked(coord){
    
     togglePlay(true);
     drawFrameOnPause();
-
-
 
   }else{ 
     
@@ -384,18 +396,30 @@ export async function videoClicked(coord){
         return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
       });
 
-      structureTooltip(colorDictionary, structureData, coord, snip, false);
+      let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
+
+      let test = nestReplies.filter((f)=> {
+        if(colorDictionary[snip].structure[1]){
+          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
+          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || d.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase));
+          return hasStructure || replyToo.length > 0;
+        }else{
+          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase());
+          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()));
+          return hasStructure || replyToo.length > 0;
+        }
+      });
+
+
+      structureTooltip(colorDictionary, structureData, test, coord, snip, false);
 
       let annoWrap = d3.select('#annotation-wrap');
       annoWrap.selectAll('*').remove();
 
-      //annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
       addStructureLabelFromButton(colorDictionary[snip].structure[0]);
       annoWrap.append('h7').text("  Annotations:");
 
       let stackedData = structureData.filter(f=> f.has_unkown == "TRUE").concat(structureData.filter(f=> f.has_unkown == "FALSE"));
-
-      let testData = formatCommentData(dataKeeper[dataKeeper.length -1], stackedData);
 
       let annos = annoWrap.selectAll('.anno').data(stackedData).join('div').classed('anno', true);
 
@@ -403,10 +427,8 @@ export async function videoClicked(coord){
       unknowns.classed('unknown', true);
 
       let annosTop = annos.append('div').classed('header-anno', true);
-   
       let annoTypeHeader = annosTop.selectAll('h6').data(d=> [d]).join('h6');
       let annoHeadSpan = annoTypeHeader.selectAll('span').data(d=> [d]).join('span').text(d=> d.annotation_type);
-     // annoHeadSpan.classed('badge badge-secondary', true);
       annoTypeHeader.style("display", "inline");
 
       let annoTime = annosTop.selectAll('text.time').data(d=> [d]).join('text').classed('time', true).text(d=> d.video_time)
@@ -429,25 +451,7 @@ export async function videoClicked(coord){
 
       annoWrap.append('h7').text("  Comments:");
 
-      let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
-
-    
-      let test = nestReplies.filter((f)=> {
-        
-        if(colorDictionary[snip].structure[1]){
-          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
-          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || d.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase));
-          return hasStructure || replyToo.length > 0;
-        }else{
-        
-          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase());
-          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()));
-          console.log("checking this", f.comment.toUpperCase(), replyToo.length);
-          return hasStructure || replyToo.length > 0;
-        }
-       
-      });
-
+     
       drawCommentBoxes(test, annoWrap);
 
 
