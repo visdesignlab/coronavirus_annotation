@@ -31,6 +31,14 @@ export function addCommentButton(d, i, n){
         checkDatabase(ref, updateSideAnnotations);
     }
 }
+
+export function addStructureLabelFromButton(structure){
+  d3.select('#top-bar').select('.add-comment').select('button').text(`Add Comment for ${structure}`);
+}
+
+export function removeStructureLabelFromButton(){
+  d3.select('#top-bar').select('.add-comment').select('button').text('Add Comment');
+}
     
 export function specialUserCheck(dbRef){
 

@@ -18,11 +18,12 @@ dom.i2svg()
 dom.watch();
 
 function recurse(parent, replyArray, level){
-
+  
     parent.level = level;
     parent.replyBool = false;
-    let replies = replyArray.filter(f=> f.replies === parent.key);
-
+   // console.log()
+    let replies = replyArray.filter(f=> f.replies.toString() === parent.key);
+    console.log('parent ', parent, ' replies',replies, replyArray);
     if(replies.length > 0){
         parent.replyKeeper = replies;
         let nextlevel = ++level;
@@ -43,38 +44,57 @@ function replyInputBox(d, i, n, user){
 
     submit.on('click',  ()=> {
         d3.event.stopPropagation();//user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool
-        let dataPush = annotationMaker(user, d3.select('video').node().currentTime, "none", null, true, d.key, "none", "none", false);
+        let dataPush = annotationMaker(user, d3.select('video').node().currentTime, "none", null, true, d.key, "none", "none", false, false);
         let ref = firebase.database().ref("comments");               
         ref.push(dataPush);    
     });
 }
 
-export function updateSideAnnotations(dbRef){
+export function formatCommentData(dbRef, annotations){
 
     let dataAnno = d3.entries(dbRef.comments)
-                .map(m=> {
-                    let value = m.value;
-                    value.key = m.key;
-                    return value;
-                    });
+    .map(m=> {
+        let value = m.value;
+        value.key = m.key;
+        return value;
+        });
 
     let unresolved = dataAnno.filter(f=> f.resolved === false);
+
+    if(annotations === null){
+
+        let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.videoTime - b.videoTime);
     
-    let data = unresolved.filter(f=> f.reply === false).sort((a, b)=> a.videoTime - b.videoTime);
-
-    let replyData = unresolved.filter(f=> f.reply === true);
-
-    let nestReplies = data.map((d, i, n)=>{
+        let replyData = unresolved.filter(f=> f.reply === true);
+    
+        let nestReplies = data.map((d, i, n)=>{
         return recurse(d, replyData, 0);
-    });
+        });
+    
+        return nestReplies;
 
-    let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
+    }else{
 
-    wrap.selectAll('*').remove();
+        console.log("annotations!!", annotations, dbRef);
 
-    let formatMinute = d3.timeFormat();
+        let replyData = unresolved.filter(f=> (f.reply === true));
+    
+        let nestReplies = annotations.map((d, i, n)=>{
+        return recurse(d, replyData, 0);
+        });
+        
 
-    let memoDivs = wrap.selectAll('.memo').data(nestReplies).join('div').classed('memo', true);
+        console.log('nested reply',nestReplies)
+        return nestReplies;
+
+    }
+
+
+}
+
+export function drawCommentBoxes(nestedData, wrap){
+
+    let memoDivs = wrap.selectAll('.memo').data(nestedData).join('div').classed('memo', true);
     memoDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName}:`);
     memoDivs.selectAll('.time').data(d=> [d]).join('span').classed('time', true).selectAll('text').data(d=> [d]).join('text').text(d=> {
         return formatVideoTime(d.videoTime);
@@ -151,104 +171,124 @@ export function updateSideAnnotations(dbRef){
         }
       });
 
-    var db = firebase.database();
+      var db = firebase.database();
 
-    upvote.on('click', (d)=> {
-        let newUp = ++d.upvote;
-        db.ref(`comments/${d.key}/upvote`).set(`${newUp}`);
-    });
-
-    downvote.on('click', (d)=> {
-        let newDown = ++d.downvote;
-        db.ref(`comments/${d.key}/downvote`).set(`${newDown}`);
-    });
-
-    memoDivs.on('click', d=>{
-      
-        if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
-        d3.event.target.tagName.toLowerCase() === 'button' || 
-        d3.event.target.tagName.toLowerCase() === 'a' || 
-        d3.event.target.tagName.toLowerCase() === 'svg'){
+      upvote.on('click', (d)=> {
+          let newUp = ++d.upvote;
+          db.ref(`comments/${d.key}/upvote`).set(`${newUp}`);
+      });
+  
+      downvote.on('click', (d)=> {
+          let newDown = ++d.downvote;
+          db.ref(`comments/${d.key}/downvote`).set(`${newDown}`);
+      });
+  
+      memoDivs.on('click', d=>{
         
-        }else{ 
-            skipAheadCircle(d.videoTime);
-        }     
-    });
+          if(d3.event.target.tagName.toLowerCase() === 'textarea' || 
+          d3.event.target.tagName.toLowerCase() === 'button' || 
+          d3.event.target.tagName.toLowerCase() === 'a' || 
+          d3.event.target.tagName.toLowerCase() === 'svg'){
+          
+          }else{ 
+              skipAheadCircle(d.videoTime);
+          }     
+      });
+  
+      memoDivs.each((d, i, n)=> {
+          if(d.replyKeeper.length > 0){
+              recurseDraw(d3.select(n[i]));
+          }
+      });
+  
 
-    memoDivs.each((d, i, n)=> {
+  
+     
+}
+
+export function recurseDraw(selectDiv){
+
+    console.log('testing',selectDiv, selectDiv.data())
+  
+    let replyDivs = selectDiv.selectAll('.reply-memo').data(d=> d.replyKeeper).join('div').classed('reply-memo', true);
+    replyDivs.style('margin-left', d=> `${d.level * 10}px`);
+
+    replyDivs.each((d, i, n)=> {
+        replyRender(d3.select(n[i]));
         if(d.replyKeeper.length > 0){
             recurseDraw(d3.select(n[i]));
         }
     })
 
-    function replyRender(replyDivs){
-        
-        replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName} replied:`);
+}
 
-        // let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
-        // tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
-       
-        replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
-        replyDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
-        .selectAll('text').data(d=> [d]).join('text').text(d=> {
-            let test = new Date(d.postTime);
-            return `on ${test.toUTCString()}`});
+function replyRender(replyDivs){
+          
+    replyDivs.selectAll('.name').data(d=> [d]).join('span').classed('name', true).selectAll('text').data(d=> [d]).join('text').text(d=> `${d.displayName} replied:`);
 
-        let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
-        upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
-        upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
-    
-        let downvote = replyDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
-        downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
-        downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
-    
-        let reply = replyDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text("Reply ");
-        reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right');
+    // let tags = replyDivs.selectAll('.tag-span').data(d=> [d]).join('span').classed('tag-span', true);
+    // tags.selectAll('.badge').data(d=> [d]).join('span').classed('badge badge-secondary', true).style('background-color', d=> tagOptions.filter(f=> f.key === d.tags)[0].color).text(d=> d.tags);
+   
+    replyDivs.selectAll('.comment').data(d=> [d]).join('span').classed('comment', true).selectAll('text').data(d=> [d]).join('text').text(d=> d.comment);
+    replyDivs.selectAll('.post-time').data(d=> [d]).join('span').classed('post-time', true)
+    .selectAll('text').data(d=> [d]).join('text').text(d=> {
+        let test = new Date(d.postTime);
+        return `on ${test.toUTCString()}`});
 
-        let resolve = replyDivs.selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
-        resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
+    let upvote = replyDivs.selectAll('.upvote-span').data(d=> [d]).join('span').classed('upvote-span', true);
+    upvote.selectAll('.upvote').data(d=> [d]).join('i').classed('upvote fas fa-thumbs-up fa-sm', true);
+    upvote.selectAll('.up-text').data(d=> [d]).join('text').classed('up-text', true).text(d=> `: ${d.upvote} `);
 
-        resolve.on('click', (d)=> {
-            db.ref(`comments/${d.key}/resolved`).set(`true`);
-        });
+    let downvote = replyDivs.selectAll('.downvote-span').data(d=> [d]).join('span').classed('downvote-span', true);
+    downvote.selectAll('.downvote').data(d=> [d]).join('i').classed('downvote fas fa-thumbs-down', true);
+    downvote.selectAll('.down-text').data(d=> [d]).join('text').classed('down-text', true).text(d=> `: ${d.downvote}`);
+
+    let reply = replyDivs.selectAll('.reply-span').data(d=> [d]).join('span').classed('reply-span', true).text("Reply ");
+    reply.selectAll('.reply').data(d=> [d]).join('i').classed('far fa-comment-dots reply', true).style('float', 'right');
+
+    let resolve = replyDivs.selectAll('.resolve-span').data(d=> [d]).join('span').classed('resolve-span', true).text("Resolve ")
+    resolve.selectAll('.resolve').data(d=> [d]).join('i').classed('resolve', true).classed('resolve fas fa-check', true);//.text(d=> `${d.displayName}:`);
+
+    resolve.on('click', (d)=> {
+        db.ref(`comments/${d.key}/resolved`).set(`true`);
+    });
 
 
-        reply.on("click", function(d, i, n) {
+    reply.on("click", function(d, i, n) {
 
-            d3.event.stopPropagation();
-            if(d.replyBool === false){
-    
-                d.replyBool = true;
-    
-                firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
-                        replyInputBox(d, i, n, user);
-                    } else {
-                        console.log("NO USER", user);
-                        // No user is signed in.
-                    }
-                });   
-    
-            }else{
-                d.replyBool = false;
-                d3.select(n[i].parentNode).select('.text-input-sidebar').remove();
-            }
-          });
-    }
+        d3.event.stopPropagation();
+        if(d.replyBool === false){
 
-    function recurseDraw(selectDiv){
+            d.replyBool = true;
 
-        let replyDivs = selectDiv.selectAll('.reply-memo').data(d=> d.replyKeeper).join('div').classed('reply-memo', true);
-        replyDivs.style('margin-left', d=> `${d.level * 10}px`);
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    replyInputBox(d, i, n, user);
+                } else {
+                    console.log("NO USER", user);
+                    // No user is signed in.
+                }
+            });   
 
-        replyDivs.each((d, i, n)=> {
-            replyRender(d3.select(n[i]));
-            if(d.replyKeeper.length > 0){
-                recurseDraw(d3.select(n[i]));
-            }
-        })
+        }else{
+            d.replyBool = false;
+            d3.select(n[i].parentNode).select('.text-input-sidebar').remove();
+        }
+      });
+}
 
-    }
+export function updateSideAnnotations(dbRef){
+
+    let wrap = d3.select('#comment-sidebar').select('#annotation-wrap');
+
+    wrap.selectAll('*').remove();
+
+    let formatMinute = d3.timeFormat();
+
+    let nestReplies = formatCommentData(dbRef, null);
+
+    drawCommentBoxes(nestReplies, wrap);
+
 }
 
 export function renderNav(div, nav){
