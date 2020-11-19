@@ -351,10 +351,7 @@ export async function videoClicked(coord){
     togglePlay(true);
     drawFrameOnPause();
 
-  // }else if(structureClicked === false){
-  //   const context = canvas.getContext('2d');
-  //   context.clearRect(0, 0, canvas.width, canvas.height); 
-  //   await togglePlay(false);
+
 
   }else{ 
     
@@ -444,14 +441,6 @@ export async function videoClicked(coord){
       });
 
       drawCommentBoxes(test, annoWrap);
-
-    //   annos.each((d, i, n)=> {
-        
-    //     if(d.replyKeeper.length > 0){
-          
-    //         recurseDraw(d3.select(n[i]));
-    //     }
-    // });
 
 
       reply.on("click", function(d, i, n) {
