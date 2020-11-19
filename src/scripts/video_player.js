@@ -431,12 +431,19 @@ export async function videoClicked(coord){
 
       let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
 
+    
       let test = nestReplies.filter((f)=> {
-        console.log("f", f);
+        
         if(colorDictionary[snip].structure[1]){
-          return f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
+          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
+          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || d.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase));
+          return hasStructure || replyToo.length > 0;
         }else{
-          return f.comment.includes(colorDictionary[snip].structure[0]);
+        
+          let hasStructure = f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase());
+          let replyToo = f.replyKeeper.filter(d=> d.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()));
+          console.log("checking this", f.comment.toUpperCase(), replyToo.length);
+          return hasStructure || replyToo.length > 0;
         }
        
       });

@@ -21,9 +21,9 @@ function recurse(parent, replyArray, level){
   
     parent.level = level;
     parent.replyBool = false;
-   // console.log()
+   
     let replies = replyArray.filter(f=> f.replies.toString() === parent.key);
-    console.log('parent ', parent, ' replies',replies, replyArray);
+  //  console.log('parent ', parent, ' replies',replies, replyArray);
     if(replies.length > 0){
         parent.replyKeeper = replies;
         let nextlevel = ++level;
@@ -75,7 +75,7 @@ export function formatCommentData(dbRef, annotations){
 
     }else{
 
-        console.log("annotations!!", annotations, dbRef);
+     //   console.log("annotations!!", annotations, dbRef);
 
         let replyData = unresolved.filter(f=> (f.reply === true));
     
@@ -84,7 +84,7 @@ export function formatCommentData(dbRef, annotations){
         });
         
 
-        console.log('nested reply',nestReplies)
+       // console.log('nested reply',nestReplies)
         return nestReplies;
 
     }
