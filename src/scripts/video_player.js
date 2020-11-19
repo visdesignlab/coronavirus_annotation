@@ -560,7 +560,7 @@ export function resizeStuff(isInteractive){
     // d3.select('#interaction').node().style.height = size.height;
   }
 
-  d3.select('#video-controls').style('top', `${(size.height + size.top) + 10}px`);
+  d3.select('#video-controls').style('top', `${(size.height + size.top) - 50}px`);
   d3.select('#video-controls').style('width', `${Math.round(size.width)}px`);
 }
 
