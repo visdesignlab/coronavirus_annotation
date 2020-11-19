@@ -297,7 +297,7 @@ export async function mouseMoveVideo(coord){
             return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
           });
 
-          structureTooltip(colorDictionary, structureData, coord, snip);
+          structureTooltip(colorDictionary, structureData, coord, snip, true);
     
     
         }else if(snip === "black" || snip === "white"){
@@ -311,8 +311,21 @@ export async function mouseMoveVideo(coord){
       
 }
 
-function structureTooltip(colorDictionary, structureData, coord, snip){
+function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool){
 
+  if(hoverBool){
+    d3.select('.tooltip')
+    .style('position', 'absolute')
+    .style("opacity", 1)
+    .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
+    <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
+    <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
+    <br>
+    <h7>Click Structure for more Info</h7>
+    `)
+    .style("left", (coord[0]+ 200) + "px")
+    .style("top", (coord[1]) + "px");
+  }else{
     d3.select('.tooltip')
     .style('position', 'absolute')
     .style("opacity", 1)
@@ -324,6 +337,8 @@ function structureTooltip(colorDictionary, structureData, coord, snip){
     `)
     .style("left", (coord[0]+ 200) + "px")
     .style("top", (coord[1]) + "px");
+  }
+    
 
 }
 
@@ -351,11 +366,8 @@ export async function videoClicked(coord){
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       removeStructureLabelFromButton();
-      //let ref = firebase.database().ref();  
-      updateSideAnnotations(dataKeeper[dataKeeper.length - 1]);
 
-      
-      
+      updateSideAnnotations(dataKeeper[dataKeeper.length - 1]);
 
       togglePlay(false);
 
@@ -371,19 +383,18 @@ export async function videoClicked(coord){
         return m;
       });
 
-  
       let structureData = annotationData.filter(f=> {
         return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
       });
 
-      structureTooltip(colorDictionary, structureData, coord, snip);
+      structureTooltip(colorDictionary, structureData, coord, snip, false);
 
       let annoWrap = d3.select('#annotation-wrap');
       annoWrap.selectAll('*').remove();
 
       //annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
       addStructureLabelFromButton(colorDictionary[snip].structure[0]);
-      annoWrap.append('h7').text("Annotations:");
+      annoWrap.append('h7').text("  Annotations:");
 
       let stackedData = structureData.filter(f=> f.has_unkown == "TRUE").concat(structureData.filter(f=> f.has_unkown == "FALSE"));
 
@@ -419,7 +430,7 @@ export async function videoClicked(coord){
       annoLink.attr('href', d=> d.url);
       annoLink.attr('target', '_blank');
 
-      annoWrap.append('h7').text("Comments:");
+      annoWrap.append('h7').text("  Comments:");
 
       let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
 
