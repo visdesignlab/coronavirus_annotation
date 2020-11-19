@@ -432,6 +432,7 @@ export async function videoClicked(coord){
       let nestReplies = formatCommentData(dataKeeper[dataKeeper.length -1], null);
 
       let test = nestReplies.filter((f)=> {
+        console.log("f", f);
         if(colorDictionary[snip].structure[1]){
           return f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
         }else{
