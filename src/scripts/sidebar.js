@@ -23,7 +23,7 @@ function recurse(parent, replyArray, level){
     parent.replyBool = false;
    
     let replies = replyArray.filter(f=> f.replies.toString() === parent.key);
-  //  console.log('parent ', parent, ' replies',replies, replyArray);
+
     if(replies.length > 0){
         parent.replyKeeper = replies;
         let nextlevel = ++level;
@@ -75,7 +75,7 @@ export function formatCommentData(dbRef, annotations){
 
     }else{
 
-     //   console.log("annotations!!", annotations, dbRef);
+   
 
         let replyData = unresolved.filter(f=> (f.reply === true));
     
@@ -83,8 +83,6 @@ export function formatCommentData(dbRef, annotations){
         return recurse(d, replyData, 0);
         });
         
-
-       // console.log('nested reply',nestReplies)
         return nestReplies;
 
     }
@@ -208,7 +206,7 @@ export function drawCommentBoxes(nestedData, wrap){
 
 export function recurseDraw(selectDiv){
 
-    console.log('testing',selectDiv, selectDiv.data())
+    
   
     let replyDivs = selectDiv.selectAll('.reply-memo').data(d=> d.replyKeeper).join('div').classed('reply-memo', true);
     replyDivs.style('margin-left', d=> `${d.level * 10}px`);

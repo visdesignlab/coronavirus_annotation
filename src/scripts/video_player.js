@@ -48,6 +48,8 @@ export function formatVidPlayer(div, videoPath, isInteractive){
 
       canPlay = true;
 
+      console.log("is Interactive", isInteractive);
+
       if(isInteractive){
 
         d3.select('#interaction').node().width = Math.round(video.videoWidth)+'px';
@@ -59,21 +61,6 @@ export function formatVidPlayer(div, videoPath, isInteractive){
         context = canvas.getContext('2d');
 
         let imgOb = loadPngForFrame();
-    
-        //context.drawImage(video2, 0, 0);
-        // imgOb.onload = ()=> {
-
-  
-        //   context.drawImage(imgOb, 0, 0);
-    
-        //   var _data = context.getImageData(0, 0, size.width, size.height)
-      
-        //   currentImageData.data = _data.data;
-        //   currentImageData.width = _data.width;
-        //   currentImageData.height = _data.height;
-      
-        //   context.putImageData(_data, 0, 0);
-        // }
         
     
     
@@ -93,7 +80,7 @@ export function formatVidPlayer(div, videoPath, isInteractive){
        drawFrameOnPause();
       }else{
         video.play();
-        console.log('VKDEO PLAY');
+
         removeStructureLabelFromButton();
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
@@ -215,8 +202,6 @@ async function loadPngForFrame(){
     //The path to the image that we want to add.
   var imgPath = pathImg + (pullFrame+1) + '.png';
 
-  console.log(imgPath);
-  
   //Create a new Image object.
   var imgObj = new Image();
   
@@ -239,6 +224,8 @@ async function loadPngForFrame(){
     currentImageData.width = _data.width;
     currentImageData.height = _data.height;
 
+    console.log(currentImageData);
+
     context.putImageData(_data, 0, 0);
   }
 
@@ -256,17 +243,18 @@ function drawFrameOnPause() {
 function getCoordColor(coord){
 
   const colorIndices = getColorIndicesForCoord(Math.round(coord[0]), (coord[1]), currentImageData.width);
-
+  console.log("color indices",colorIndices);
+  
   const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+  //const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
 
-  var redForCoord = currentImageData.data[redIndex];
-  var greenForCoord = currentImageData.data[greenIndex];
-  var blueForCoord = currentImageData.data[blueIndex];
-  var alphaForCoord = currentImageData.data[alphaIndex];
+  var redForCoord = currentImageData.data[Math.round(redIndex)];
+  var greenForCoord = currentImageData.data[Math.round(greenIndex)];
+  var blueForCoord = currentImageData.data[Math.round(blueIndex)];
+  var alphaForCoord = currentImageData.data[Math.round(alphaIndex)];
   var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
 
-  let body = d3.select('body').node();
-  //body.style.background = new_rgb;
+
 
   let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
 
@@ -275,15 +263,15 @@ function getCoordColor(coord){
 }
 
 export async function mouseMoveVideo(coord){
-
+  console.log("mouseover");
       if(isPlaying()){
         console.log('videoPlaying');
       }else if(structureClicked){
-       
+       console.log("structure clicked");
       }else{
-
+       
         let snip = getCoordColor(coord);
-
+        console.log("COORd", coord, currentColorCodes, snip);
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
           currentColorCodes.push(snip);
           make2DArray(currentImageData, snip);
@@ -324,7 +312,6 @@ function structureTooltip(colorDictionary, structureData, commentData, coord, sn
     return (hasRef && has) || rep.length > 0;
   });
 
-  console.log("strucut",structureData);
   if(hoverBool){
     d3.select('.tooltip')
     .style('position', 'absolute')
@@ -332,7 +319,7 @@ function structureTooltip(colorDictionary, structureData, commentData, coord, sn
     .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
     <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
     <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
-    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> References. <br>
+    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> Found References. <br>
     <br>
     <h7>Click Structure for more Info</h7>
     `)
@@ -345,7 +332,7 @@ function structureTooltip(colorDictionary, structureData, commentData, coord, sn
     .html(`<h4>${colorDictionary[snip].structure[0]}</h4>
     <span class="badge badge-pill badge-info"><h7>${structureData.length}</h7></span> annotations for this structure. <br>
     <span class="badge badge-pill badge-danger">${structureData.filter(f=> f.has_unkown === "TRUE").length}</span> Unknowns. <br>
-    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> References. <br>
+    <span class="badge badge-pill badge-warning">${(commentsRef.length + structureData.filter(f=> f.url != "").length)}</span> Found References. <br>
     <br>
     <button class="btn btn-outline-secondary">Add information on this structure</button> <br>
     `)
@@ -359,9 +346,7 @@ function structureTooltip(colorDictionary, structureData, commentData, coord, sn
 export async function videoClicked(coord){
 
   if(isPlaying()){
-
     structureClicked = false;
-   
     togglePlay(true);
     drawFrameOnPause();
 
@@ -465,9 +450,6 @@ export async function videoClicked(coord){
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                 
-                   // replyInputBox(d, i, n, user);
-                   console.log("user data", d);
-
                    let inputDiv = d3.select(n[i].parentNode.parentNode).append('div').classed('text-input-sidebar', true);
                    inputDiv.append('text').text(`${user.displayName}:`)
                    inputDiv.append('textarea').attr('id', 'text-area-id').attr('placeholder', 'Comment Here');

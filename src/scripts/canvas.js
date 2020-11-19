@@ -82,6 +82,7 @@ async function updateAnnotationSidebar(data, annoType, videoTime){
 }
 
 export function formatVideoTime(videoTime){
+   
     let time = parseInt(videoTime);
     var minutes = Math.floor(time / 60);
     var seconds = (time - (minutes * 60));
@@ -179,7 +180,7 @@ export async function updateVideoAnn(data, annoType){
             return urlDood;
         });
 
-        if(d3.select('.show-comments').select('.form-check').select('.form-check-input').node().checked){
+        if(false){
            
             let images = interDIV.selectAll('.doodles').data(await Promise.all(test)).join('img').classed('doodles', true);
             images.attr('src', d=> d);
@@ -263,7 +264,7 @@ export function clearSidebar(){
 
 export function annotationMaker(user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool, annoReply){
 
-    //console.log('is this working',user, currentTime, tag, coords, replyBool, replyTo, mark, initTag, annoBool)
+  
    
     return {
         annoReply: annoReply,
