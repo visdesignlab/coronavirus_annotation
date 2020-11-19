@@ -1,20 +1,11 @@
 import * as d3 from 'd3';
-<<<<<<< HEAD
-import { formatCanvas, formatPush, annotationBar, formatTime } from './canvas';
-import { toggleMagic } from './sidebar';
-=======
 import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime, annotationMaker } from './canvas';
 import { drawCommentBoxes, formatCommentData, toggleMagic, recurseDraw, updateSideAnnotations } from './sidebar';
->>>>>>> gix-fs
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
 import { comments } from './annotation';
-<<<<<<< HEAD
-import { TRUE } from 'node-sass';
-=======
 import { addStructureLabelFromButton, removeStructureLabelFromButton } from './topToolbar';
->>>>>>> gix-fs
 
 const shapeArray = [];
 var startButton;
@@ -98,18 +89,12 @@ export function formatVidPlayer(div, videoPath, isInteractive){
   
       if(togglePlay()) {
         video.pause();
-<<<<<<< HEAD
-        drawFrameOnPause(d3.select('#context-map').node());
-      }else{
-        video.play();
-=======
        // drawFrameOnPause(d3.select('#context-map').node());
        drawFrameOnPause();
       }else{
         video.play();
         console.log('VKDEO PLAY');
         removeStructureLabelFromButton();
->>>>>>> gix-fs
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
   
@@ -312,11 +297,7 @@ export async function mouseMoveVideo(coord){
             return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
           });
 
-<<<<<<< HEAD
-          structureTooltip(colorDictionary, structureData, coord, snip);
-=======
           structureTooltip(colorDictionary, structureData, coord, snip, true);
->>>>>>> gix-fs
     
     
         }else if(snip === "black" || snip === "white"){
@@ -330,10 +311,6 @@ export async function mouseMoveVideo(coord){
       
 }
 
-<<<<<<< HEAD
-function structureTooltip(colorDictionary, structureData, coord, snip){
-
-=======
 function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool){
 
   if(hoverBool){
@@ -349,7 +326,6 @@ function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool
     .style("left", (coord[0]+ 200) + "px")
     .style("top", (coord[1]) + "px");
   }else{
->>>>>>> gix-fs
     d3.select('.tooltip')
     .style('position', 'absolute')
     .style("opacity", 1)
@@ -361,11 +337,8 @@ function structureTooltip(colorDictionary, structureData, coord, snip, hoverBool
     `)
     .style("left", (coord[0]+ 200) + "px")
     .style("top", (coord[1]) + "px");
-<<<<<<< HEAD
-=======
   }
     
->>>>>>> gix-fs
 
 }
 
@@ -378,14 +351,7 @@ export async function videoClicked(coord){
     togglePlay(true);
     drawFrameOnPause();
 
-<<<<<<< HEAD
-  // }else if(structureClicked === false){
-  //   const context = canvas.getContext('2d');
-  //   context.clearRect(0, 0, canvas.width, canvas.height); 
-  //   await togglePlay(false);
-=======
 
->>>>>>> gix-fs
 
   }else{ 
     
@@ -394,10 +360,6 @@ export async function videoClicked(coord){
   
     if(snip === "black" || snip === "white" || snip === "unknown"){
       structureClicked = false;
-<<<<<<< HEAD
-      togglePlay(false);
-=======
->>>>>>> gix-fs
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       removeStructureLabelFromButton();
@@ -420,42 +382,6 @@ export async function videoClicked(coord){
 
       let structureData = annotationData.filter(f=> {
         return f.associated_structures.split(', ').map(m=> m.toUpperCase()).indexOf(colorDictionary[snip].structure[0].toUpperCase()) > -1;
-<<<<<<< HEAD
-      });
-
-      structureTooltip(colorDictionary, structureData, coord, snip);
-
-      let annoWrap = d3.select('#annotation-wrap');
-      annoWrap.selectAll('*').remove();
-
-      let dataAnno = d3.entries(dataKeeper[dataKeeper.length -1].comments)
-                .map(m=> {
-                    let value = m.value;
-                    value.key = m.key;
-                    return value;
-                    });
-
-      let test = dataAnno.filter((f)=> {
-       // console.log(f.comment, "struct", colorDictionary[snip].structure);
-        if(colorDictionary[snip].structure[1]){
-          //console.log(f.comment, "struct")
-          return f.comment.toUpperCase().includes(colorDictionary[snip].structure[0].toUpperCase()) || f.comment.toUpperCase().includes(colorDictionary[snip].structure[1].toUpperCase);
-        }else{
-          return f.comment.includes(colorDictionary[snip].structure[0]);
-        }
-       
-      });
-
-      console.log('test',test, structureData);
-
-      annoWrap.append('h3').text(colorDictionary[snip].structure[0]);
-      let annos = annoWrap.selectAll('.anno').data(structureData).join('div').classed('anno', true);
-      let blurb = annos.selectAll('.anno-text').data(d=> [d]).join('text').classed('anno-text', true)
-      blurb.text(d=> {return d.text_description});
-      // annos.filter(f=> {
-      //   return f.has_unkown === TRUE;
-      // }).classed('unknown', true);
-=======
       });
 
       structureTooltip(colorDictionary, structureData, coord, snip, false);
@@ -516,6 +442,14 @@ export async function videoClicked(coord){
 
       drawCommentBoxes(test, annoWrap);
 
+    //   annos.each((d, i, n)=> {
+        
+    //     if(d.replyKeeper.length > 0){
+          
+    //         recurseDraw(d3.select(n[i]));
+    //     }
+    // });
+
 
       reply.on("click", function(d, i, n) {
 
@@ -557,7 +491,6 @@ export async function videoClicked(coord){
         }
       });
       
->>>>>>> gix-fs
 
 
 
