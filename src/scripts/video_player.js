@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import { formatCanvas, formatPush, annotationBar, formatTime, formatVideoTime, annotationMaker } from './canvas';
-import { drawCommentBoxes, formatCommentData, toggleMagic, recurseDraw } from './sidebar';
+import { drawCommentBoxes, formatCommentData, toggleMagic, recurseDraw, updateSideAnnotations } from './sidebar';
 import { checkDatabase, dataKeeper } from './firebaseStuff';
 import * as firebase from 'firebase';
 import { mouse, select } from 'd3';
 import { comments } from './annotation';
-import { addStructureLabelFromButton } from './topToolbar';
+import { addStructureLabelFromButton, removeStructureLabelFromButton } from './topToolbar';
 
 const shapeArray = [];
 var startButton;
@@ -93,6 +93,8 @@ export function formatVidPlayer(div, videoPath, isInteractive){
        drawFrameOnPause();
       }else{
         video.play();
+        console.log('VKDEO PLAY');
+        removeStructureLabelFromButton();
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
   
@@ -330,7 +332,8 @@ export async function videoClicked(coord){
   if(isPlaying()){
 
     structureClicked = false;
-    await togglePlay(true);
+   
+    togglePlay(true);
     drawFrameOnPause();
 
   // }else if(structureClicked === false){
@@ -345,9 +348,17 @@ export async function videoClicked(coord){
   
     if(snip === "black" || snip === "white" || snip === "unknown"){
       structureClicked = false;
-      togglePlay(false);
 
       context.clearRect(0, 0, canvas.width, canvas.height);
+      removeStructureLabelFromButton();
+      //let ref = firebase.database().ref();  
+      updateSideAnnotations(dataKeeper[dataKeeper.length - 1]);
+
+      
+      
+
+      togglePlay(false);
+
       d3.select('.tooltip')
             .style('position', 'absolute')
             .style("opacity", 0)
