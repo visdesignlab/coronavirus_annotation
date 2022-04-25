@@ -246,15 +246,12 @@ function getCoordColor(coord){
   console.log("color indices",colorIndices);
   
   const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
-  //const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
+ 
 
   var redForCoord = currentImageData.data[Math.round(redIndex)];
   var greenForCoord = currentImageData.data[Math.round(greenIndex)];
   var blueForCoord = currentImageData.data[Math.round(blueIndex)];
   var alphaForCoord = currentImageData.data[Math.round(alphaIndex)];
-  var new_rgb = 'rgba(' + redForCoord +","+ greenForCoord +","+ blueForCoord +', 1.0)';
-
-
 
   let snip = colorChecker([redForCoord, greenForCoord, blueForCoord, alphaForCoord]);
 
@@ -263,15 +260,15 @@ function getCoordColor(coord){
 }
 
 export async function mouseMoveVideo(coord){
-  console.log("mouseover");
+
       if(isPlaying()){
         console.log('videoPlaying');
       }else if(structureClicked){
-       console.log("structure clicked");
+     
       }else{
        
         let snip = getCoordColor(coord);
-        console.log("COORd", coord, currentColorCodes, snip);
+      
         if(snip != currentColorCodes[currentColorCodes.length - 1] && !playing && snip != "black" && snip != "white"){
           currentColorCodes.push(snip);
           make2DArray(currentImageData, snip);
